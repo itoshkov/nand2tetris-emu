@@ -70,6 +70,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
     // Creating the file chooser window & the breakpoint window.
     private JFileChooser fileChooser = new JFileChooser();
     private BreakpointWindow breakpointWindow = new BreakpointWindow();
+    private ProfilerWindow profilerWindow;
 
     // Creating the icons for the buttons.
     private ImageIcon rewindIcon = new ImageIcon(Utilities.imagesDir + "vcrrewind.gif");
@@ -102,6 +103,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
     protected JMenuItem usageMenuItem, aboutMenuItem;
     protected JMenu animationSubMenu, numericFormatSubMenu, additionalDisplaySubMenu;
     protected JMenuItem breakpointsMenuItem, scriptMenuItem, programMenuItem;
+    protected JMenuItem profilerMenuItem;
     protected JRadioButtonMenuItem decMenuItem, hexaMenuItem, binMenuItem;
     protected JRadioButtonMenuItem scriptDisplayMenuItem, outputMenuItem, compareMenuItem, noAdditionalDisplayMenuItem;
     protected JRadioButtonMenuItem partAnimMenuItem, fullAnimMenuItem, noAnimMenuItem;
@@ -127,7 +129,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         additionalDisplayCombo = new TitledComboBox("View:", "View options",
                                                     new String[]{"Script", "Output", "Compare",
                                                                  "Screen"}, 80);
-        animationCombo = new TitledComboBox("Animate:", "Animtion type",
+        animationCombo = new TitledComboBox("Animate:", "Animation type",
                                             new String[]{"Program flow", "Program & data flow",
                                                          "No animation"}, 135);
         scriptComponent = new FileDisplayComponent();
@@ -261,6 +263,12 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
             breakpointWindow.setState(Frame.NORMAL);
     }
 
+    public void showProfiler() {
+        profilerWindow.setVisible(true);
+        if (profilerWindow.getState() == Frame.ICONIFIED)
+            profilerWindow.setState(Frame.NORMAL);
+    }
+
     /**
      * Enables the single step action.
      */
@@ -377,6 +385,17 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         partAnimMenuItem.setEnabled(false);
         fullAnimMenuItem.setEnabled(false);
         noAnimMenuItem.setEnabled(false);
+    }
+
+    @Override
+    public void setProfiler(Profiler profiler) {
+        if (profiler != null) {
+            profilerWindow = new ProfilerWindow(profiler);
+            profilerMenuItem.setEnabled(true);
+        } else {
+            profilerWindow = null;
+            profilerMenuItem.setEnabled(false);
+        }
     }
 
     /**
@@ -739,6 +758,16 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
             }
         });
         runMenu.add(breakpointsMenuItem);
+
+        profilerMenuItem = new JMenuItem("Profiler", KeyEvent.VK_I);
+        profilerMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showProfiler();
+            }
+        });
+        profilerMenuItem.setEnabled(false);
+        runMenu.add(profilerMenuItem);
 
         usageMenuItem = new JMenuItem("Usage", KeyEvent.VK_U);
         usageMenuItem.setAccelerator(KeyStroke.getKeyStroke("F1"));

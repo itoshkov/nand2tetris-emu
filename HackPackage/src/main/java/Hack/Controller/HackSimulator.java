@@ -145,6 +145,8 @@ public abstract class HackSimulator implements ProgramEventListener, ComputerPar
         getGUI().loadProgram();
     }
 
+    protected abstract Profiler getProfiler();
+
     /**
      * Sets the working dir.
      */

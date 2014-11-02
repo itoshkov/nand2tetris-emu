@@ -44,8 +44,7 @@ import Hack.VirtualMachine.*;
  * currentFunction - the name of the current function (String) - READ ONLY
  * line - <function name>.<index in function> (String) - READ ONLY
  */
-public class VMEmulator extends HackSimulator
- implements ComputerPartErrorEventListener {
+public class VMEmulator extends HackSimulator implements ComputerPartErrorEventListener {
 
 	private static final File INITIAL_BUILTIN_DIR = new File("builtInVMCode");
     // variables
@@ -619,6 +618,11 @@ public class VMEmulator extends HackSimulator
 
     protected HackSimulatorGUI getGUI() {
         return gui;
+    }
+
+    @Override
+    protected Profiler getProfiler() {
+        return cpu.getProfiler();
     }
 
     /**

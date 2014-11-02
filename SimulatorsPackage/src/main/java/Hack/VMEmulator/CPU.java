@@ -71,6 +71,8 @@ public class CPU {
 	// Runner for built-in vm code
 	private BuiltInFunctionsRunner builtInFunctionsRunner;
 
+    private VMProfiler profiler = new VMProfiler();
+
     /**
      * Constructs the CPU with given program, RAM, call stack, bus, stack and other
      * memory segments.
@@ -135,6 +137,8 @@ public class CPU {
         if (builtInFunctionsRunner != null) {
             builtInFunctionsRunner.killAllRunningBuiltInFunctions();
         }
+
+        profiler.reset();
     }
 
     /**
@@ -267,6 +271,8 @@ public class CPU {
                            currentInstruction.getStringArg(), false);
                 break;
         }
+
+        profiler.mark(currentInstruction);
     }
 
     /**
@@ -816,5 +822,9 @@ public class CPU {
     private void error(String message) throws ProgramException {
         throw new ProgramException(message + " in " + callStack.getTopFunction() + "." +
                                    currentInstruction.getIndexInFunction());
+    }
+
+    public VMProfiler getProfiler() {
+        return profiler;
     }
 }

@@ -383,6 +383,11 @@ public class CPUEmulator extends HackSimulator implements ComputerPartErrorEvent
         return gui;
     }
 
+    @Override
+    protected Profiler getProfiler() {
+        return null;
+    }
+
     /**
      * Called when the ROM's current program is changed.
      * The event contains the source object, event type and the new program's file name (if any).

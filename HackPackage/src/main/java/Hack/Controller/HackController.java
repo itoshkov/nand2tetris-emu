@@ -294,6 +294,8 @@ public class HackController
 
         stopMode();
 
+        gui.setProfiler(simulator.getProfiler());
+
         simulator.prepareGUI(); // prepares the gui after it is displayed
     }
 

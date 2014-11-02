@@ -228,4 +228,6 @@ public interface ControllerGUI {
      * Disables the animation mode buttons.
      */
     public void disableAnimationModes();
+
+    public void setProfiler(Profiler profiler);
 }

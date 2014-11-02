@@ -509,6 +509,11 @@ public class HardwareSimulator extends HackSimulator
         return gui;
     }
 
+    @Override
+    protected Profiler getProfiler() {
+        return null;
+    }
+
     // Loads a gate with the given name
     // If containsPath is true, the gateName should contain the full path.
     protected synchronized void loadGate(String gateName, boolean containsPath) throws GateException {
