@@ -20,13 +20,13 @@ package Hack.Controller;
 /**
  * A controller script breakpoint: includes a variable and a desired value.
  */
-public class Breakpoint {
+public class Breakpoint implements Comparable<Breakpoint> {
 
     // The variable name
-    private String varName;
+    private final String varName;
 
     // The desired value
-    private String value;
+    private final String value;
 
     // The status of the breakpoint
     private boolean reached;
@@ -73,5 +73,28 @@ public class Breakpoint {
      */
     public boolean isReached() {
         return reached;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Breakpoint that = (Breakpoint) o;
+
+        return varName.equals(that.varName) && value.equals(that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = varName.hashCode();
+        result = 31 * result + value.hashCode();
+        return result;
+    }
+
+    @Override
+    public int compareTo(Breakpoint o) {
+        final int c = varName.compareTo(o.varName);
+        return c != 0? c : value.compareTo(o.value);
     }
 }

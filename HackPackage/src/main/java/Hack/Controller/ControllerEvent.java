@@ -25,6 +25,8 @@ import java.util.EventObject;
  */
 public class ControllerEvent extends EventObject {
 
+    public static final byte STEP_OVER = 0;
+
     /**
      * Action code for performing the single step operation.
      * supplied data = null
