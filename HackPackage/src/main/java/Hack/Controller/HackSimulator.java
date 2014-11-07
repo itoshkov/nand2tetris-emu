@@ -147,6 +147,10 @@ public abstract class HackSimulator implements ProgramEventListener, ComputerPar
 
     protected abstract Profiler getProfiler();
 
+    public Breakpoint genStepOverBreakpoint() {
+        return null;
+    }
+
     /**
      * Sets the working dir.
      */

@@ -44,7 +44,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
     protected static final Dimension separatorDimension = new Dimension(3, TOOLBAR_HEIGHT - 5);
 
     // The vector of listeners to this component.
-    private Vector listeners;
+    private final Vector<ControllerEventListener> listeners;
 
     // The fast forward button.
     protected MouseOverJButton ffwdButton;
@@ -64,6 +64,8 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
     // The single step button.
     protected MouseOverJButton singleStepButton;
 
+    protected MouseOverJButton stepOverButton;
+
     // The load program button.
     protected MouseOverJButton loadProgramButton;
 
@@ -76,6 +78,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
     private ImageIcon rewindIcon = new ImageIcon(Utilities.imagesDir + "vcrrewind.gif");
     private ImageIcon ffwdIcon = new ImageIcon(Utilities.imagesDir + "vcrfastforward.gif");
     private ImageIcon singleStepIcon = new ImageIcon(Utilities.imagesDir + "vcrforward.gif");
+    private ImageIcon stepOverIcon = new ImageIcon(Utilities.imagesDir + "vcrstepover.gif");
     private ImageIcon stopIcon = new ImageIcon(Utilities.imagesDir + "vcrstop.gif");
     private ImageIcon breakIcon = new ImageIcon(Utilities.imagesDir + "redflag.gif");
     private ImageIcon loadProgramIcon = new ImageIcon(Utilities.imagesDir + "opendoc.gif");
@@ -123,7 +126,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
      * Constructs a new ControllerComponent.
      */
     public ControllerComponent() {
-        listeners = new Vector();
+        listeners = new Vector<ControllerEventListener>();
         formatCombo = new TitledComboBox("Format:", "Numeric display format",
                                          new String[]{"Decimal", "Hexa", "Binary"}, 75);
         additionalDisplayCombo = new TitledComboBox("View:", "View options",
@@ -182,6 +185,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         scriptButton = new MouseOverJButton();
         breakButton = new MouseOverJButton();
         singleStepButton = new MouseOverJButton();
+        stepOverButton = new MouseOverJButton();
     }
 
 
@@ -207,7 +211,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
     public void notifyControllerListeners(byte action, Object data) {
         ControllerEvent event = new ControllerEvent(this,action,data);
         for(int i=0;i<listeners.size();i++)
-            ((ControllerEventListener)listeners.elementAt(i)).actionPerformed(event);
+            listeners.elementAt(i).actionPerformed(event);
     }
 
     /**
@@ -274,6 +278,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
      */
     public void enableSingleStep() {
         singleStepButton.setEnabled(true);
+        stepOverButton.setEnabled(true);
         singleStepMenuItem.setEnabled(true);
     }
 
@@ -282,6 +287,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
      */
     public void disableSingleStep() {
         singleStepButton.setEnabled(false);
+        stepOverButton.setEnabled(false);
         singleStepMenuItem.setEnabled(false);
     }
 
@@ -411,7 +417,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
     /**
      * Sets the breakpoints list with the given one.
      */
-    public void setBreakpoints(Vector breakpoints) {
+    public void setBreakpoints(Collection<Breakpoint> breakpoints) {
         // sending the given Vector to the breakpoint panel.
         breakpointWindow.setBreakpoints(breakpoints);
     }
@@ -466,20 +472,6 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
     }
 
     /**
-     * Hides the controller.
-     */
-    public void hideController () {
-        setVisible(false);
-    }
-
-    /**
-     * Shows the controller.
-     */
-    public void showController() {
-        setVisible(true);
-    }
-
-    /**
      * Sets the animation mode (int code, out of the possible animation constants in HackController)
      */
     public void setAnimationMode(int mode) {
@@ -524,6 +516,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         toolBar.add(loadProgramButton);
         toolBar.addSeparator(separatorDimension);
         toolBar.add(singleStepButton);
+        toolBar.add(stepOverButton);
         toolBar.add(ffwdButton);
         toolBar.add(stopButton);
         toolBar.add(rewindButton);
@@ -563,7 +556,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         programMenuItem = new JMenuItem("Load Program", KeyEvent.VK_O);
         programMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                programMenuItem_actionPerformed(e);
+                programMenuItem_actionPerformed();
             }
         });
         fileMenu.add(programMenuItem);
@@ -571,17 +564,17 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         scriptMenuItem = new JMenuItem("Load Script", KeyEvent.VK_P);
         scriptMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                scriptMenuItem_actionPerformed(e);
+                scriptMenuItem_actionPerformed();
             }
         });
         fileMenu.add(scriptMenuItem);
         fileMenu.addSeparator();
 
         exitMenuItem = new JMenuItem("Exit", KeyEvent.VK_X);
-        exitMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.ALT_MASK));
+        exitMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.ALT_MASK));
         exitMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                exitMenuItem_actionPerformed(e);
+                exitMenuItem_actionPerformed();
             }
         });
         fileMenu.add(exitMenuItem);
@@ -599,7 +592,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         partAnimMenuItem.setSelected(true);
         partAnimMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                partAnimMenuItem_actionPerformed(e);
+                partAnimMenuItem_actionPerformed();
             }
         });
         animationRadioButtons.add(partAnimMenuItem);
@@ -609,7 +602,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         fullAnimMenuItem.setMnemonic(KeyEvent.VK_D);
         fullAnimMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fullAnimMenuItem_actionPerformed(e);
+                fullAnimMenuItem_actionPerformed();
             }
         });
         animationRadioButtons.add(fullAnimMenuItem);
@@ -619,7 +612,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         noAnimMenuItem.setMnemonic(KeyEvent.VK_N);
         noAnimMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                noAnimMenuItem_actionPerformed(e);
+                noAnimMenuItem_actionPerformed();
             }
         });
         animationRadioButtons.add(noAnimMenuItem);
@@ -637,7 +630,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         scriptDisplayMenuItem.setSelected(true);
         scriptDisplayMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                scriptDisplayMenuItem_actionPerformed(e);
+                scriptDisplayMenuItem_actionPerformed();
             }
         });
         additionalDisplayRadioButtons.add(scriptDisplayMenuItem);
@@ -647,7 +640,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         outputMenuItem.setMnemonic(KeyEvent.VK_O);
         outputMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                outputMenuItem_actionPerformed(e);
+                outputMenuItem_actionPerformed();
             }
         });
         additionalDisplayRadioButtons.add(outputMenuItem);
@@ -657,7 +650,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         compareMenuItem.setMnemonic(KeyEvent.VK_C);
         compareMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                compareMenuItem_actionPerformed(e);
+                compareMenuItem_actionPerformed();
             }
         });
         additionalDisplayRadioButtons.add(compareMenuItem);
@@ -667,7 +660,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         noAdditionalDisplayMenuItem.setMnemonic(KeyEvent.VK_N);
         noAdditionalDisplayMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                noAdditionalDisplayMenuItem_actionPerformed(e);
+                noAdditionalDisplayMenuItem_actionPerformed();
             }
         });
         additionalDisplayRadioButtons.add(noAdditionalDisplayMenuItem);
@@ -685,7 +678,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         decMenuItem.setSelected(true);
         decMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                decMenuItem_actionPerformed(e);
+                decMenuItem_actionPerformed();
             }
         });
         formatRadioButtons.add(decMenuItem);
@@ -695,7 +688,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         hexaMenuItem.setMnemonic(KeyEvent.VK_H);
         hexaMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                hexaMenuItem_actionPerformed(e);
+                hexaMenuItem_actionPerformed();
             }
         });
         formatRadioButtons.add(hexaMenuItem);
@@ -705,7 +698,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         binMenuItem.setMnemonic(KeyEvent.VK_B);
         binMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                binMenuItem_actionPerformed(e);
+                binMenuItem_actionPerformed();
             }
         });
         formatRadioButtons.add(binMenuItem);
@@ -717,7 +710,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         singleStepMenuItem.setAccelerator(KeyStroke.getKeyStroke("F11"));
         singleStepMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                singleStepMenuItem_actionPerformed(e);
+                singleStepMenuItem_actionPerformed();
             }
         });
         runMenu.add(singleStepMenuItem);
@@ -726,7 +719,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         ffwdMenuItem.setAccelerator(KeyStroke.getKeyStroke("F5"));
         ffwdMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                ffwdMenuItem_actionPerformed(e);
+                ffwdMenuItem_actionPerformed();
             }
         });
         runMenu.add(ffwdMenuItem);
@@ -735,7 +728,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         stopMenuItem.setAccelerator(KeyStroke.getKeyStroke("shift F5"));
         stopMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                stopMenuItem_actionPerformed(e);
+                stopMenuItem_actionPerformed();
             }
         });
         runMenu.add(stopMenuItem);
@@ -744,7 +737,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         rewindMenuItem = new JMenuItem("Reset", KeyEvent.VK_R);
         rewindMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                rewindMenuItem_actionPerformed(e);
+                rewindMenuItem_actionPerformed();
             }
         });
         runMenu.add(rewindMenuItem);
@@ -754,7 +747,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         breakpointsMenuItem = new JMenuItem("Breakpoints", KeyEvent.VK_B);
         breakpointsMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                breakpointsMenuItem_actionPerformed(e);
+                breakpointsMenuItem_actionPerformed();
             }
         });
         runMenu.add(breakpointsMenuItem);
@@ -773,7 +766,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         usageMenuItem.setAccelerator(KeyStroke.getKeyStroke("F1"));
         usageMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                usageMenuItem_actionPerformed(e);
+                usageMenuItem_actionPerformed();
             }
         });
         helpMenu.add(usageMenuItem);
@@ -781,7 +774,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         aboutMenuItem = new JMenuItem("About ...", KeyEvent.VK_A);
         aboutMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                aboutMenuItem_actionPerformed(e);
+                aboutMenuItem_actionPerformed();
             }
         });
         helpMenu.add(aboutMenuItem);
@@ -802,14 +795,14 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         fileChooser.setFileFilter(new ScriptFileFilter());
         this.getContentPane().setLayout(null);
 
-        Hashtable labelTable = new Hashtable();
+        Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
 
         JLabel slowLabel = new JLabel("Slow");
         slowLabel.setFont(Utilities.thinLabelsFont);
         JLabel fastLabel = new JLabel("Fast");
         fastLabel.setFont(Utilities.thinLabelsFont);
-        labelTable.put(new Integer(1), slowLabel);
-        labelTable.put(new Integer(5), fastLabel);
+        labelTable.put(1, slowLabel);
+        labelTable.put(5, fastLabel);
 
         speedSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
@@ -826,70 +819,72 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         speedSlider.setToolTipText("Speed");
         speedSlider.setMaximumSize(new Dimension(95, 50));
 
+        final Dimension buttonSize = new Dimension(39, 39);
+
         loadProgramButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                loadProgramButton_actionPerformed(e);
+                loadProgramButton_actionPerformed();
             }
         });
-        loadProgramButton.setMaximumSize(new Dimension(39, 39));
-        loadProgramButton.setMinimumSize(new Dimension(39, 39));
-        loadProgramButton.setPreferredSize(new Dimension(39, 39));
-        loadProgramButton.setSize(new Dimension(39, 39));
+        loadProgramButton.setMaximumSize(buttonSize);
+        loadProgramButton.setMinimumSize(buttonSize);
+        loadProgramButton.setPreferredSize(buttonSize);
+        loadProgramButton.setSize(buttonSize);
         loadProgramButton.setToolTipText("Load Program");
         loadProgramButton.setIcon(loadProgramIcon);
 
-        ffwdButton.setMaximumSize(new Dimension(39, 39));
-        ffwdButton.setMinimumSize(new Dimension(39, 39));
-        ffwdButton.setPreferredSize(new Dimension(39, 39));
+        ffwdButton.setMaximumSize(buttonSize);
+        ffwdButton.setMinimumSize(buttonSize);
+        ffwdButton.setPreferredSize(buttonSize);
         ffwdButton.setToolTipText("Run");
         ffwdButton.setIcon(ffwdIcon);
         ffwdButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                ffwdButton_actionPerformed(e);
+                ffwdButton_actionPerformed();
             }
         });
 
         stopButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                stopButton_actionPerformed(e);
+                stopButton_actionPerformed();
             }
         });
-        stopButton.setMaximumSize(new Dimension(39, 39));
-        stopButton.setMinimumSize(new Dimension(39, 39));
-        stopButton.setPreferredSize(new Dimension(39, 39));
+        stopButton.setMaximumSize(buttonSize);
+        stopButton.setMinimumSize(buttonSize);
+        stopButton.setPreferredSize(buttonSize);
         stopButton.setToolTipText("Stop");
         stopButton.setIcon(stopIcon);
 
-        rewindButton.setMaximumSize(new Dimension(39, 39));
-        rewindButton.setMinimumSize(new Dimension(39, 39));
-        rewindButton.setPreferredSize(new Dimension(39, 39));
+        rewindButton.setMaximumSize(buttonSize);
+        rewindButton.setMinimumSize(buttonSize);
+        rewindButton.setPreferredSize(buttonSize);
         rewindButton.setToolTipText("Reset");
         rewindButton.setIcon(rewindIcon);
         rewindButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                rewindButton_actionPerformed(e);
+                rewindButton_actionPerformed();
             }
         });
 
-        scriptButton.setMaximumSize(new Dimension(39, 39));
-        scriptButton.setMinimumSize(new Dimension(39, 39));
-        scriptButton.setPreferredSize(new Dimension(39, 39));
+        scriptButton.setMaximumSize(buttonSize);
+        scriptButton.setMinimumSize(buttonSize);
+        scriptButton.setPreferredSize(buttonSize);
         scriptButton.setToolTipText("Load Script");
         scriptButton.setIcon(scriptIcon);
         scriptButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                scriptButton_actionPerformed(e);
+                scriptButton_actionPerformed();
             }
         });
 
         breakButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            breakButton_actionPerformed(e);
+            breakButton_actionPerformed();
             }
         });
-        breakButton.setMaximumSize(new Dimension(39, 39));
-        breakButton.setMinimumSize(new Dimension(39, 39));
-        breakButton.setPreferredSize(new Dimension(39, 39));
+        breakButton.setMaximumSize(buttonSize);
+        breakButton.setMinimumSize(buttonSize);
+        breakButton.setPreferredSize(buttonSize);
         breakButton.setToolTipText("Open breakpoint panel");
         breakButton.setIcon(breakIcon);
 
@@ -897,31 +892,43 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
 
         singleStepButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                singleStepButton_actionPerformed(e);
+                singleStepButton_actionPerformed();
             }
         });
-        singleStepButton.setMaximumSize(new Dimension(39, 39));
-        singleStepButton.setMinimumSize(new Dimension(39, 39));
-        singleStepButton.setPreferredSize(new Dimension(39, 39));
-        singleStepButton.setSize(new Dimension(39, 39));
+        singleStepButton.setMaximumSize(buttonSize);
+        singleStepButton.setMinimumSize(buttonSize);
+        singleStepButton.setPreferredSize(buttonSize);
+        singleStepButton.setSize(buttonSize);
         singleStepButton.setToolTipText("Single Step");
         singleStepButton.setIcon(singleStepIcon);
 
+        stepOverButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                stepOverButton_actionPerformed();
+            }
+        });
+        stepOverButton.setMaximumSize(buttonSize);
+        stepOverButton.setMinimumSize(buttonSize);
+        stepOverButton.setPreferredSize(buttonSize);
+        stepOverButton.setSize(buttonSize);
+        stepOverButton.setToolTipText("Step Over");
+        stepOverButton.setIcon(stepOverIcon);
+
         animationCombo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                animationCombo_actionPerformed(e);
+                animationCombo_actionPerformed();
             }
         });
 
         formatCombo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                formatCombo_actionPerformed(e);
+                formatCombo_actionPerformed();
             }
         });
 
         additionalDisplayCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                additionalDisplayCombo_actionPerformed(e);
+                additionalDisplayCombo_actionPerformed();
             }
         });
 
@@ -946,7 +953,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         arrangeMenu();
         setJMenuBar(menuBar);
 
-        this.setDefaultCloseOperation(3);
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.getContentPane().add(messageLbl, null);
 
         setControllerSize();
@@ -959,7 +966,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
     /**
      * Called when a choice was made in the additional display combo box.
      */
-    public void additionalDisplayCombo_actionPerformed (ActionEvent e) {
+    public void additionalDisplayCombo_actionPerformed() {
         int selectedIndex = additionalDisplayCombo.getSelectedIndex();
         switch (selectedIndex) {
             case HackController.SCRIPT_ADDITIONAL_DISPLAY:
@@ -989,49 +996,53 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
     /**
      * Called when the load program button was pressed.
      */
-    public void loadProgramButton_actionPerformed(ActionEvent e) {
+    public void loadProgramButton_actionPerformed() {
         notifyControllerListeners(ControllerEvent.LOAD_PROGRAM,null);
     }
 
     /**
      * Called when the fast forward button was pressed.
      */
-    public void ffwdButton_actionPerformed(ActionEvent e) {
+    public void ffwdButton_actionPerformed() {
         notifyControllerListeners(ControllerEvent.FAST_FORWARD,null);
     }
 
     /**
      * Called when the rewind button was pressed.
      */
-    public void rewindButton_actionPerformed(ActionEvent e) {
+    public void rewindButton_actionPerformed() {
         notifyControllerListeners(ControllerEvent.REWIND, null);
     }
 
     /**
      * Called when the load script button was pressed.
      */
-    public void scriptButton_actionPerformed(ActionEvent e) {
+    public void scriptButton_actionPerformed() {
         scriptPressed();
     }
 
     /**
      * Called when the breakpoints button was pressed.
      */
-    public void breakButton_actionPerformed(ActionEvent e) {
+    public void breakButton_actionPerformed() {
         showBreakpoints();
     }
 
     /**
      * Called when the single step button was pressed.
      */
-    public void singleStepButton_actionPerformed(ActionEvent e) {
+    public void singleStepButton_actionPerformed() {
         notifyControllerListeners(ControllerEvent.SINGLE_STEP, null);
+    }
+
+    public void stepOverButton_actionPerformed() {
+        notifyControllerListeners(ControllerEvent.STEP_OVER, null);
     }
 
     /**
      * Called when the stop button was pressed.
      */
-    public void stopButton_actionPerformed(ActionEvent e) {
+    public void stopButton_actionPerformed() {
         notifyControllerListeners(ControllerEvent.STOP, null);
     }
 
@@ -1041,7 +1052,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
     public void SpeedSlider_stateChanged(ChangeEvent e) {
         JSlider source = (JSlider)e.getSource();
         if (!source.getValueIsAdjusting()) {
-            int speed = (int)source.getValue();
+            int speed = source.getValue();
             notifyControllerListeners(ControllerEvent.SPEED_CHANGE, new Integer(speed));
         }
     }
@@ -1049,7 +1060,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
     /**
      * Called when a choice was made in the animation type combo box.
      */
-    public void animationCombo_actionPerformed(ActionEvent e) {
+    public void animationCombo_actionPerformed() {
         int selectedIndex = animationCombo.getSelectedIndex();
         switch (selectedIndex) {
             case HackController.DISPLAY_CHANGES:
@@ -1074,7 +1085,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
     /**
      * Called when a choice was made in the numeric format combo box.
      */
-    public void formatCombo_actionPerformed(ActionEvent e) {
+    public void formatCombo_actionPerformed() {
         int selectedIndex = formatCombo.getSelectedIndex();
         switch (selectedIndex) {
             case HackController.DECIMAL_FORMAT:
@@ -1093,34 +1104,34 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
                 break;
         }
 
-        notifyControllerListeners(ControllerEvent.NUMERIC_FORMAT_CHANGE,new Integer(selectedIndex));
+        notifyControllerListeners(ControllerEvent.NUMERIC_FORMAT_CHANGE, selectedIndex);
     }
 
     /**
      * Called when the load program menu item was selected.
      */
-    public void programMenuItem_actionPerformed(ActionEvent e) {
+    public void programMenuItem_actionPerformed() {
         notifyControllerListeners(ControllerEvent.LOAD_PROGRAM, null);
     }
 
     /**
      * Called when the load script menu item was selected.
      */
-    public void scriptMenuItem_actionPerformed(ActionEvent e) {
+    public void scriptMenuItem_actionPerformed() {
         scriptPressed();
     }
 
     /**
      * Called when the exit menu item was selected.
      */
-    public void exitMenuItem_actionPerformed(ActionEvent e) {
+    public void exitMenuItem_actionPerformed() {
         System.exit(0);
     }
 
     /**
      * Called when the animation's "display changes" menu item was selected.
      */
-    public void partAnimMenuItem_actionPerformed(ActionEvent e) {
+    public void partAnimMenuItem_actionPerformed() {
         if (!animationCombo.isSelectedIndex(HackController.DISPLAY_CHANGES))
             animationCombo.setSelectedIndex(HackController.DISPLAY_CHANGES);
     }
@@ -1128,7 +1139,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
     /**
      * Called when the animation's "animate" menu item was selected.
      */
-    public void fullAnimMenuItem_actionPerformed(ActionEvent e) {
+    public void fullAnimMenuItem_actionPerformed() {
         if (!animationCombo.isSelectedIndex(HackController.ANIMATION))
             animationCombo.setSelectedIndex(HackController.ANIMATION);
     }
@@ -1136,7 +1147,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
     /**
      * Called when the animation's "no animation" menu item was selected.
      */
-    public void noAnimMenuItem_actionPerformed(ActionEvent e) {
+    public void noAnimMenuItem_actionPerformed() {
         if (!animationCombo.isSelectedIndex(HackController.NO_DISPLAY_CHANGES))
             animationCombo.setSelectedIndex(HackController.NO_DISPLAY_CHANGES);
     }
@@ -1144,7 +1155,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
     /**
      * Called when the numeric format's "decimal" menu item was selected.
      */
-    public void decMenuItem_actionPerformed(ActionEvent e) {
+    public void decMenuItem_actionPerformed() {
         if (!formatCombo.isSelectedIndex(HackController.DECIMAL_FORMAT))
             formatCombo.setSelectedIndex(HackController.DECIMAL_FORMAT);
     }
@@ -1152,7 +1163,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
     /**
      * Called when the numeric format's "hexa" menu item was selected.
      */
-    public void hexaMenuItem_actionPerformed(ActionEvent e) {
+    public void hexaMenuItem_actionPerformed() {
         if (!formatCombo.isSelectedIndex(HackController.HEXA_FORMAT))
             formatCombo.setSelectedIndex(HackController.HEXA_FORMAT);
     }
@@ -1160,39 +1171,39 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
     /**
      * Called when the numeric format's "binary" menu item was selected.
      */
-    public void binMenuItem_actionPerformed(ActionEvent e) {
+    public void binMenuItem_actionPerformed() {
         if (!formatCombo.isSelectedIndex(HackController.BINARY_FORMAT))
             formatCombo.setSelectedIndex(HackController.BINARY_FORMAT);
     }
 
     /**
-     * Called when the additonal display's "script" menu item was selected.
+     * Called when the additional display's "script" menu item was selected.
      */
-    public void scriptDisplayMenuItem_actionPerformed (ActionEvent e) {
+    public void scriptDisplayMenuItem_actionPerformed() {
         if (!additionalDisplayCombo.isSelectedIndex(HackController.SCRIPT_ADDITIONAL_DISPLAY))
             additionalDisplayCombo.setSelectedIndex(HackController.SCRIPT_ADDITIONAL_DISPLAY);
     }
 
     /**
-     * Called when the additonal display's "output" menu item was selected.
+     * Called when the additional display's "output" menu item was selected.
      */
-    public void outputMenuItem_actionPerformed (ActionEvent e) {
+    public void outputMenuItem_actionPerformed() {
         if (!additionalDisplayCombo.isSelectedIndex(HackController.OUTPUT_ADDITIONAL_DISPLAY))
             additionalDisplayCombo.setSelectedIndex(HackController.OUTPUT_ADDITIONAL_DISPLAY);
     }
 
     /**
-     * Called when the additonal display's "comparison" menu item was selected.
+     * Called when the additional display's "comparison" menu item was selected.
      */
-    public void compareMenuItem_actionPerformed (ActionEvent e) {
+    public void compareMenuItem_actionPerformed() {
         if (!additionalDisplayCombo.isSelectedIndex(HackController.COMPARISON_ADDITIONAL_DISPLAY))
             additionalDisplayCombo.setSelectedIndex(HackController.COMPARISON_ADDITIONAL_DISPLAY);
     }
 
     /**
-     * Called when the additonal display's "no display" menu item was selected.
+     * Called when the additional display's "no display" menu item was selected.
      */
-    public void noAdditionalDisplayMenuItem_actionPerformed (ActionEvent e) {
+    public void noAdditionalDisplayMenuItem_actionPerformed() {
         if (!additionalDisplayCombo.isSelectedIndex(HackController.NO_ADDITIONAL_DISPLAY))
             additionalDisplayCombo.setSelectedIndex(HackController.NO_ADDITIONAL_DISPLAY);
     }
@@ -1200,42 +1211,42 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
     /**
      * Called when the single step menu item was selected.
      */
-    public void singleStepMenuItem_actionPerformed(ActionEvent e) {
+    public void singleStepMenuItem_actionPerformed() {
         notifyControllerListeners(ControllerEvent.SINGLE_STEP, null);
     }
 
     /**
      * Called when the fast forward menu item was selected.
      */
-    public void ffwdMenuItem_actionPerformed(ActionEvent e) {
+    public void ffwdMenuItem_actionPerformed() {
         notifyControllerListeners(ControllerEvent.FAST_FORWARD, null);
     }
 
     /**
      * Called when the stop menu item was selected.
      */
-    public void stopMenuItem_actionPerformed(ActionEvent e) {
+    public void stopMenuItem_actionPerformed() {
         notifyControllerListeners(ControllerEvent.STOP, null);
     }
 
     /**
      * Called when the rewind menu item was selected.
      */
-    public void rewindMenuItem_actionPerformed(ActionEvent e) {
+    public void rewindMenuItem_actionPerformed() {
         notifyControllerListeners(ControllerEvent.REWIND, null);
     }
 
     /**
      * Called when the breakpoints menu item was selected.
      */
-    public void breakpointsMenuItem_actionPerformed(ActionEvent e) {
+    public void breakpointsMenuItem_actionPerformed() {
         showBreakpoints();
     }
 
     /**
      * Called when the usage window menu item was selected.
      */
-    public void usageMenuItem_actionPerformed(ActionEvent e) {
+    public void usageMenuItem_actionPerformed() {
         if (usageWindow != null)
             usageWindow.setVisible(true);
     }
@@ -1243,7 +1254,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
     /**
      * Called when the about window menu item was selected.
      */
-    public void aboutMenuItem_actionPerformed(ActionEvent e) {
+    public void aboutMenuItem_actionPerformed() {
         if (aboutWindow != null)
             aboutWindow.setVisible(true);
     }

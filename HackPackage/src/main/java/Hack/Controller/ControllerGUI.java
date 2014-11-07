@@ -117,7 +117,7 @@ public interface ControllerGUI {
     /**
      * Sets the breakpoints list with the given one.
      */
-    public void setBreakpoints(Vector breakpoints);
+    public void setBreakpoints(Collection<Breakpoint> breakpoints);
 
     /**
      * Sets the list of recognized variables with the given one.
