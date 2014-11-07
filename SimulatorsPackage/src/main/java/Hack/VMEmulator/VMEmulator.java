@@ -17,14 +17,17 @@
 
 package Hack.VMEmulator;
 
-import java.io.*;
+import Hack.CPUEmulator.Keyboard;
+import Hack.CPUEmulator.RAM;
+import Hack.CPUEmulator.ScreenGUI;
 import Hack.ComputerParts.*;
-import Hack.Utilities.*;
 import Hack.Controller.*;
-import Hack.Events.*;
-import Hack.Utilities.*;
-import Hack.CPUEmulator.*;
-import Hack.VirtualMachine.*;
+import Hack.Events.ProgramEvent;
+import Hack.Utilities.Conversions;
+import Hack.Utilities.Definitions;
+import Hack.VirtualMachine.HVMInstructionSet;
+
+import java.io.File;
 
 /**
  * A virtual machine emulator. Emulates virtual machine code (in VM format).
@@ -445,7 +448,7 @@ public class VMEmulator extends HackSimulator implements ComputerPartErrorEventL
 
         // hide gui highlights
         if (animationMode != HackController.NO_DISPLAY_CHANGES)
-            hideHighlightes();
+            hideHighlights();
 
         // execute the appropriate command
         if (command[0].equals(COMMAND_VMSTEP)) {
@@ -473,7 +476,7 @@ public class VMEmulator extends HackSimulator implements ComputerPartErrorEventL
     }
 
     // Hides all highlights in GUIs.
-    private void hideHighlightes() {
+    private void hideHighlights() {
         cpu.getRAM().hideHighlight();
         cpu.getStack().hideHighlight();
         cpu.getWorkingStack().hideHighlight();
@@ -481,8 +484,8 @@ public class VMEmulator extends HackSimulator implements ComputerPartErrorEventL
         cpu.getStaticSegment().hideHighlight();
 
         MemorySegment[] segments = cpu.getMemorySegments();
-        for (int i = 0; i < segments.length; i++)
-            segments[i].hideHighlight();
+        for (MemorySegment segment : segments)
+            segment.hideHighlight();
     }
 
     /**
@@ -499,8 +502,8 @@ public class VMEmulator extends HackSimulator implements ComputerPartErrorEventL
         cpu.getStaticSegment().reset();
 
         MemorySegment[] segments = cpu.getMemorySegments();
-        for (int i = 0; i < segments.length; i++)
-            segments[i].reset();
+        for (MemorySegment segment : segments)
+            segment.reset();
 
         cpu.boot();
     }
@@ -517,8 +520,8 @@ public class VMEmulator extends HackSimulator implements ComputerPartErrorEventL
                 cpu.getStaticSegment().disableUserInput();
 
                 MemorySegment[] segments = cpu.getMemorySegments();
-                for (int i = 0; i < segments.length; i++)
-                    segments[i].disableUserInput();
+                for (MemorySegment segment : segments)
+                    segment.disableUserInput();
 
                 ScreenGUI screen = gui.getScreen();
                 if (screen != null)
@@ -534,8 +537,8 @@ public class VMEmulator extends HackSimulator implements ComputerPartErrorEventL
                 cpu.getStaticSegment().enableUserInput();
 
                 MemorySegment[] segments = cpu.getMemorySegments();
-                for (int i = 0; i < segments.length; i++)
-                    segments[i].enableUserInput();
+                for (MemorySegment segment : segments)
+                    segment.enableUserInput();
 
                 ScreenGUI screen = gui.getScreen();
                 if (screen != null)
@@ -565,9 +568,9 @@ public class VMEmulator extends HackSimulator implements ComputerPartErrorEventL
         cpu.getStaticSegment().setDisplayChanges(displayChanges);
 
         MemorySegment[] segments = cpu.getMemorySegments();
-        for (int i = 0; i < segments.length; i++) {
-            segments[i].setDisplayChanges(displayChanges);
-            segments[i].setAnimate(animate);
+        for (MemorySegment segment : segments) {
+            segment.setDisplayChanges(displayChanges);
+            segment.setAnimate(animate);
         }
     }
 
@@ -600,8 +603,8 @@ public class VMEmulator extends HackSimulator implements ComputerPartErrorEventL
         cpu.getStaticSegment().refreshGUI();
 
         MemorySegment[] segments = cpu.getMemorySegments();
-        for (int i = 0; i < segments.length; i++)
-            segments[i].refreshGUI();
+        for (MemorySegment segment : segments)
+            segment.refreshGUI();
     }
 
     public void prepareFastForward() {
@@ -623,6 +626,12 @@ public class VMEmulator extends HackSimulator implements ComputerPartErrorEventL
     @Override
     protected Profiler getProfiler() {
         return cpu.getProfiler();
+    }
+
+    @Override
+    public Breakpoint genStepOverBreakpoint() {
+        final String address = cpu.getSPIfStepOver();
+        return address != null ? new Breakpoint(VAR_SP, address) : null;
     }
 
     /**
@@ -652,7 +661,7 @@ public class VMEmulator extends HackSimulator implements ComputerPartErrorEventL
     // value of i, which is an address in the RAM.
     // Throws VariableException if i is not a legal address in the RAM.
     private static short getRamIndex(String varName) throws VariableException {
-        if (varName.indexOf("]") == -1)
+        if (!varName.contains("]"))
             throw new VariableException("Missing ']'", varName);
 
         String indexStr = varName.substring(varName.indexOf("[") + 1, varName.indexOf("]"));

@@ -58,4 +58,9 @@ public class VMEmulatorInstruction extends HVMInstruction {
     public short getIndexInFunction() {
         return indexInFunction;
     }
+
+    @Override
+    public String toString() {
+        return "VMEmulatorInstruction{" + indexInFunction + ": " + super.toString() + '}';
+    }
 }

@@ -17,17 +17,21 @@
 
 package Hack.Controller;
 
+import Hack.Events.ProgramEvent;
+import Hack.Events.ProgramEventListener;
+import Hack.Utilities.Conversions;
+import Hack.Utilities.Definitions;
+
 import javax.swing.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.Vector;
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
-import Hack.Utilities.*;
-import Hack.Events.*;
 
 /**
  * A Controller for HackSimulators. Executes scripts written in a special scripting language
@@ -166,6 +170,8 @@ public class HackController
 
     // The current breakpoints list
     private final Set<Breakpoint> breakpoints = Collections.synchronizedSet(new LinkedHashSet<Breakpoint>());
+
+    private final Set<Breakpoint> tempBreakpoints = Collections.synchronizedSet(new LinkedHashSet<Breakpoint>());
 
     // The current compared and output lines
     private int compareLinesCounter, outputLinesCounter;
@@ -398,12 +404,15 @@ public class HackController
                 stopMode();
             }
 
+            boolean breakpointReached = false;
+
             // Check Breakpoints
             for (Breakpoint breakpoint : breakpoints) {
                 String currentValue = simulator.getValue(breakpoint.getVarName());
                 if (currentValue.equals(breakpoint.getValue())) {
                     // if value is equal and the breakpoint wasn't reached before, turn it on
                     if (!breakpoint.isReached()) {
+                        breakpointReached = true;
                         breakpoint.on();
                         gui.setBreakpoints(breakpoints);
                         displayMessage("Breakpoint reached", false);
@@ -417,6 +426,20 @@ public class HackController
                     gui.setBreakpoints(breakpoints);
                 }
             }
+
+            // Check temp breakpoints
+            if (!breakpointReached)
+                for (Breakpoint breakpoint : tempBreakpoints) {
+                    String currentValue = simulator.getValue(breakpoint.getVarName());
+                    if (currentValue.equals(breakpoint.getValue())) {
+                        breakpointReached = true;
+                        stopMode();
+                    }
+                }
+
+            if (breakpointReached)
+                tempBreakpoints.clear();
+
         } catch (ControllerException ce) {
             stopWithError(ce);
         } catch (ProgramException pe) {
@@ -925,7 +948,14 @@ public class HackController
         try {
             switch (event.getAction()) {
                 case ControllerEvent.STEP_OVER:
-                    // TODO Implement this
+                    final Breakpoint stepOverBreakpoint = simulator.genStepOverBreakpoint();
+                    if (stepOverBreakpoint != null) {
+                        tempBreakpoints.add(stepOverBreakpoint);
+                        displayMessage(lastEcho, true);
+                        fastForward();
+                        break;
+                    }
+                    // Otherwise fallback to SINGLE_STEP
                 case ControllerEvent.SINGLE_STEP:
                     displayMessage(lastEcho, true);
                     gui.disableSingleStep();

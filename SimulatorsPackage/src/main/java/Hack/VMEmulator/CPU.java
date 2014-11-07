@@ -17,13 +17,14 @@
 
 package Hack.VMEmulator;
 
-import Hack.ComputerParts.*;
-import java.util.*;
-import java.io.*;
-import Hack.Utilities.*;
 import Hack.CPUEmulator.RAM;
-import Hack.Controller.*;
-import Hack.VirtualMachine.*;
+import Hack.ComputerParts.*;
+import Hack.Controller.ProgramException;
+import Hack.Utilities.Definitions;
+import Hack.VirtualMachine.HVMInstructionSet;
+
+import java.io.File;
+import java.util.Vector;
 
 /**
  * A CPU of a computer. Runs the program on the virtual machine emulator.
@@ -57,13 +58,12 @@ public class CPU {
     private MemorySegment argSegment;
     private MemorySegment thisSegment;
     private MemorySegment thatSegment;
-    private MemorySegment tempSegment;
 
     // A mapping from memory segment codes to the MemorySegment objects (not including stack).
     private MemorySegment[] segments;
 
     // A stack of method frame addresses
-    private Vector stackFrames;
+    private Vector<Integer> stackFrames;
 
     // The last instruction that was executed.
     private VMEmulatorInstruction currentInstruction;
@@ -98,7 +98,6 @@ public class CPU {
         this.argSegment = argSegment;
         this.thisSegment = thisSegment;
         this.thatSegment = thatSegment;
-        this.tempSegment = tempSegment;
 
         segments = new MemorySegment[HVMInstructionSet.NUMBER_OF_ACTUAL_SEGMENTS];
         segments[HVMInstructionSet.LOCAL_SEGMENT_CODE] = localSegment;
@@ -107,7 +106,7 @@ public class CPU {
         segments[HVMInstructionSet.THAT_SEGMENT_CODE] = thatSegment;
         segments[HVMInstructionSet.TEMP_SEGMENT_CODE] = tempSegment;
 
-        stackFrames = new Vector();
+        stackFrames = new Vector<Integer>();
 
         if (program.getGUI() != null) {
             builtInFunctionsRunner =
@@ -480,7 +479,7 @@ public class CPU {
         // check whether there is a "calling frame"
         if (stackFrames.size() > 0) {
             // retrieve stack frame address of old function
-            int frameAddress = ((Integer)stackFrames.lastElement()).intValue();
+            int frameAddress = stackFrames.lastElement();
             stackFrames.removeElementAt(stackFrames.size() - 1);
             workingStackSegment.setStartAddress(frameAddress);
 
@@ -526,14 +525,11 @@ public class CPU {
 	 * Calls a function according to the given function name
 	 * with the given parameters from a built-in function
 	 */
-	public void callFunctionFromBuiltIn(String functionName, short[] params)
-			throws ProgramException {
+	public void callFunctionFromBuiltIn(String functionName, short[] params) throws ProgramException {
 		// Push the arguments onto the stack
-		for (int i=0; i<params.length; ++i) {
-			pushValue(METHOD_STACK, params[i]);
-		}
-		callFunction(program.getAddress(functionName), (short)params.length,
-					 functionName, true);
+        for (short param : params)
+            pushValue(METHOD_STACK, param);
+		callFunction(program.getAddress(functionName), (short)params.length, functionName, true);
 	}
 	
     /**
@@ -546,7 +542,7 @@ public class CPU {
      */
     public void callFunction(short address, short numberOfArguments, String functionName, boolean callerIsBuiltIn)
      throws ProgramException {
-        stackFrames.addElement(new Integer(workingStackSegment.getStartAddress()));
+        stackFrames.addElement(workingStackSegment.getStartAddress());
         workingStackSegment.setStartAddress(getSP() + 5);
 
 		if (callerIsBuiltIn) {
@@ -634,8 +630,8 @@ public class CPU {
         else
             workingStackSegment.setValueAt(sp, value, false);
 
-        checkSP((short)(sp + 1));
-        setSP((short)(sp + 1));
+        checkSP((short) (sp + 1));
+        setSP((short) (sp + 1));
     }
 
     // Pushes a value from the RAM at the given index into the appropriate stack.
@@ -826,5 +822,17 @@ public class CPU {
 
     public VMProfiler getProfiler() {
         return profiler;
+    }
+
+    public String getSPIfStepOver() {
+        final short currentPC = program.getCurrentPC();
+        if (currentPC >= 0) {
+            final short visiblePC = program.getNextInstructionAddress(currentPC);
+            final VMEmulatorInstruction visibleInstr = program.getInstructionAt(visiblePC);
+            if (visibleInstr != null && visibleInstr.getOpCode() == HVMInstructionSet.CALL_CODE)
+                return Integer.toString(getSP() + 1);
+        }
+
+        return null;
     }
 }
