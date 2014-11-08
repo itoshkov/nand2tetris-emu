@@ -100,7 +100,11 @@ pop argument 1
 label IF_FALSE0
 label WHILE_EXP0
 push local 2
+push constant 1
+sub
 push argument 1
+push constant 1
+sub
 lt
 not
 if-goto WHILE_END0
@@ -112,7 +116,8 @@ push that 0
 push argument 1
 and
 push constant 0
-gt
+eq
+not
 if-goto IF_TRUE1
 goto IF_FALSE1
 label IF_TRUE1
@@ -189,8 +194,12 @@ push argument 0
 call Math.abs 1
 pop argument 0
 label WHILE_EXP0
+push local 0
+push constant 15
+lt
 push local 3
 not
+and
 not
 if-goto WHILE_END0
 push constant 32767
@@ -199,12 +208,16 @@ push static 1
 add
 pop pointer 1
 push that 0
+push constant 1
+sub
 sub
 push local 0
 push static 1
 add
 pop pointer 1
 push that 0
+push constant 1
+sub
 lt
 pop local 3
 push local 3
@@ -239,7 +252,11 @@ push static 1
 add
 pop pointer 1
 push that 0
+push constant 1
+sub
 push argument 0
+push constant 1
+sub
 gt
 pop local 3
 push local 3
@@ -267,7 +284,11 @@ push static 1
 add
 pop pointer 1
 push that 0
+push constant 1
+sub
 push argument 0
+push constant 1
+sub
 gt
 not
 if-goto IF_TRUE3
