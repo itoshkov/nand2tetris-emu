@@ -32,6 +32,8 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.Vector;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 /**
  * A Controller for HackSimulators. Executes scripts written in a special scripting language
@@ -124,8 +126,9 @@ public class HackController
 
     // A helper string with spaces
     private static final String SPACES = "                                        ";
+    private static final String DIRECTORY = "directory";
 
-    // The contorller's GUI
+    // The controller's GUI
     protected ControllerGUI gui;
 
     // The file of the current script
@@ -864,34 +867,28 @@ public class HackController
 
     // Returns the working dir that is saved in the data file, or "" if data file doesn't exist.
     protected File loadWorkingDir() {
-        String dir = ".";
-
-        try {
-            BufferedReader r = new BufferedReader(new FileReader("bin/" + simulator.getName() +
-                                                                 ".dat"));
-            dir = r.readLine();
-            r.close();
-        } catch (IOException ignored) {}
-
+        final Preferences preferences = Preferences.userNodeForPackage(simulator.getClass());
+        final String dir = preferences.get(DIRECTORY, ".");
         return new File(dir);
     }
 
     // Saves the given working dir into the data file and gui's.
     protected void saveWorkingDir(File file) {
-        File parent = file.getParentFile();
+        final File parent = file.getParentFile();
 
         if (gui != null)
             gui.setWorkingDir(parent);
 
         simulator.setWorkingDir(file);
 
-        File dir = file.isDirectory() ? file : parent;
+        final File dir = file.isDirectory() ? file : parent;
 
+        final Preferences preferences = Preferences.userNodeForPackage(simulator.getClass());
+        preferences.put(DIRECTORY, dir.toString());
         try {
-            PrintWriter r = new PrintWriter(new FileWriter("bin/" + simulator.getName() + ".dat"));
-            r.println(dir.getAbsolutePath());
-            r.close();
-        } catch (IOException ignored) {}
+            preferences.sync();
+        } catch (BackingStoreException ignored) {
+        }
     }
 
     // Returns the version string

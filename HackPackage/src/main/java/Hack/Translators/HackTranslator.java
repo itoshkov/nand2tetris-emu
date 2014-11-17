@@ -17,20 +17,26 @@
 
 package Hack.Translators;
 
+import Hack.ComputerParts.TextFileEvent;
+import Hack.ComputerParts.TextFileEventListener;
+import Hack.Utilities.Definitions;
+
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.Hashtable;
-import Hack.ComputerParts.*;
-import java.awt.event.*;
 import java.util.Vector;
-import Hack.Translators.*;
-import Hack.Utilities.*;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 /**
  * This object provides translation services.
  */
 public abstract class HackTranslator implements HackTranslatorEventListener, ActionListener,
-                                                TextFileEventListener {
+        TextFileEventListener {
+
+    private static final String DIRECTORY = "directory";
 
     // The delay in ms between each step in fast forward
     private static final int FAST_FORWARD_DELAY = 750;
@@ -90,7 +96,7 @@ public abstract class HackTranslator implements HackTranslatorEventListener, Act
     // in the destination. The key is the pc of the source (Integer) and
     // the value is an int array of length 2, containing start and end pc of the destination
     // file.
-    protected Hashtable compilationMap;
+    protected Hashtable<Integer, int[]> compilationMap;
 
     // true only in the process of full compilation
     protected boolean inFullCompilation;
@@ -107,8 +113,8 @@ public abstract class HackTranslator implements HackTranslatorEventListener, Act
      * file that will have the same name as the source but with the destination extension.
      */
     public HackTranslator(String fileName, int size, short nullValue, boolean save)
-     throws HackTranslatorException {
-        if (fileName.indexOf(".") < 0)
+            throws HackTranslatorException {
+        if (!fileName.contains("."))
             fileName = fileName + "." + getSourceExtension();
 
         checkSourceFile(fileName);
@@ -130,7 +136,7 @@ public abstract class HackTranslator implements HackTranslatorEventListener, Act
      * The gui is assumed to be not null.
      */
     public HackTranslator(HackTranslatorGUI gui, int size, short nullValue, String sourceFileName)
-     throws HackTranslatorException {
+            throws HackTranslatorException {
         this.gui = gui;
         gui.addHackTranslatorListener(this);
         gui.getSource().addTextFileListener(this);
@@ -154,8 +160,7 @@ public abstract class HackTranslator implements HackTranslatorEventListener, Act
             gui.disableSave();
             gui.enableLoadSource();
             gui.disableSourceRowSelection();
-        }
-        else {
+        } else {
             loadSource(sourceFileName);
             gui.setSourceName(sourceFileName);
         }
@@ -221,7 +226,7 @@ public abstract class HackTranslator implements HackTranslatorEventListener, Act
     private void checkSourceFile(String fileName) throws HackTranslatorException {
         if (!fileName.endsWith("." + getSourceExtension()))
             throw new HackTranslatorException(fileName + " is not a ." + getSourceExtension() +
-                                              " file");
+                    " file");
 
         File file = new File(fileName);
         if (!file.exists())
@@ -233,14 +238,14 @@ public abstract class HackTranslator implements HackTranslatorEventListener, Act
     private void checkDestinationFile(String fileName) throws HackTranslatorException {
         if (!fileName.endsWith("." + getDestinationExtension()))
             throw new HackTranslatorException(fileName + " is not a ." + getDestinationExtension()
-                                              + " file");
+                    + " file");
     }
 
     /**
      * Restarts the compilation from the beginning of the source.
      */
     protected void restartCompilation() {
-        compilationMap = new Hashtable();
+        compilationMap = new Hashtable<Integer, int[]>();
         sourcePC = 0;
         destPC = 0;
 
@@ -263,8 +268,8 @@ public abstract class HackTranslator implements HackTranslatorEventListener, Act
     // Loads the given source file and displays it in the Source GUI
     private void loadSource(String fileName) throws HackTranslatorException {
         String line;
-        Vector formattedLines = new Vector();
-        Vector lines = null;
+        Vector<String> formattedLines = new Vector<String>();
+        Vector<String> lines;
         String errorMessage = null;
 
         try {
@@ -284,10 +289,10 @@ public abstract class HackTranslator implements HackTranslatorEventListener, Act
             checkSourceFile(fileName);
             sourceFileName = fileName;
 
-            lines = new Vector();
+            lines = new Vector<String>();
             BufferedReader sourceReader = new BufferedReader(new FileReader(sourceFileName));
 
-            while((line = sourceReader.readLine()) != null) {
+            while ((line = sourceReader.readLine()) != null) {
                 formattedLines.addElement(line);
 
                 if (gui != null)
@@ -305,8 +310,8 @@ public abstract class HackTranslator implements HackTranslatorEventListener, Act
                 gui.getSource().setContents(linesArray);
             }
 
-            destFileName = sourceFileName.substring(0,sourceFileName.indexOf('.')) +
-                             "." + getDestinationExtension();
+            destFileName = sourceFileName.substring(0, sourceFileName.indexOf('.')) +
+                    "." + getDestinationExtension();
 
             initSource();
             restartCompilation();
@@ -382,10 +387,10 @@ public abstract class HackTranslator implements HackTranslatorEventListener, Act
 
             updateGUI = false;
 
-            while(sourcePC < source.length) {
+            while (sourcePC < source.length) {
                 int[] compiledRange = compileLineAndCount(source[sourcePC]);
                 if (compiledRange != null) {
-                    compilationMap.put(new Integer(sourcePC), compiledRange);
+                    compilationMap.put(sourcePC, compiledRange);
                 }
 
                 sourcePC++;
@@ -434,16 +439,7 @@ public abstract class HackTranslator implements HackTranslatorEventListener, Act
     }
 
     /**
-     * Replaces the command in program location pc with the given command.
-     */
-    protected void replaceCommand(int pc, short command) {
-        program[pc] = command;
-        if (updateGUI)
-            gui.getDestination().setLineAt(pc, getCodeString(command, pc, true));
-    }
-
-    /**
-     * Displayes the first numOfCommands commands from the program in the dest window.
+     * Displays the first numOfCommands commands from the program in the dest window.
      */
     protected void showProgram(int numOfCommands) {
         gui.getDestination().reset();
@@ -473,7 +469,7 @@ public abstract class HackTranslator implements HackTranslatorEventListener, Act
     }
 
     // Reads a single line from the source, compiles it and writes the result to the
-    // detination.
+    // destination.
     private void singleStep() {
         singleStepLocked = true;
 
@@ -489,7 +485,7 @@ public abstract class HackTranslator implements HackTranslatorEventListener, Act
             int[] compiledRange = compileLineAndCount(source[sourcePC]);
 
             if (compiledRange != null) {
-                compilationMap.put(new Integer(sourcePC), compiledRange);
+                compilationMap.put(sourcePC, compiledRange);
             }
 
             sourcePC++;
@@ -600,20 +596,13 @@ public abstract class HackTranslator implements HackTranslatorEventListener, Act
      * Returns the range in the compilation map that corresponds to the given rowIndex.
      */
     protected int[] rowIndexToRange(int rowIndex) {
-        Integer key = new Integer(rowIndex);
-        return (int[])compilationMap.get(key);
+        return compilationMap.get(rowIndex);
     }
 
-     // Returns the working dir that is saved in the data file, or "" if data file doesn't exist.
+    // Returns the working dir that is saved in the data file, or "" if data file doesn't exist.
     protected File loadWorkingDir() {
-        String dir = ".";
-
-        try {
-            BufferedReader r = new BufferedReader(new FileReader("bin/" + getName() + ".dat"));
-            dir = r.readLine();
-            r.close();
-        } catch (IOException ioe) {}
-
+        final Preferences preferences = Preferences.userNodeForPackage(HackTranslator.class);
+        final String dir = preferences.get(DIRECTORY, ".");
         return new File(dir);
     }
 
@@ -621,11 +610,12 @@ public abstract class HackTranslator implements HackTranslatorEventListener, Act
      * Saves the given working dir into the data file.
      */
     protected void saveWorkingDir(File file) {
+        final Preferences preferences = Preferences.userNodeForPackage(HackTranslator.class);
+        preferences.put(DIRECTORY, file.getAbsolutePath());
         try {
-            PrintWriter r = new PrintWriter(new FileWriter("bin/" + getName() + ".dat"));
-            r.println(file.getAbsolutePath());
-            r.close();
-        } catch (IOException ioe) {}
+            preferences.sync();
+        } catch (BackingStoreException ignored) {
+        }
 
         gui.setWorkingDir(file);
     }
@@ -642,8 +632,7 @@ public abstract class HackTranslator implements HackTranslatorEventListener, Act
             gui.getDestination().clearHighlights();
             for (int i = range[0]; i <= range[1]; i++)
                 gui.getDestination().addHighlight(i, false);
-        }
-        else
+        } else
             gui.getDestination().clearHighlights();
     }
 
@@ -668,7 +657,7 @@ public abstract class HackTranslator implements HackTranslatorEventListener, Act
 
         switch (event.getAction()) {
             case HackTranslatorEvent.SOURCE_LOAD:
-                String fileName = (String)event.getData();
+                String fileName = (String) event.getData();
                 File file = new File(fileName);
                 saveWorkingDir(file);
                 gui.setTitle(getName() + getVersionString() + " - " + fileName);
@@ -679,7 +668,7 @@ public abstract class HackTranslator implements HackTranslatorEventListener, Act
 
             case HackTranslatorEvent.SAVE_DEST:
                 clearMessage();
-                fileName = (String)event.getData();
+                fileName = (String) event.getData();
                 try {
                     checkDestinationFile(fileName);
                     destFileName = fileName;
