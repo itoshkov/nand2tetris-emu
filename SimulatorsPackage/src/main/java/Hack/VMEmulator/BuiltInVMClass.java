@@ -23,11 +23,12 @@ import Hack.Utilities.Definitions;
 /**
  * A BuiltIn VM Class.
  * The base class for all classes which are implemented in java.
- * All methods in decendents of this class represent functions and therefore
+ * All methods in descendants of this class represent functions and therefore
  * should be static.
  */
 public abstract class BuiltInVMClass {
-	private static Hashtable builtInFunctionsRunnerByThread = new Hashtable();
+	private static Hashtable<Thread, BuiltInFunctionsRunner> builtInFunctionsRunnerByThread =
+			new Hashtable<Thread, BuiltInFunctionsRunner>();
 
 	/* Some definitions regarding the memory. */
     public static final short SCREEN_START_ADDRESS = Definitions.SCREEN_START_ADDRESS;
@@ -50,7 +51,7 @@ public abstract class BuiltInVMClass {
 	 */
     protected static void writeMemory(int address, int value)
 			throws TerminateVMProgramThrowable {
-		((BuiltInFunctionsRunner)builtInFunctionsRunnerByThread.get(Thread.currentThread())).builtInFunctionRequestsMemoryWrite((short)address, (short)value);
+		builtInFunctionsRunnerByThread.get(Thread.currentThread()).builtInFunctionRequestsMemoryWrite((short) address, (short) value);
 	}
 
 	/**
@@ -60,7 +61,7 @@ public abstract class BuiltInVMClass {
 	 */
     protected static short readMemory(int address)
 			throws TerminateVMProgramThrowable {
-		return ((BuiltInFunctionsRunner)builtInFunctionsRunnerByThread.get(Thread.currentThread())).builtInFunctionRequestsMemoryRead((short)address);
+		return builtInFunctionsRunnerByThread.get(Thread.currentThread()).builtInFunctionRequestsMemoryRead((short) address);
 	}
 
 	/**
@@ -74,7 +75,7 @@ public abstract class BuiltInVMClass {
 	protected static short callFunction(String functionName,
 		   								short[] params)
 			throws TerminateVMProgramThrowable {
-		return ((BuiltInFunctionsRunner)builtInFunctionsRunnerByThread.get(Thread.currentThread())).builtInFunctionRequestsCall(functionName, params);
+		return builtInFunctionsRunnerByThread.get(Thread.currentThread()).builtInFunctionRequestsCall(functionName, params);
 	}
 
 	protected static short callFunction(String functionName)
@@ -124,9 +125,8 @@ public abstract class BuiltInVMClass {
 	 * stop an infinite loop in a built-in Jack class.
 	 * A message containing information may be provided (can be null).
 	 */
-	protected static void infiniteLoop(String message)
-			throws TerminateVMProgramThrowable {
-		((BuiltInFunctionsRunner)builtInFunctionsRunnerByThread.get(Thread.currentThread())).builtInFunctionRequestsInfiniteLoop(message);
+	protected static void infiniteLoop(String message) throws TerminateVMProgramThrowable {
+		builtInFunctionsRunnerByThread.get(Thread.currentThread()).builtInFunctionRequestsInfiniteLoop(message);
 	}
 
 
@@ -137,13 +137,12 @@ public abstract class BuiltInVMClass {
 	 *
 	 * Called by a BuiltInFunctionsRunner to request that all calls from
 	 * built-in functions executed from this thread be forwarded to it.
-	 * This is used instead of instatiating each implementing class as
+	 * This is used instead of instantiating each implementing class as
 	 * needed with a data member of the BuiltInFunctionsRunner because
 	 * logically all implementing classes should implement only static
 	 * methods.
 	 */
-	static final void associateForThread(BuiltInFunctionsRunner bifr) {
+	static void associateForThread(BuiltInFunctionsRunner bifr) {
 		builtInFunctionsRunnerByThread.put(Thread.currentThread(), bifr);
 	}
-
 }

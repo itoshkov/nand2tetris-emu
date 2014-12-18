@@ -48,12 +48,9 @@ public class BuiltInFunctionsRunner implements Runnable {
 		Method functionObject;
 		Object[] params;
 		short returnValue;
-	};
+	}
 	private BuiltInToProgramRequest builtInToProgram;
 	private ProgramToBuiltInRequest programToBuiltIn;
-
-	// The thread that runs the built-in code
-	private Thread thread;
 
 	// The CPU that communicates with this class
 	private CPU cpu;
@@ -91,9 +88,8 @@ public class BuiltInFunctionsRunner implements Runnable {
 		this.builtInDir = builtInDir;
 		builtInToProgram = new BuiltInToProgramRequest();
 		programToBuiltIn = new ProgramToBuiltInRequest();
-		thread = new Thread(this);
 		synchronized (this) {
-			thread.start();
+			new Thread(this).start();
 			continueOtherThread(); // Let the built-in code runner init itself
 								   // The notify part of this call does nothing
 		}
@@ -141,12 +137,7 @@ public class BuiltInFunctionsRunner implements Runnable {
 		}
 		
 		// Find the implementing class
-		Class implementingClass;
-		try {
-			implementingClass = Class.forName(builtInDir+"."+className);
-		} catch (ClassNotFoundException cnfe) {
-			throw new ProgramException("Can't find "+className+".vm or a built-in implementation for class "+className);
-		}
+		Class<? extends BuiltInVMClass> implementingClass = loadBuiltInClass(className);
 
 		// Check that the class is a subclass of BuiltInVMClass
 		// (right now not that important if the class doesn't want to access
@@ -165,7 +156,7 @@ public class BuiltInFunctionsRunner implements Runnable {
 		Class[] paramsClasses = new Class[params.length];
 		Object[] requestParams = new Object[params.length];
 		for (int i=0; i<params.length; ++i) {
-			requestParams[i] = new Short(params[i]);
+			requestParams[i] = params[i];
 			paramsClasses[i] = short.class;
 		}
 
@@ -186,6 +177,27 @@ public class BuiltInFunctionsRunner implements Runnable {
 		programToBuiltIn.functionObject = functionObject;
 			
 		sendBuiltInRequestAndWaitForAnswer();
+	}
+
+	private Class<? extends BuiltInVMClass> loadBuiltInClass(String jackClassName) throws ProgramException {
+		final String[] classNames = new String[] { "Jack_" + jackClassName, jackClassName };
+		for (String className : classNames) {
+			final Class<? extends BuiltInVMClass> aClass1 = loadBuiltInClass(className, BuiltInVMClass.class);
+			if (aClass1 != null)
+				return aClass1;
+		}
+		throw new ProgramException("Can't find " + jackClassName + ".vm or a built-in implementation for class " + jackClassName);
+	}
+
+	private <T> Class<? extends T> loadBuiltInClass(String className, Class<T> type) {
+		try {
+			final Class<?> aClass = Class.forName(builtInDir + "." + className);
+			if (type.isAssignableFrom(aClass))
+				//noinspection unchecked
+				return (Class<T>) aClass;
+		} catch (ClassNotFoundException ignored) {
+		}
+		return null;
 	}
 
 	/**
@@ -275,11 +287,11 @@ public class BuiltInFunctionsRunner implements Runnable {
 														   programToBuiltIn.params);
 				builtInToProgram.request = RETURN_REQUEST;
 				if (returnType == short.class) {
-					builtInToProgram.returnValue = ((Short)returnValue).shortValue();
+					builtInToProgram.returnValue = (Short) returnValue;
 				} else if (returnType == char.class) {
 					builtInToProgram.returnValue = (short)((Character)returnValue).charValue();
 				} else if (returnType == boolean.class) {
-					if (((Boolean)returnValue).booleanValue()) {
+					if ((Boolean) returnValue) {
 						builtInToProgram.returnValue = (short)-1;
 					} else {
 						builtInToProgram.returnValue = 0;

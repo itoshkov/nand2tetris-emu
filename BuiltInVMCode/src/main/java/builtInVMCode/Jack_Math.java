@@ -17,47 +17,44 @@
 
 package builtInVMCode;
 
-import Hack.VMEmulator.BuiltInVMClass;
 import Hack.VMEmulator.TerminateVMProgramThrowable;
 
 /**
  * A built-in implementation for the Math class of the Jack OS.
  */
 
-public class Math extends JackOSClass {
+@SuppressWarnings("UnusedDeclaration")
+public class Jack_Math extends JackOSClass {
 
-	public static void init() { }
+    public static void init() {
+    }
 
-	public static short abs(short x) {
-		return (x<0)?(short)-x:x;
-	}
+    public static short abs(short x) {
+        return (x < 0) ? (short) -x : x;
+    }
 
-	public static short multiply(short x, short y) {
-		return (short)(x*y);
-	}
-	
-	public static short divide(short x, short y)
-			throws TerminateVMProgramThrowable 	{
-		if (y == 0) {
-			callFunction("Sys.error", MATH_DIVIDE_ZERO);
-		}
-		return (short)(x/y);
-	}
-	
-	public static short min(short x, short y) {
-		return (x>y)?y:x;
-	}
-	
-	public static short max(short x, short y) {
-		return (x>y)?x:y;
-	}
-	
-	public static short sqrt(short x)
-			throws TerminateVMProgramThrowable {
-		if (x < 0) {
-			callFunction("Sys.error", MATH_SQRT_NEGATIVE);
-		}
-		return (short)java.lang.Math.sqrt(x);
-	}
+    public static short multiply(short x, short y) {
+        return (short) (x * y);
+    }
+
+    public static short divide(short x, short y) throws TerminateVMProgramThrowable {
+        if (y == 0)
+            callFunction("Sys.error", MATH_DIVIDE_ZERO);
+        return (short) (x / y);
+    }
+
+    public static short min(short x, short y) {
+        return (x > y) ? y : x;
+    }
+
+    public static short max(short x, short y) {
+        return (x > y) ? x : y;
+    }
+
+    public static short sqrt(short x) throws TerminateVMProgramThrowable {
+        if (x < 0)
+            callFunction("Sys.error", MATH_SQRT_NEGATIVE);
+        return (short) java.lang.Math.sqrt(x);
+    }
 
 }

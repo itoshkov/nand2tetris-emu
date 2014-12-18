@@ -17,25 +17,22 @@
 
 package builtInVMCode;
 
-import Hack.VMEmulator.BuiltInVMClass;
 import Hack.VMEmulator.TerminateVMProgramThrowable;
 
 /**
  * A built-in implementation for the Array class of the Jack OS.
  */
 
-public class Array extends JackOSClass {
+@SuppressWarnings("UnusedDeclaration")
+public class Jack_Array extends JackOSClass {
 
 	public static short NEW(short size) throws TerminateVMProgramThrowable {
-		if (size <= 0) {
+		if (size <= 0)
 			callFunction("Sys.error", ARRAY_NEW_NONPOSITIVE_SIZE);
-		}
 		return callFunction("Memory.alloc", size);
 	}
 
 	public static void dispose(short arr) throws TerminateVMProgramThrowable {
 		callFunction("Memory.deAlloc", arr);
-		return;
 	}
-
 }

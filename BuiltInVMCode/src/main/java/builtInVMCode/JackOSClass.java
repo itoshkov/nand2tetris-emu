@@ -69,23 +69,20 @@ class JackOSClass extends BuiltInVMClass {
 		return jackStr;
 	}
 
-	// Not Used
 	/**
 	 * Converts a Jack string to a Java String by using whatever implementation
 	 * of the Jack class String is available (String.vm if available, else
 	 * built-in) calling String.length and then consecutively calling 
 	 * String.getChar
 	 */
-	/*
-	public static java.lang.String jackStringToJavaStringUsingVM(short jackStr) 
+	public static java.lang.String jackStringToJavaStringUsingVM(short jackStr)
 			throws TerminateVMProgramThrowable {
-		StringBuffer javaStr = new StringBuffer();
+		StringBuilder javaStr = new StringBuilder();
 		int l = callFunction("String.length", jackStr);
-		for (int i=0; i<l; ++i) {
-			javaStr.append((char)callFunction("String.charAt", jackStr, i));
-		}
+		for (int i=0; i<l; ++i)
+			javaStr.append((char) callFunction("String.charAt", jackStr, i));
 		return javaStr.toString();
-	}*/
+	}
 
 	/**
 	 * Converts a java string to a Javk Int according to the conversion
