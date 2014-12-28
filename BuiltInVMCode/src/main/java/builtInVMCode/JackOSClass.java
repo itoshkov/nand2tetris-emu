@@ -17,10 +17,11 @@
 
 package builtInVMCode;
 
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
 import Hack.VMEmulator.BuiltInVMClass;
 import Hack.VMEmulator.TerminateVMProgramThrowable;
+
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
 
 /**
  * A common superclass for all of the built-in implementations for the various
@@ -56,8 +57,7 @@ class JackOSClass extends BuiltInVMClass {
 	 * using String.appendChar.
 	 * Returns the VM address to the Jack String.
 	 */
-	public static short javaStringToJackStringUsingVM(java.lang.String javaStr) 
-			throws TerminateVMProgramThrowable {
+	public static short javaStringToJackStringUsingVM(String javaStr) throws TerminateVMProgramThrowable {
 		if (javaStr.length() == 0) {
 			return callFunction("String.new", 1);
 		}
@@ -69,32 +69,28 @@ class JackOSClass extends BuiltInVMClass {
 		return jackStr;
 	}
 
-	// Not Used
 	/**
 	 * Converts a Jack string to a Java String by using whatever implementation
 	 * of the Jack class String is available (String.vm if available, else
 	 * built-in) calling String.length and then consecutively calling 
 	 * String.getChar
 	 */
-	/*
-	public static java.lang.String jackStringToJavaStringUsingVM(short jackStr) 
-			throws TerminateVMProgramThrowable {
-		StringBuffer javaStr = new StringBuffer();
+	public static String jackStringToJavaStringUsingVM(short jackStr) throws TerminateVMProgramThrowable {
+		StringBuilder javaStr = new StringBuilder();
 		int l = callFunction("String.length", jackStr);
-		for (int i=0; i<l; ++i) {
-			javaStr.append((char)callFunction("String.charAt", jackStr, i));
-		}
+		for (int i=0; i<l; ++i)
+			javaStr.append((char) callFunction("String.charAt", jackStr, i));
 		return javaStr.toString();
-	}*/
+	}
 
 	/**
-	 * Converts a java string to a Javk Int according to the conversion
+	 * Converts a java string to a Jack Int according to the conversion
 	 * of the Jack OS API: converts until the first non-digit character in
 	 * the line (a - as a first character os allowed and is not considered
 	 * such a non-digit character).
 	 */
-	public static short javaStringToInt(java.lang.String str) {
-        StringCharacterIterator i = new StringCharacterIterator(str);
+	public static short javaStringToInt(String str) {
+		StringCharacterIterator i = new StringCharacterIterator(str);
 		i.first();
 		boolean neg = false;
 		if (i.current() == '-') {

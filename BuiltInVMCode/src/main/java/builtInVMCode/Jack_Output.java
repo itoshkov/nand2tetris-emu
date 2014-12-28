@@ -17,29 +17,30 @@
 
 package builtInVMCode;
 
+import Hack.VMEmulator.TerminateVMProgramThrowable;
+
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
-import Hack.VMEmulator.BuiltInVMClass;
-import Hack.VMEmulator.TerminateVMProgramThrowable;
 
 /**
  * A built-in implementation for the Output class of the Jack OS.
  */
 
-public class Output extends JackOSClass {
-	private static final int N_COLS = SCREEN_WIDTH/8;
-	private static final int N_ROWS = SCREEN_HEIGHT/11;
-	private static final int START_ADDRESS = SCREEN_WIDTH>>4;
+@SuppressWarnings("UnusedDeclaration")
+public class Jack_Output extends JackOSClass {
+    private static final int N_COLS = SCREEN_WIDTH / 8;
+    private static final int N_ROWS = SCREEN_HEIGHT / 11;
+    private static final int START_ADDRESS = SCREEN_WIDTH >> 4;
 
     static int wordInLine, address;
     static boolean firstInWord;
-	static int map[][];
+    static int map[][];
 
-	public static void init() {
+    public static void init() {
         firstInWord = true;
         address = START_ADDRESS;
         wordInLine = 0;
-		map = new int[127][11];
+        map = new int[127][11];
         create(0, 63, 63, 63, 63, 63, 63, 63, 63, 63, 0, 0);
         create(32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         create(33, 12, 30, 30, 30, 12, 12, 0, 12, 12, 0, 0);
@@ -139,9 +140,9 @@ public class Output extends JackOSClass {
     }
 
     private static void create(int c, int line0, int line1, int line2,
-							   int line3, int line4, int line5,
-							   int line6, int line7, int line8,
-   							   int line9, int line10) {
+                               int line3, int line4, int line5,
+                               int line6, int line7, int line8,
+                               int line9, int line10) {
         map[c][0] = line0;
         map[c][1] = line1;
         map[c][2] = line2;
@@ -156,31 +157,31 @@ public class Output extends JackOSClass {
     }
 
     private static void drawChar(int c) throws TerminateVMProgramThrowable {
-		if (c < 32 || c >= 127) c = 0;
-		int mask;
-		int shift;
-		if (firstInWord) {
-			mask = 0xFF00;
-			shift = 0;
-		} else {
-			mask = 0x00FF;
-			shift = 8;
-		}
-        for (int i=0, j=address; i<11; ++i, j+=(SCREEN_WIDTH>>4)) {
-			writeMemory(SCREEN_START_ADDRESS+j,
-						(readMemory(SCREEN_START_ADDRESS+j)&mask) |
-						(map[c][i]<<shift));
+        if (c < 32 || c >= 127) c = 0;
+        int mask;
+        int shift;
+        if (firstInWord) {
+            mask = 0xFF00;
+            shift = 0;
+        } else {
+            mask = 0x00FF;
+            shift = 8;
+        }
+        for (int i = 0, j = address; i < 11; ++i, j += (SCREEN_WIDTH >> 4)) {
+            writeMemory(SCREEN_START_ADDRESS + j,
+                    (readMemory(SCREEN_START_ADDRESS + j) & mask) |
+                            (map[c][i] << shift));
         }
     }
 
     public static void moveCursor(short row, short col)
-			throws TerminateVMProgramThrowable  {
+            throws TerminateVMProgramThrowable {
         if (row < 0 || row >= N_ROWS || col < 0 || col >= N_COLS) {
-			callFunction("Sys.error", OUTPUT_MOVECURSOR_ILLEGAL_POSITION);
+            callFunction("Sys.error", OUTPUT_MOVECURSOR_ILLEGAL_POSITION);
         }
         wordInLine = col / 2;
-        address = START_ADDRESS + (row * (11*(SCREEN_WIDTH>>4))) + wordInLine;
-        firstInWord = ((col&1) == 0);
+        address = START_ADDRESS + (row * (11 * (SCREEN_WIDTH >> 4))) + wordInLine;
+        firstInWord = ((col & 1) == 0);
         drawChar(' ');
     }
 
@@ -188,43 +189,40 @@ public class Output extends JackOSClass {
         if (c == NEWLINE_KEY) {
             println();
         } else if (c == BACKSPACE_KEY) {
-			backSpace();
-		} else {
-			drawChar(c);
-			if (!firstInWord) {
-				++wordInLine;
-				++address;
-				if (wordInLine == (SCREEN_WIDTH>>4)) {
-					println();
-				} else {
-					firstInWord = !firstInWord;
-				}
-			} else {
-				firstInWord = !firstInWord;
-			}
-		}
+            backSpace();
+        } else {
+            drawChar(c);
+            if (!firstInWord) {
+                ++wordInLine;
+                ++address;
+                if (wordInLine == (SCREEN_WIDTH >> 4)) {
+                    println();
+                } else {
+                    firstInWord = !firstInWord;
+                }
+            } else {
+                firstInWord = false;
+            }
+        }
     }
 
     public static void printString(short s) throws TerminateVMProgramThrowable {
-		int l = callFunction("String.length", s);
-		for (int i=0; i<l; ++i) {
-			printChar(callFunction("String.charAt", s, i));
-		}
+        int l = callFunction("String.length", s);
+        for (int i = 0; i < l; ++i)
+            printChar(callFunction("String.charAt", s, i));
     }
 
     public static void printInt(short i) throws TerminateVMProgramThrowable {
-        StringCharacterIterator iter = new StringCharacterIterator(""+i);
-        for (iter.first(); iter.current() != CharacterIterator.DONE;
-			 iter.next()) {
-			printChar((short)iter.current());
-		}
+        StringCharacterIterator iter = new StringCharacterIterator("" + i);
+        for (iter.first(); iter.current() != CharacterIterator.DONE; iter.next())
+            printChar((short) iter.current());
     }
 
     public static void println() throws TerminateVMProgramThrowable {
-        address = (address + 11*(SCREEN_WIDTH>>4)) - wordInLine;
+        address = (address + 11 * (SCREEN_WIDTH >> 4)) - wordInLine;
         wordInLine = 0;
         firstInWord = true;
-        if (address == START_ADDRESS+N_ROWS*11*(SCREEN_WIDTH>>4)) {
+        if (address == START_ADDRESS + N_ROWS * 11 * (SCREEN_WIDTH >> 4)) {
             address = START_ADDRESS;
         }
     }
@@ -233,19 +231,18 @@ public class Output extends JackOSClass {
         if (firstInWord) {
             if (wordInLine > 0) {
                 --wordInLine;
-				--address;
-			} else {
-				wordInLine = (SCREEN_WIDTH>>4)-1;
-				if (address == START_ADDRESS) {
-					address = START_ADDRESS+N_ROWS*11*(SCREEN_WIDTH>>4);
-				}
-				address -= 10*(SCREEN_WIDTH>>4) + 1;
-			}
-			firstInWord = false;
+                --address;
+            } else {
+                wordInLine = (SCREEN_WIDTH >> 4) - 1;
+                if (address == START_ADDRESS) {
+                    address = START_ADDRESS + N_ROWS * 11 * (SCREEN_WIDTH >> 4);
+                }
+                address -= 10 * (SCREEN_WIDTH >> 4) + 1;
+            }
+            firstInWord = false;
         } else {
             firstInWord = true;
         }
         drawChar(' ');
     }
-
 }
