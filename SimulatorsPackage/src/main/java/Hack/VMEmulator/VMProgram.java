@@ -557,12 +557,11 @@ public class VMProgram extends InteractiveComputerPart
                 // this as this is not a feature from the book but a later
                 // addition.
 				if (builtInAccessStatus == BUILTIN_ACCESS_UNDECIDED) {
-					if (hasGUI && gui.confirmBuiltInAccess()) {
-						builtInAccessStatus = BUILTIN_ACCESS_AUTHORIZED;
-					} else {
-						builtInAccessStatus = BUILTIN_ACCESS_DENIED;
-					}
-				}
+                    final String envUseBuiltIns = System.getenv("N2T_VM_USE_BUILTINS");
+                    final boolean useBuiltIns = "yes".equalsIgnoreCase(envUseBuiltIns)
+                            || (!"no".equalsIgnoreCase(envUseBuiltIns) && hasGUI && gui.confirmBuiltInAccess());
+                    builtInAccessStatus = useBuiltIns ? BUILTIN_ACCESS_AUTHORIZED : BUILTIN_ACCESS_DENIED;
+                }
 				if (builtInAccessStatus == BUILTIN_ACCESS_AUTHORIZED) {
 					return BUILTIN_FUNCTION_ADDRESS;
 				}

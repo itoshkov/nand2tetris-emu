@@ -108,10 +108,9 @@ public class CPU {
 
         stackFrames = new Vector<Integer>();
 
-        if (program.getGUI() != null) {
-            builtInFunctionsRunner =
-                new BuiltInFunctionsRunner(this, builtInDir);
-        }
+        final boolean useBuiltIns = "yes".equalsIgnoreCase(System.getenv("N2T_VM_USE_BUILTINS"));
+        if (useBuiltIns || program.getGUI() != null)
+            builtInFunctionsRunner = new BuiltInFunctionsRunner(this, builtInDir);
     }
 
     /**
