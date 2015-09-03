@@ -112,15 +112,18 @@ public abstract class GateClass {
 
         // gate wasn't found in cache
         if (result == null) {
-            if (classesBeingLoaded.contains(gateName))
-                throw new HDLException("Cyclic dependency. Gate definition (possibly indirectly) depends on itself: "
-                        + gateName);
+            try {
+                if (classesBeingLoaded.contains(gateName))
+                    throw new HDLException("Cyclic dependency. Gate definition (possibly indirectly) depends on itself: "
+                            + gateName);
 
-            classesBeingLoaded.add(gateName);
-            HDLTokenizer input = new HDLTokenizer(fileName);
-            result = readHDL(input, gateName);
-            GateClasses.put(fileName, result);
-            classesBeingLoaded.remove(gateName);
+                classesBeingLoaded.add(gateName);
+                HDLTokenizer input = new HDLTokenizer(fileName);
+                result = readHDL(input, gateName);
+                GateClasses.put(fileName, result);
+            } finally {
+                classesBeingLoaded.remove(gateName);
+            }
         }
 
         return result;
