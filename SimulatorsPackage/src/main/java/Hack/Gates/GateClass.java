@@ -65,6 +65,8 @@ public abstract class GateClass {
     // a table that maps a gate name with its GateClass
     protected static Hashtable GateClasses = new Hashtable();
 
+    protected static final Set<String> classesBeingLoaded = new HashSet<String>();
+
 
     // Constructs a new GateCLass (public access through the getGateClass method)
     protected GateClass(String gateName, PinInfo[] inputPinsInfo, PinInfo[] outputPinsInfo) {
@@ -110,9 +112,15 @@ public abstract class GateClass {
 
         // gate wasn't found in cache
         if (result == null) {
+            if (classesBeingLoaded.contains(gateName))
+                throw new HDLException("Cyclic dependency. Gate definition (possibly indirectly) depends on itself: "
+                        + gateName);
+
+            classesBeingLoaded.add(gateName);
             HDLTokenizer input = new HDLTokenizer(fileName);
             result = readHDL(input, gateName);
             GateClasses.put(fileName, result);
+            classesBeingLoaded.remove(gateName);
         }
 
         return result;
