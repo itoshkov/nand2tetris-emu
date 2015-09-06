@@ -3,12 +3,12 @@
  * (GPL) Version 2 or later (the "License"); you may not use this file except   *
  * in compliance with the License. You may obtain a copy of the License at      *
  * http://www.gnu.org/copyleft/gpl.html                                         *
- *                                                                              *
+ * *
  * Software distributed under the License is distributed on an "AS IS" basis,   *
  * without warranty of any kind, either expressed or implied. See the License   *
  * for the specific language governing rights and limitations under the         *
  * License.                                                                     *
- *                                                                              *
+ * *
  * This file was originally developed as part of the software suite that        *
  * supports the book "The Elements of Computing Systems" by Nisan and Schocken, *
  * MIT Press 2005. If you modify the contents of this file, please document and *
@@ -57,21 +57,18 @@ public abstract class GateClass {
     protected boolean[] isOutputClocked;
 
     // Mapping from pin names to their types (INPUT_PIN_TYPE, OUTPUT_PIN_TYPE)
-    protected Hashtable namesToTypes;
+    protected Hashtable<String, Byte> namesToTypes;
 
     // Mapping from pin names to their numbers (Integer objects)
-    protected Hashtable namesToNumbers;
+    protected Hashtable<String, Integer> namesToNumbers;
 
     // a table that maps a gate name with its GateClass
-    protected static Hashtable GateClasses = new Hashtable();
-
-    protected static final Set<String> classesBeingLoaded = new HashSet<String>();
-
+    protected static Hashtable<String, GateClass> GateClasses = new Hashtable<String, GateClass>();
 
     // Constructs a new GateCLass (public access through the getGateClass method)
     protected GateClass(String gateName, PinInfo[] inputPinsInfo, PinInfo[] outputPinsInfo) {
-        namesToTypes = new Hashtable();
-        namesToNumbers = new Hashtable();
+        namesToTypes = new Hashtable<String, Byte>();
+        namesToNumbers = new Hashtable<String, Integer>();
 
         this.name = gateName;
 
@@ -89,16 +86,15 @@ public abstract class GateClass {
      * If the GateClass doesn't exist yet, creates the GateClass by parsing the hdl file.
      */
     public static GateClass getGateClass(String gateName, boolean containsPath) throws HDLException {
-        String fileName = null;
+        String fileName;
 
         // find hdl file name according to the gate name.
         if (!containsPath) {
             fileName = GatesManager.getInstance().getHDLFileName(gateName);
             if (fileName == null)
                 throw new HDLException("Chip " + gateName +
-                                       " is not found in the working and built in folders");
-        }
-        else {
+                        " is not found in the working and built in folders");
+        } else {
             fileName = gateName;
             File file = new File(fileName);
             if (!file.exists())
@@ -108,22 +104,17 @@ public abstract class GateClass {
         }
 
         // Try to find the gate in the "cache"
-        GateClass result = (GateClass)GateClasses.get(fileName);
+        GateClass result = GateClasses.get(fileName);
 
         // gate wasn't found in cache
         if (result == null) {
-            try {
-                if (classesBeingLoaded.contains(gateName))
-                    throw new HDLException("Cyclic dependency. Gate definition (possibly indirectly) depends on itself: "
-                            + gateName);
-
-                classesBeingLoaded.add(gateName);
-                HDLTokenizer input = new HDLTokenizer(fileName);
-                result = readHDL(input, gateName);
-                GateClasses.put(fileName, result);
-            } finally {
-                classesBeingLoaded.remove(gateName);
-            }
+            GateClasses.put(fileName, new GateClassUnderLoad(fileName));
+            HDLTokenizer input = new HDLTokenizer(fileName);
+            result = readHDL(input, gateName);
+            GateClasses.put(fileName, result);
+        } else if (result instanceof GateClassUnderLoad) {
+            throw new HDLException("Cyclic dependency. Gate definition (possibly indirectly) depends on itself: "
+                    + gateName);
         }
 
         return result;
@@ -146,12 +137,12 @@ public abstract class GateClass {
 
     // Loads the HDL from the given input, creates the appropriate GateClass and returns it.
     private static GateClass readHDL(HDLTokenizer input, String gateName)
-     throws HDLException {
+            throws HDLException {
 
         // read CHIP keyword
         input.advance();
         if (!(input.getTokenType() == HDLTokenizer.TYPE_KEYWORD
-              && input.getKeywordType() == HDLTokenizer.KW_CHIP))
+                && input.getKeywordType() == HDLTokenizer.KW_CHIP))
             input.HDLError("Missing 'CHIP' keyword");
 
         // read gate name
@@ -165,30 +156,28 @@ public abstract class GateClass {
         // read '{' symbol
         input.advance();
         if (!(input.getTokenType() == HDLTokenizer.TYPE_SYMBOL
-              && input.getSymbol() == '{'))
+                && input.getSymbol() == '{'))
             input.HDLError("Missing '{'");
 
         // read IN keyword
         PinInfo[] inputPinsInfo, outputPinsInfo;
         input.advance();
         if (input.getTokenType() == HDLTokenizer.TYPE_KEYWORD
-              && input.getKeywordType() == HDLTokenizer.KW_IN) {
+                && input.getKeywordType() == HDLTokenizer.KW_IN) {
             // read input pins list
             inputPinsInfo = getPinsInfo(input, readPinNames(input));
             input.advance();
-        }
-        else
+        } else
             // no input pins
             inputPinsInfo = new PinInfo[0];
 
         // read OUT keyword
         if (input.getTokenType() == HDLTokenizer.TYPE_KEYWORD
-              && input.getKeywordType() == HDLTokenizer.KW_OUT){
+                && input.getKeywordType() == HDLTokenizer.KW_OUT) {
             // read output pins list
             outputPinsInfo = getPinsInfo(input, readPinNames(input));
             input.advance();
-        }
-        else
+        } else
             // no output pins
             outputPinsInfo = new PinInfo[0];
 
@@ -196,13 +185,12 @@ public abstract class GateClass {
 
         // read BuiltIn/Parts keyword
         if (input.getTokenType() == HDLTokenizer.TYPE_KEYWORD
-             && input.getKeywordType() == HDLTokenizer.KW_BUILTIN)
+                && input.getKeywordType() == HDLTokenizer.KW_BUILTIN)
             result = new BuiltInGateClass(gateName, input, inputPinsInfo, outputPinsInfo);
         else if (input.getTokenType() == HDLTokenizer.TYPE_KEYWORD
-                 && input.getKeywordType() == HDLTokenizer.KW_PARTS) {
+                && input.getKeywordType() == HDLTokenizer.KW_PARTS) {
             result = new CompositeGateClass(gateName, input, inputPinsInfo, outputPinsInfo);
-        }
-        else
+        } else
             input.HDLError("Keyword expected");
 
         return result;
@@ -210,8 +198,8 @@ public abstract class GateClass {
 
     // Returns an array of pin names read from the input (names may contain width specification).
     protected static String[] readPinNames(HDLTokenizer input)
-     throws HDLException {
-        Vector list = new Vector();
+            throws HDLException {
+        Vector<String> list = new Vector<String>();
         boolean exit = false;
         input.advance();
 
@@ -230,7 +218,7 @@ public abstract class GateClass {
                 // check seperator
                 input.advance();
                 if (!(input.getTokenType() == HDLTokenizer.TYPE_SYMBOL
-                      && (input.getSymbol() == ',' || input.getSymbol() == ';')))
+                        && (input.getSymbol() == ',' || input.getSymbol() == ';')))
                     input.HDLError("',' or ';' expected");
                 if (input.getTokenType() == HDLTokenizer.TYPE_SYMBOL && input.getSymbol() == ',')
                     input.advance();
@@ -245,7 +233,7 @@ public abstract class GateClass {
     // Returns a PinInfo array according to the given pin names
     // (which may contain width specification).
     private static PinInfo[] getPinsInfo(HDLTokenizer input, String[] names)
-     throws HDLException {
+            throws HDLException {
         PinInfo[] result = new PinInfo[names.length];
 
         for (int i = 0; i < names.length; i++) {
@@ -254,13 +242,12 @@ public abstract class GateClass {
             if (bracketsPos >= 0) {
                 try {
                     String width = names[i].substring(bracketsPos + 1, names[i].indexOf("]"));
-                    result[i].width = (byte)Integer.parseInt(width);
+                    result[i].width = (byte) Integer.parseInt(width);
                     result[i].name = names[i].substring(0, bracketsPos);
                 } catch (Exception e) {
                     input.HDLError(names[i] + " has an invalid bus width");
                 }
-            }
-            else {
+            } else {
                 result[i].width = 1;
                 result[i].name = names[i];
             }
@@ -305,8 +292,8 @@ public abstract class GateClass {
      */
     protected void registerPins(PinInfo[] pins, byte type) {
         for (int i = 0; i < pins.length; i++) {
-            namesToTypes.put(pins[i].name, new Byte(type));
-            namesToNumbers.put(pins[i].name, new Integer(i));
+            namesToTypes.put(pins[i].name, type);
+            namesToNumbers.put(pins[i].name, i);
         }
     }
 
@@ -314,8 +301,8 @@ public abstract class GateClass {
      * Registers the given pin with its given type and number.
      */
     protected void registerPin(PinInfo pin, byte type, int number) {
-        namesToTypes.put(pin.name, new Byte(type));
-        namesToNumbers.put(pin.name, new Integer(number));
+        namesToTypes.put(pin.name, type);
+        namesToNumbers.put(pin.name, number);
     }
 
     /**
@@ -323,8 +310,8 @@ public abstract class GateClass {
      * If not found, returns UNKNOWN_PIN_TYPE.
      */
     public byte getPinType(String pinName) {
-        Byte result = (Byte)namesToTypes.get(pinName);
-        return (result != null ? result.byteValue() : UNKNOWN_PIN_TYPE);
+        Byte result = namesToTypes.get(pinName);
+        return result != null ? result : UNKNOWN_PIN_TYPE;
     }
 
     /**
@@ -332,8 +319,8 @@ public abstract class GateClass {
      * If not found, returns -1.
      */
     public int getPinNumber(String pinName) {
-        Integer result = (Integer)namesToNumbers.get(pinName);
-        return (result != null ? result.intValue() : -1);
+        Integer result = namesToNumbers.get(pinName);
+        return result != null ? result : -1;
     }
 
     /**
