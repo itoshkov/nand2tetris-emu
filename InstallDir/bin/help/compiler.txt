@@ -1,5 +1,5 @@
 
-Jack Compiler, Version 2.5
+Jack Compiler, Version 2.6
 
 This program is part of the software suite that accompanies the book:
 

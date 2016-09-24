@@ -1,77 +1,100 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.nand2tetris</groupId>
-  <artifactId>parent</artifactId>
-  <version>2.5-SNAPSHOT</version>
-  <packaging>pom</packaging>
+    <groupId>org.nand2tetris</groupId>
+    <artifactId>parent</artifactId>
+    <version>2.6-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
-  <name>Hack/Jack tools</name>
-  <url>http://nand2tetris.org</url>
+    <name>Hack/Jack tools</name>
+    <url>http://nand2tetris.org</url>
 
-  <modules>
-    <module>HackPackage</module>
-    <module>HackGUIPackage</module>
-    <module>CompilersPackage</module>
-    <module>SimulatorsPackage</module>
-    <module>SimulatorsGUIPackage</module>
-    <module>BuiltInChips</module>
-    <module>BuiltInVMCode</module>
-    <module>HardwareSimulator</module>
-    <module>CPUEmulator</module>
-    <module>VMEmulator</module>
-    <module>TextComparer</module>
-  </modules>
+    <modules>
+        <module>HackPackage</module>
+        <module>HackGUIPackage</module>
+        <module>CompilersPackage</module>
+        <module>SimulatorsPackage</module>
+        <module>SimulatorsGUIPackage</module>
+        <module>BuiltInChips</module>
+        <module>BuiltInVMCode</module>
+        <module>HardwareSimulator</module>
+        <module>CPUEmulator</module>
+        <module>VMEmulator</module>
+        <module>TextComparer</module>
+    </modules>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <hackJack.version>2.5-SNAPSHOT</hackJack.version>
-  </properties>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.nand2tetris</groupId>
-	<artifactId>HackPackage</artifactId>
-	<version>${hackJack.version}</version>
-      </dependency>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>get-the-git-infos</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <generateGitPropertiesFilename>
+                        ${project.build.outputDirectory}/git.properties
+                    </generateGitPropertiesFilename>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
-      <dependency>
-        <groupId>org.nand2tetris</groupId>
-	<artifactId>HackGUIPackage</artifactId>
-	<version>${hackJack.version}</version>
-      </dependency>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.nand2tetris</groupId>
+                <artifactId>HackPackage</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
-      <dependency>
-        <groupId>org.nand2tetris</groupId>
-	<artifactId>CompilersPackage</artifactId>
-	<version>${hackJack.version}</version>
-      </dependency>
+            <dependency>
+                <groupId>org.nand2tetris</groupId>
+                <artifactId>HackGUIPackage</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
-      <dependency>
-        <groupId>org.nand2tetris</groupId>
-	<artifactId>SimulatorsPackage</artifactId>
-	<version>${hackJack.version}</version>
-      </dependency>
+            <dependency>
+                <groupId>org.nand2tetris</groupId>
+                <artifactId>CompilersPackage</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
-      <dependency>
-        <groupId>org.nand2tetris</groupId>
-	<artifactId>SimulatorsGUIPackage</artifactId>
-	<version>${hackJack.version}</version>
-      </dependency>
+            <dependency>
+                <groupId>org.nand2tetris</groupId>
+                <artifactId>SimulatorsPackage</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
-      <dependency>
-        <groupId>org.nand2tetris</groupId>
-	<artifactId>BuiltInChips</artifactId>
-	<version>${hackJack.version}</version>
-      </dependency>
+            <dependency>
+                <groupId>org.nand2tetris</groupId>
+                <artifactId>SimulatorsGUIPackage</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
-      <dependency>
-        <groupId>org.nand2tetris</groupId>
-	<artifactId>BuiltInVMCode</artifactId>
-	<version>${hackJack.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
+            <dependency>
+                <groupId>org.nand2tetris</groupId>
+                <artifactId>BuiltInChips</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.nand2tetris</groupId>
+                <artifactId>BuiltInVMCode</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>
