@@ -1,22 +1,23 @@
-/********************************************************************************
- * The contents of this file are subject to the GNU General Public License      *
- * (GPL) Version 2 or later (the "License"); you may not use this file except   *
- * in compliance with the License. You may obtain a copy of the License at      *
- * http://www.gnu.org/copyleft/gpl.html                                         *
- *                                                                              *
- * Software distributed under the License is distributed on an "AS IS" basis,   *
- * without warranty of any kind, either expressed or implied. See the License   *
- * for the specific language governing rights and limitations under the         *
- * License.                                                                     *
- *                                                                              *
- * This file was originally developed as part of the software suite that        *
- * supports the book "The Elements of Computing Systems" by Nisan and Schocken, *
- * MIT Press 2005. If you modify the contents of this file, please document and *
- * mark your changes clearly, for the benefit of others.                        *
- ********************************************************************************/
+/*
+ * The contents of this file are subject to the GNU General Public License
+ * (GPL) Version 2 or later (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ * http://www.gnu.org/copyleft/gpl.html
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * without warranty of any kind, either expressed or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * This file was originally developed as part of the software suite that
+ * supports the book "The Elements of Computing Systems" by Nisan and Schocken,
+ * MIT Press 2005. If you modify the contents of this file, please document and
+ * mark your changes clearly, for the benefit of others.
+ */
 
 package Hack.Utilities;
 
+import java.io.IOException;
 import java.util.*;
 import java.awt.event.*;
 
@@ -28,7 +29,7 @@ public class Definitions {
     /**
      * Current software version
      */
-    public static final String version = "2.5";
+    public static final String version = buildVersion();
 
     /**
      * Size of RAM
@@ -542,5 +543,14 @@ public class Definitions {
         actionKeyCodes[KeyEvent.VK_F11] = F11_KEY;
         actionKeyCodes[KeyEvent.VK_F12] = F12_KEY;
         actionKeyCodes[KeyEvent.VK_INSERT] = INSERT_KEY;
+    }
+
+    private static String buildVersion() {
+        try {
+            final GitRepositoryState git = GitRepositoryState.getGitRepositoryState();
+            return String.format("%s - %s", git.getBuildVersion(), git.getDescribeShort());
+        } catch (IOException e) {
+            return "unknown";
+        }
     }
 }
