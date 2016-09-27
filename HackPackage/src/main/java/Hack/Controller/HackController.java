@@ -246,10 +246,8 @@ public class HackController
         try {
             loadNewScript(file, false);
             saveWorkingDir(file);
-        } catch (ScriptException se) {
+        } catch (ScriptException | ControllerException se) {
             displayMessage(se.getMessage(), true);
-        } catch (ControllerException ce) {
-            displayMessage(ce.getMessage(), true);
         }
 
         fastForwardRunning = true;
@@ -450,14 +448,8 @@ public class HackController
             if (breakpointReached)
                 tempBreakpoints.clear();
 
-        } catch (ControllerException ce) {
+        } catch (ControllerException | ProgramException | CommandException | VariableException ce) {
             stopWithError(ce);
-        } catch (ProgramException pe) {
-            stopWithError(pe);
-        } catch (CommandException ce) {
-            stopWithError(ce);
-        } catch (VariableException ve) {
-            stopWithError(ve);
         }
 
         singleStepLocked = false;
@@ -913,8 +905,7 @@ public class HackController
             try {
                 loadNewScript(defaultScriptFile, false);
                 rewind();
-            } catch (ScriptException ignored) {
-            } catch (ControllerException ignored) {
+            } catch (ScriptException | ControllerException ignored) {
             }
         }
     }
@@ -1070,10 +1061,7 @@ public class HackController
                     doUnknownAction(event.getAction(), event.getData());
                     break;
             }
-        } catch (ScriptException e) {
-            displayMessage(e.getMessage(), true);
-            stopMode();
-        } catch (ControllerException e) {
+        } catch (ScriptException | ControllerException e) {
             displayMessage(e.getMessage(), true);
             stopMode();
         }
