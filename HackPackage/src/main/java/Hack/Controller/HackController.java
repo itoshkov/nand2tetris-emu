@@ -128,6 +128,8 @@ public class HackController
     private static final String SPACES = "                                        ";
     private static final String DIRECTORY = "directory";
     private static final String SPEED = "speed";
+    private static final String ANIMATION_MODE = "animation_mode";
+    private final Preferences preferences;
 
     // The controller's GUI
     protected ControllerGUI gui;
@@ -230,6 +232,7 @@ public class HackController
      * The script will be executed and the final result will be printed.
      */
     public HackController(HackSimulator simulator, String scriptFileName) {
+        this.preferences = Preferences.userNodeForPackage(simulator.getClass());
         File file = new File(scriptFileName);
         if (!file.exists())
             displayMessage(scriptFileName + " doesn't exist", true);
@@ -261,7 +264,7 @@ public class HackController
     public HackController(ControllerGUI gui, HackSimulator simulator, String defaultScriptName)
      throws ScriptException, ControllerException {
 
-        final Preferences preferences = Preferences.userNodeForPackage(simulator.getClass());
+        this.preferences = Preferences.userNodeForPackage(simulator.getClass());
         this.gui = gui;
         this.simulator = simulator;
         singleStepTask = new SingleStepTask();
@@ -279,7 +282,7 @@ public class HackController
             delays[i] = (int)(MAX_MS - SPEED_FUNCTION[i] * (float)(MAX_MS - MIN_MS));
 
         currentSpeedUnit = preferences.getInt(SPEED, INITIAL_SPEED_UNIT);
-        animationMode = simulator.getInitialAnimationMode();
+        animationMode = preferences.getInt(ANIMATION_MODE, simulator.getInitialAnimationMode());
         simulator.setAnimationMode(animationMode);
         simulator.setAnimationSpeed(currentSpeedUnit);
         simulator.setNumericFormat(simulator.getInitialNumericFormat());
@@ -290,7 +293,7 @@ public class HackController
         gui.setTitle(simulator.getName() + getVersionString());
 
         // load and set working dir
-        File file = loadWorkingDir(preferences);
+        File file = new File(preferences.get(DIRECTORY, "."));
         simulator.setWorkingDir(file);
         gui.setWorkingDir(file);
 
@@ -795,7 +798,8 @@ public class HackController
         currentSpeedUnit = newSpeedUnit;
         timer.setDelay(delays[currentSpeedUnit - 1]);
         simulator.setAnimationSpeed(newSpeedUnit);
-        saveSpeedUnit(newSpeedUnit);
+        preferences.putInt(SPEED, newSpeedUnit);
+        savePreferences();
     }
 
     // Sets the animation mode with the given one.
@@ -809,6 +813,8 @@ public class HackController
 
         gui.setAnimationMode(newAnimationMode);
         animationMode = newAnimationMode;
+        preferences.putInt(ANIMATION_MODE, newAnimationMode);
+        savePreferences();
     }
 
     // Sets the numeric format with the given code.
@@ -868,12 +874,6 @@ public class HackController
         }
     }
 
-    // Returns the working dir that is saved in the data file, or "" if data file doesn't exist.
-    private File loadWorkingDir(Preferences preferences) {
-        final String dir = preferences.get(DIRECTORY, ".");
-        return new File(dir);
-    }
-
     // Saves the given working dir into the data file and gui's.
     private void saveWorkingDir(File file) {
         final File parent = file.getParentFile();
@@ -885,17 +885,11 @@ public class HackController
 
         final File dir = file.isDirectory() ? file : parent;
 
-        final Preferences preferences = Preferences.userNodeForPackage(simulator.getClass());
         preferences.put(DIRECTORY, dir.toString());
-        try {
-            preferences.sync();
-        } catch (BackingStoreException ignored) {
-        }
+        savePreferences();
     }
 
-    private void saveSpeedUnit(int speedUnit) {
-        final Preferences preferences = Preferences.userNodeForPackage(simulator.getClass());
-        preferences.putInt(SPEED, speedUnit);
+    private void savePreferences() {
         try {
             preferences.sync();
         } catch (BackingStoreException ignored) {
