@@ -129,6 +129,7 @@ public class HackController
     private static final String DIRECTORY = "directory";
     private static final String SPEED = "speed";
     private static final String ANIMATION_MODE = "animation_mode";
+    private static final String NUMERIC_FORMAT = "numeric_format";
     private final Preferences preferences;
 
     // The controller's GUI
@@ -285,7 +286,8 @@ public class HackController
         animationMode = preferences.getInt(ANIMATION_MODE, simulator.getInitialAnimationMode());
         simulator.setAnimationMode(animationMode);
         simulator.setAnimationSpeed(currentSpeedUnit);
-        simulator.setNumericFormat(simulator.getInitialNumericFormat());
+        final int numericFormat = preferences.getInt(NUMERIC_FORMAT, simulator.getInitialNumericFormat());
+        simulator.setNumericFormat(numericFormat);
         timer = new Timer(delays[currentSpeedUnit - 1], this);
 
         // adds the simulator component to the controller component
@@ -300,7 +302,7 @@ public class HackController
         gui.addControllerListener(this);
         gui.setSpeed(currentSpeedUnit);
         gui.setAnimationMode(animationMode);
-        gui.setNumericFormat(simulator.getInitialNumericFormat());
+        gui.setNumericFormat(numericFormat);
         gui.setAdditionalDisplay(simulator.getInitialAdditionalDisplay());
         gui.setVariables(simulator.getVariables());
 
@@ -821,6 +823,8 @@ public class HackController
     private void setNumericFormat(int formatCode) {
         simulator.setNumericFormat(formatCode);
         gui.setNumericFormat(formatCode);
+        preferences.putInt(NUMERIC_FORMAT, formatCode);
+        savePreferences();
     }
 
     // Sets the additional display with the given code.
