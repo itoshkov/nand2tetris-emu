@@ -29,5 +29,6 @@ else
 		arg1="${dir}/$1"
 	fi
 #	echo Running "$arg1"
-  java -jar bin/VMEmulator.jar "$arg1"
+	[ -z "$N2T_VM_USE_BUILTINS" ] && export N2T_VM_USE_BUILTINS="yes"
+	java -jar bin/VMEmulator.jar "$arg1"
 fi

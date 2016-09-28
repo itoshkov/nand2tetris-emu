@@ -22,6 +22,7 @@ if "%~1"=="" (
   start javaw -jar bin/VMEmulator.jar
 ) else (
 rem  echo Running "%_arg1%"
+  if "%N2T_VM_USE_BUILTINS%"=="" set N2T_VM_USE_BUILTINS=yes
   java -jar bin/VMEmulator.jar "%_arg1%"
 )
 popd
