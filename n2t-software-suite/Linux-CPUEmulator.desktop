@@ -1,0 +1,7 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Nand2Tetris CPU Emulator
+Exec=/bin/bash -c 'cd `dirname %k` && ./CPUEmulator.sh %f'
+Categories=Development;IDE;
+Terminal=false
