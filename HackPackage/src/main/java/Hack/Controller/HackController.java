@@ -37,7 +37,7 @@ import java.util.prefs.Preferences;
 
 /**
  * A Controller for HackSimulators. Executes scripts written in a special scripting language
- * that controlls the features of the simulators.
+ * that controls the features of the simulators.
  * Constructed with a GUI that enables the execution control of the script.
  */
 public class HackController
@@ -56,7 +56,7 @@ public class HackController
     /**
      * The speed function for fast forward mode.
      */
-    public static final int[] FASTFORWARD_SPEED_FUNCTION = {500, 1000, 2000, 4000, 15000};
+    private static final int[] FASTFORWARD_SPEED_FUNCTION = {500, 1000, 2000, 4000, 15000};
 
     // ANIMATION MODES:
 
@@ -127,6 +127,10 @@ public class HackController
     // A helper string with spaces
     private static final String SPACES = "                                        ";
     private static final String DIRECTORY = "directory";
+    private static final String SPEED = "speed";
+    private static final String ANIMATION_MODE = "animation_mode";
+    private static final String NUMERIC_FORMAT = "numeric_format";
+    private final Preferences preferences;
 
     // The controller's GUI
     protected ControllerGUI gui;
@@ -229,6 +233,7 @@ public class HackController
      * The script will be executed and the final result will be printed.
      */
     public HackController(HackSimulator simulator, String scriptFileName) {
+        this.preferences = Preferences.userNodeForPackage(simulator.getClass());
         File file = new File(scriptFileName);
         if (!file.exists())
             displayMessage(scriptFileName + " doesn't exist", true);
@@ -241,10 +246,8 @@ public class HackController
         try {
             loadNewScript(file, false);
             saveWorkingDir(file);
-        } catch (ScriptException se) {
+        } catch (ScriptException | ControllerException se) {
             displayMessage(se.getMessage(), true);
-        } catch (ControllerException ce) {
-            displayMessage(ce.getMessage(), true);
         }
 
         fastForwardRunning = true;
@@ -260,6 +263,7 @@ public class HackController
     public HackController(ControllerGUI gui, HackSimulator simulator, String defaultScriptName)
      throws ScriptException, ControllerException {
 
+        this.preferences = Preferences.userNodeForPackage(simulator.getClass());
         this.gui = gui;
         this.simulator = simulator;
         singleStepTask = new SingleStepTask();
@@ -276,11 +280,12 @@ public class HackController
         for (int i = 0; i < NUMBER_OF_SPEED_UNITS; i++)
             delays[i] = (int)(MAX_MS - SPEED_FUNCTION[i] * (float)(MAX_MS - MIN_MS));
 
-        currentSpeedUnit = INITIAL_SPEED_UNIT;
-        animationMode = simulator.getInitialAnimationMode();
+        currentSpeedUnit = preferences.getInt(SPEED, INITIAL_SPEED_UNIT);
+        animationMode = preferences.getInt(ANIMATION_MODE, simulator.getInitialAnimationMode());
         simulator.setAnimationMode(animationMode);
-        simulator.setAnimationSpeed(INITIAL_SPEED_UNIT);
-        simulator.setNumericFormat(simulator.getInitialNumericFormat());
+        simulator.setAnimationSpeed(currentSpeedUnit);
+        final int numericFormat = preferences.getInt(NUMERIC_FORMAT, simulator.getInitialNumericFormat());
+        simulator.setNumericFormat(numericFormat);
         timer = new Timer(delays[currentSpeedUnit - 1], this);
 
         // adds the simulator component to the controller component
@@ -288,14 +293,14 @@ public class HackController
         gui.setTitle(simulator.getName() + getVersionString());
 
         // load and set working dir
-        File file = loadWorkingDir();
+        File file = new File(preferences.get(DIRECTORY, "."));
         simulator.setWorkingDir(file);
         gui.setWorkingDir(file);
 
         gui.addControllerListener(this);
         gui.setSpeed(currentSpeedUnit);
         gui.setAnimationMode(animationMode);
-        gui.setNumericFormat(simulator.getInitialNumericFormat());
+        gui.setNumericFormat(numericFormat);
         gui.setAdditionalDisplay(simulator.getInitialAdditionalDisplay());
         gui.setVariables(simulator.getVariables());
 
@@ -443,14 +448,8 @@ public class HackController
             if (breakpointReached)
                 tempBreakpoints.clear();
 
-        } catch (ControllerException ce) {
+        } catch (ControllerException | ProgramException | CommandException | VariableException ce) {
             stopWithError(ce);
-        } catch (ProgramException pe) {
-            stopWithError(pe);
-        } catch (CommandException ce) {
-            stopWithError(ce);
-        } catch (VariableException ve) {
-            stopWithError(ve);
         }
 
         singleStepLocked = false;
@@ -736,7 +735,7 @@ public class HackController
     }
 
     // loads the given script file and restarts the GUI.
-    protected void loadNewScript(File file, boolean displayMessage)
+    private void loadNewScript(File file, boolean displayMessage)
      throws ControllerException, ScriptException {
         currentScriptFile = file;
         script = new Script(file.getPath());
@@ -793,6 +792,8 @@ public class HackController
         currentSpeedUnit = newSpeedUnit;
         timer.setDelay(delays[currentSpeedUnit - 1]);
         simulator.setAnimationSpeed(newSpeedUnit);
+        preferences.putInt(SPEED, newSpeedUnit);
+        savePreferences();
     }
 
     // Sets the animation mode with the given one.
@@ -806,12 +807,16 @@ public class HackController
 
         gui.setAnimationMode(newAnimationMode);
         animationMode = newAnimationMode;
+        preferences.putInt(ANIMATION_MODE, newAnimationMode);
+        savePreferences();
     }
 
     // Sets the numeric format with the given code.
     private void setNumericFormat(int formatCode) {
         simulator.setNumericFormat(formatCode);
         gui.setNumericFormat(formatCode);
+        preferences.putInt(NUMERIC_FORMAT, formatCode);
+        savePreferences();
     }
 
     // Sets the additional display with the given code.
@@ -865,15 +870,8 @@ public class HackController
         }
     }
 
-    // Returns the working dir that is saved in the data file, or "" if data file doesn't exist.
-    protected File loadWorkingDir() {
-        final Preferences preferences = Preferences.userNodeForPackage(simulator.getClass());
-        final String dir = preferences.get(DIRECTORY, ".");
-        return new File(dir);
-    }
-
     // Saves the given working dir into the data file and gui's.
-    protected void saveWorkingDir(File file) {
+    private void saveWorkingDir(File file) {
         final File parent = file.getParentFile();
 
         if (gui != null)
@@ -883,8 +881,11 @@ public class HackController
 
         final File dir = file.isDirectory() ? file : parent;
 
-        final Preferences preferences = Preferences.userNodeForPackage(simulator.getClass());
         preferences.put(DIRECTORY, dir.toString());
+        savePreferences();
+    }
+
+    private void savePreferences() {
         try {
             preferences.sync();
         } catch (BackingStoreException ignored) {
@@ -904,8 +905,7 @@ public class HackController
             try {
                 loadNewScript(defaultScriptFile, false);
                 rewind();
-            } catch (ScriptException ignored) {
-            } catch (ControllerException ignored) {
+            } catch (ScriptException | ControllerException ignored) {
             }
         }
     }
@@ -1061,10 +1061,7 @@ public class HackController
                     doUnknownAction(event.getAction(), event.getData());
                     break;
             }
-        } catch (ScriptException e) {
-            displayMessage(e.getMessage(), true);
-            stopMode();
-        } catch (ControllerException e) {
+        } catch (ScriptException | ControllerException e) {
             displayMessage(e.getMessage(), true);
             stopMode();
         }
@@ -1077,7 +1074,7 @@ public class HackController
     }
 
     // Performs the single step task
-    class SingleStepTask implements Runnable {
+    private class SingleStepTask implements Runnable {
 
         public void run() {
             singleStep();
@@ -1100,7 +1097,7 @@ public class HackController
     }
 
     // Performs the fast forward task
-    class FastForwardTask implements Runnable {
+    private class FastForwardTask implements Runnable {
         public synchronized void run() {
             try {
                 System.runFinalization();
@@ -1132,7 +1129,7 @@ public class HackController
     }
 
     // Sets the animation mode
-    class SetAnimationModeTask implements Runnable {
+    private class SetAnimationModeTask implements Runnable {
 
         private int animationMode;
 
@@ -1146,7 +1143,7 @@ public class HackController
     }
 
     // Sets the numeric format
-    class SetNumericFormatTask implements Runnable {
+    private class SetNumericFormatTask implements Runnable {
 
         private int numericFormat;
 

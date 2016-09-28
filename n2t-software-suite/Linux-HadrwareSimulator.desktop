@@ -1,0 +1,7 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Nand2Tetris Hardware Simulator
+Exec=/bin/bash -c 'cd `dirname %k` && ./HardwareSimulator.sh %f'
+Categories=Development;IDE;
+Terminal=false

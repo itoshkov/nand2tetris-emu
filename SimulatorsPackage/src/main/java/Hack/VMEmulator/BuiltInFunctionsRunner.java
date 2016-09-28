@@ -19,8 +19,10 @@ package Hack.VMEmulator;
 
 import Hack.Controller.ProgramException;
 import Hack.Utilities.Definitions;
+
 import java.io.File;
-import java.lang.reflect.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * A class that runs built-in VM code as a coroutine so that
@@ -89,7 +91,9 @@ public class BuiltInFunctionsRunner implements Runnable {
 		builtInToProgram = new BuiltInToProgramRequest();
 		programToBuiltIn = new ProgramToBuiltInRequest();
 		synchronized (this) {
-			new Thread(this).start();
+			final Thread thread = new Thread(this, "built-in-functions");
+			thread.setDaemon(true);
+			thread.start();
 			continueOtherThread(); // Let the built-in code runner init itself
 								   // The notify part of this call does nothing
 		}
