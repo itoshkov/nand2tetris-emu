@@ -451,28 +451,30 @@ public class VMEmulator extends HackSimulator implements ComputerPartErrorEventL
             hideHighlights();
 
         // execute the appropriate command
-        if (command[0].equals(COMMAND_VMSTEP)) {
-            if (command.length != 1)
-                throw new CommandException("Illegal number of arguments to command", command);
+        switch (command[0]) {
+            case COMMAND_VMSTEP:
+                if (command.length != 1)
+                    throw new CommandException("Illegal number of arguments to command", command);
 
-            cpu.executeInstruction();
-        }
-        else if (command[0].equals(COMMAND_SETVAR)) {
-            if (command.length != 3)
-                throw new CommandException("Illegal number of arguments to command", command);
-            setValue(command[1], command[2]);
-        }
-        else if (command[0].equals(COMMAND_ROMLOAD)) {
-            if (command.length != 1 && command.length != 2)
-                throw new CommandException("Illegal number of arguments to command", command);
+                cpu.executeInstruction();
+                break;
+            case COMMAND_SETVAR:
+                if (command.length != 3)
+                    throw new CommandException("Illegal number of arguments to command", command);
+                setValue(command[1], command[2]);
+                break;
+            case COMMAND_ROMLOAD:
+                if (command.length != 1 && command.length != 2)
+                    throw new CommandException("Illegal number of arguments to command", command);
 
-            String fileName = workingDir + (command.length == 1 ? "" : "/" + command[1]);
+                String fileName = workingDir + (command.length == 1 ? "" : "/" + command[1]);
 
-            cpu.getProgram().loadProgram(fileName);
-            cpu.boot();
+                cpu.getProgram().loadProgram(fileName);
+                cpu.boot();
+                break;
+            default:
+                throw new CommandException("Unknown simulator command", command);
         }
-        else
-            throw new CommandException("Unknown simulator command", command);
     }
 
     // Hides all highlights in GUIs.
@@ -635,7 +637,7 @@ public class VMEmulator extends HackSimulator implements ComputerPartErrorEventL
     }
 
     /**
-     * Called when an error occured in a computer part.
+     * Called when an error occurred in a computer part.
      * The event contains the source object and the error message.
      */
     public void computerPartErrorOccured(ComputerPartErrorEvent event) {

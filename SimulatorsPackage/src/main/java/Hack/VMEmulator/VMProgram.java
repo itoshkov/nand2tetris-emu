@@ -35,11 +35,10 @@ import java.util.Vector;
 /**
  * A list of VM instructions, with a program counter.
  */
-public class VMProgram extends InteractiveComputerPart
- implements ProgramEventListener {
+class VMProgram extends InteractiveComputerPart implements ProgramEventListener {
 
 	// pseudo address for returning to built-in functions
-	public static final short BUILTIN_FUNCTION_ADDRESS = -1;
+	static final short BUILTIN_FUNCTION_ADDRESS = -1;
 
 	// Possible values for the current status - has the user allowed
 	// access to built-in vm functions?
@@ -86,12 +85,12 @@ public class VMProgram extends InteractiveComputerPart
     /**
      * Constructs a new empty program with the given GUI.
      */
-    public VMProgram(VMProgramGUI gui) {
+    VMProgram(VMProgramGUI gui) {
         super(gui != null);
         this.gui = gui;
-        listeners = new Vector<ProgramEventListener>();
-        staticRange = new Hashtable<String, Object>();
-        functions = new Hashtable<String, Short>();
+        listeners = new Vector<>();
+        staticRange = new Hashtable<>();
+        functions = new Hashtable<>();
 
         if (hasGUI) {
             assert gui != null;
@@ -132,7 +131,7 @@ public class VMProgram extends InteractiveComputerPart
 		staticRange.clear();
 		functions.clear();
 		builtInAccessStatus = BUILTIN_ACCESS_UNDECIDED;
-        Hashtable<String, Short> symbols = new Hashtable<String, Short>();
+        Hashtable<String, Short> symbols = new Hashtable<>();
         nextPC = 0;
         for (File f : files) {
             String name = f.getName();
@@ -534,7 +533,7 @@ public class VMProgram extends InteractiveComputerPart
      * form of a 2-elements array {startAddress, endAddress}.
      * If unknown class name, returns null.
      */
-    public int[] getStaticRange(String className) {
+    int[] getStaticRange(String className) {
         return (int[])staticRange.get(className);
     }
 
@@ -545,7 +544,7 @@ public class VMProgram extends InteractiveComputerPart
         return instructionsLength;
     }
 
-	public short getAddress(String functionName) throws ProgramException {
+	short getAddress(String functionName) throws ProgramException {
         Short address = functions.get(functionName);
         if (address != null) {
             return address;
@@ -580,28 +579,28 @@ public class VMProgram extends InteractiveComputerPart
     /**
      * Returns the next program counter.
      */
-    public short getPC() {
+    short getPC() {
         return nextPC;
     }
 
     /**
      * Returns the current value of the program counter.
      */
-    public short getCurrentPC() {
+    short getCurrentPC() {
         return currentPC;
     }
 
     /**
      * Returns the previous value of the program counter.
      */
-    public short getPreviousPC() {
+    short getPreviousPC() {
         return prevPC;
     }
 
     /**
      * Sets the program counter with the given address.
      */
-    public void setPC(short address) {
+    void setPC(short address) {
         prevPC = currentPC;
         currentPC = nextPC;
         nextPC = address;
@@ -618,7 +617,7 @@ public class VMProgram extends InteractiveComputerPart
 	 * stop an infinite loop in a built-in jack class.
 	 * A message containing information may be provided (can be null).
      */
-    public void setPCToInfiniteLoopForBuiltIns(String message) {
+    void setPCToInfiniteLoopForBuiltIns(String message) {
 		if (hasGUI) {
 			gui.notify(message);
 		}
@@ -629,7 +628,7 @@ public class VMProgram extends InteractiveComputerPart
      * Returns the next VMEmulatorInstruction and increments the PC by one.
      * The PC will be incremented by more if the next instruction is a label.
      */
-    public VMEmulatorInstruction getNextInstruction() {
+    VMEmulatorInstruction getNextInstruction() {
         VMEmulatorInstruction result = null;
 
         if (nextPC < instructionsLength) {
@@ -645,7 +644,7 @@ public class VMProgram extends InteractiveComputerPart
         return result;
     }
 
-    public short getNextInstructionAddress(short pc) {
+    short getNextInstructionAddress(short pc) {
         do {
             pc++;
         } while (pc < instructionsLength && instructions[pc].getOpCode() == HVMInstructionSet.LABEL_CODE);
@@ -655,7 +654,7 @@ public class VMProgram extends InteractiveComputerPart
     /**
      * Restarts the program from the beginning.
      */
-    public void restartProgram() {
+    void restartProgram() {
         currentPC = -999;
         prevPC = -999;
         nextPC = startAddress;
@@ -713,16 +712,16 @@ public class VMProgram extends InteractiveComputerPart
             gui.setCurrentInstruction(nextPC);
     }
 
-    public VMEmulatorInstruction getInstructionAt(short pc) {
+    VMEmulatorInstruction getInstructionAt(short pc) {
         return pc >= 0 && pc < instructions.length ? instructions[pc] : null;
     }
 
     // The task that loads a new program into the emulator
-    class LoadProgramTask implements Runnable {
+    private class LoadProgramTask implements Runnable {
 
         private String fileName;
 
-        public LoadProgramTask(String fileName) {
+        LoadProgramTask(String fileName) {
             this.fileName = fileName;
         }
 
@@ -746,7 +745,7 @@ public class VMProgram extends InteractiveComputerPart
     /**
      * Registers the given ProgramEventListener as a listener to this GUI.
      */
-    public void addProgramListener(ProgramEventListener listener) {
+    void addProgramListener(ProgramEventListener listener) {
         listeners.add(listener);
     }
 
@@ -755,7 +754,7 @@ public class VMProgram extends InteractiveComputerPart
      * a ProgramEvent (with the new event type and program's file name) and sending it using the
      * programChanged function to all the listeners.
      */
-    protected void notifyProgramListeners(byte eventType, String programFileName) {
+    private void notifyProgramListeners(byte eventType, String programFileName) {
         ProgramEvent event = new ProgramEvent(this, eventType, programFileName);
 
         for (ProgramEventListener listener : listeners)
