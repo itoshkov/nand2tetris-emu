@@ -20,6 +20,7 @@ package HackGUI;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
+import java.net.URL;
 import javax.swing.text.html.*;
 import javax.swing.event.*;
 
@@ -37,15 +38,15 @@ public class HTMLViewFrame extends JFrame {
     /**
      * Constructs a new HTMLViewFrame for the given HTML file.
      */
-    public HTMLViewFrame(String fileName) {
+    public HTMLViewFrame(URL url) {
         setTitle("Help");
         ep.setEditable(false);
         ep.setContentType("text/html");
 
         try {
-            ep.setPage("file:" + fileName);
+            ep.setPage(url);
         } catch (IOException ioe) {
-            System.err.println("Error while reading file: " + fileName);
+            System.err.println("Error while reading: " + url);
             System.exit(-1);
         }
 

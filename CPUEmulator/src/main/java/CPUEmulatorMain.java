@@ -15,37 +15,43 @@
  * mark your changes clearly, for the benefit of others.                        *
  ********************************************************************************/
 
-import Hack.Controller.*;
-import Hack.CPUEmulator.*;
-import HackGUI.*;
-import SimulatorsGUI.*;
+import Hack.CPUEmulator.CPUEmulator;
+import Hack.CPUEmulator.CPUEmulatorApplication;
+import Hack.CPUEmulator.CPUEmulatorGUI;
+import Hack.Controller.ControllerGUI;
+import Hack.Controller.HackController;
+import HackGUI.ControllerComponent;
+import SimulatorsGUI.CPUEmulatorComponent;
+
 import javax.swing.*;
 
 /**
  * The CPU Emulator.
  */
-public class CPUEmulatorMain
-{
-  /**
-   * The command line CPU Emulator program.
-   */
-  public static void main(String[] args) {
-        if (args.length > 1)
-            System.err.println("Usage: java CPUEmulatorMain [script name]");
-        else if (args.length == 0) {
-            try {
-                UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-            } catch (Exception e) {
-            }
+public class CPUEmulatorMain {
+    /**
+     * The command line CPU Emulator program.
+     */
+    public static void main(String[] args) {
+        switch (args.length) {
+            case 0:
+                try {
+                    UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+                } catch (Exception ignored) {
+                }
 
-            CPUEmulatorGUI simulatorGUI = new CPUEmulatorComponent();
+                final CPUEmulatorGUI simulatorGUI = new CPUEmulatorComponent();
+                final ControllerGUI controllerGUI = new ControllerComponent();
+                new CPUEmulatorApplication(controllerGUI, simulatorGUI, "bin/scripts/defaultCPU.txt");
+                break;
 
-            ControllerGUI controllerGUI = new ControllerComponent();
-            CPUEmulatorApplication application =
-                new CPUEmulatorApplication(controllerGUI, simulatorGUI, "bin/scripts/defaultCPU.txt",
-                                           "bin/help/cpuUsage.html", "bin/help/cpuAbout.html");
+            case 1:
+                new HackController(new CPUEmulator(), args[0]);
+                break;
+
+            default:
+                System.err.printf("Usage: java %s [script name]%n", CPUEmulatorMain.class.getName());
+                System.exit(1);
         }
-        else
-            new HackController(new CPUEmulator(), args[0]);
     }
 }

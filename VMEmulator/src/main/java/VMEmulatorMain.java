@@ -36,14 +36,13 @@ public class VMEmulatorMain {
         switch (args.length) {
             case 0:
                 try {
-                    UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+                    UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
                 } catch (Exception ignored) {
                 }
 
                 final VMEmulatorGUI simulatorGUI = new VMEmulatorComponent();
                 final ControllerGUI controllerGUI = new ControllerComponent();
-                new VMEmulatorApplication(controllerGUI, simulatorGUI, "bin/scripts/defaultVM.txt",
-                        "bin/help/vmUsage.html", "bin/help/vmAbout.html");
+                new VMEmulatorApplication(controllerGUI, simulatorGUI, "bin/scripts/defaultVM.txt");
                 break;
 
             case 1:
@@ -51,7 +50,8 @@ public class VMEmulatorMain {
                 break;
 
             default:
-                System.err.println("Usage: java CPUEmulatorMain [script name]");
+                System.err.printf("Usage: java %s [script name]%n", VMEmulatorMain.class.getName());
+                System.exit(1);
         }
     }
 }

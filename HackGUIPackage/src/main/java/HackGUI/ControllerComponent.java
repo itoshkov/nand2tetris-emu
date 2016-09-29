@@ -18,12 +18,19 @@
 package HackGUI;
 
 import Hack.Controller.*;
-import java.io.*;
+
 import javax.swing.*;
-import javax.swing.event.*;
-import java.awt.event.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.util.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Vector;
 
 /**
  * This class represents the GUI of the controller component.
@@ -153,15 +160,11 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
         ((JComponent)simulator).revalidate();
         repaint();
 
-        if (simulator.getUsageFileName() != null) {
-            usageWindow = new HTMLViewFrame(simulator.getUsageFileName());
-            usageWindow.setSize(450, 430);
-        }
+        usageWindow = new HTMLViewFrame(getClass().getResource("/usage.html"));
+        usageWindow.setSize(450, 430);
 
-        if (simulator.getAboutFileName() != null) {
-            aboutWindow = new HTMLViewFrame(simulator.getAboutFileName());
-            aboutWindow.setSize(450, 420);
-        }
+        aboutWindow = new HTMLViewFrame(getClass().getResource("/about.html"));
+        aboutWindow.setSize(450, 420);
     }
 
 

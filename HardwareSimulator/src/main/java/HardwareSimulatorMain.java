@@ -15,38 +15,43 @@
  * mark your changes clearly, for the benefit of others.                        *
  ********************************************************************************/
 
-import Hack.Controller.*;
-import Hack.HardwareSimulator.*;
-import SimulatorsGUI.*;
-import javax.swing.*;
+import Hack.Controller.HackController;
+import Hack.HardwareSimulator.HardwareSimulator;
+import Hack.HardwareSimulator.HardwareSimulatorApplication;
+import Hack.HardwareSimulator.HardwareSimulatorControllerGUI;
+import Hack.HardwareSimulator.HardwareSimulatorGUI;
+import SimulatorsGUI.HardwareSimulatorComponent;
+import SimulatorsGUI.HardwareSimulatorControllerComponent;
 
+import javax.swing.*;
 
 /**
  * The Hardware Simulator.
  */
-public class HardwareSimulatorMain
-{
-  /**
-   * The command line Hardware Simulator program.
-   */
-  public static void main(String[] args) {
-        if (args.length > 1)
-            System.err.println("Usage: java HardwareSimulatorMain [script name]");
-        else if (args.length == 0) {
-            try {
-                UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-            } catch (Exception e) {
-            }
+public class HardwareSimulatorMain {
+    /**
+     * The command line Hardware Simulator program.
+     */
+    public static void main(String[] args) {
+        switch (args.length) {
+            case 0:
+                try {
+                    UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+                } catch (Exception ignored) {
+                }
 
-            HardwareSimulatorGUI simulatorGUI = new HardwareSimulatorComponent();
-            HardwareSimulatorControllerGUI controllerGUI = new HardwareSimulatorControllerComponent();
+                final HardwareSimulatorGUI simulatorGUI = new HardwareSimulatorComponent();
+                final HardwareSimulatorControllerGUI controllerGUI = new HardwareSimulatorControllerComponent();
+                new HardwareSimulatorApplication(controllerGUI, simulatorGUI, "bin/scripts/defaultHW.txt");
+                break;
 
-            HardwareSimulatorApplication application =
-                new HardwareSimulatorApplication(controllerGUI, simulatorGUI,
-                                                 "bin/scripts/defaultHW.txt",
-                                                 "bin/help/hwUsage.html", "bin/help/hwAbout.html");
+            case 1:
+                new HackController(new HardwareSimulator(), args[0]);
+                break;
+
+            default:
+                System.err.printf("Usage: java %s [script name]%n", HardwareSimulatorMain.class.getName());
+                System.exit(1);
         }
-        else
-            new HackController(new HardwareSimulator(), args[0]);
     }
 }
