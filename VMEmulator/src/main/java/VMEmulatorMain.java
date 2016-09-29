@@ -36,7 +36,7 @@ public class VMEmulatorMain {
         switch (args.length) {
             case 0:
                 try {
-                    UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+                    UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
                 } catch (Exception ignored) {
                 }
 
@@ -51,7 +51,8 @@ public class VMEmulatorMain {
                 break;
 
             default:
-                System.err.println("Usage: java CPUEmulatorMain [script name]");
+                System.err.printf("Usage: java %s [script name]%n", VMEmulatorMain.class.getName());
+                System.exit(1);
         }
     }
 }
