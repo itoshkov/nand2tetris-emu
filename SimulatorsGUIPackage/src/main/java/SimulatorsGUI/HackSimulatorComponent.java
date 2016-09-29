@@ -54,20 +54,4 @@ public abstract class HackSimulatorComponent extends JPanel implements HackSimul
      */
     protected abstract Point getAdditionalDisplayLocation();
 
-    public void setUsageFileName(String fileName) {
-        usageFileName = fileName;
-    }
-
-    public void setAboutFileName(String fileName) {
-        aboutFileName = fileName;
-    }
-
-    public String getUsageFileName() {
-        return usageFileName;
-    }
-
-    public String getAboutFileName() {
-        return aboutFileName;
-    }
-
 }

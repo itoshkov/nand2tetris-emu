@@ -42,8 +42,7 @@ public class VMEmulatorMain {
 
                 final VMEmulatorGUI simulatorGUI = new VMEmulatorComponent();
                 final ControllerGUI controllerGUI = new ControllerComponent();
-                new VMEmulatorApplication(controllerGUI, simulatorGUI, "bin/scripts/defaultVM.txt",
-                        "bin/help/vmUsage.html", "bin/help/vmAbout.html");
+                new VMEmulatorApplication(controllerGUI, simulatorGUI, "bin/scripts/defaultVM.txt");
                 break;
 
             case 1:

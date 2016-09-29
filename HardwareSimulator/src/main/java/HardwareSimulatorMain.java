@@ -42,8 +42,7 @@ public class HardwareSimulatorMain {
 
                 final HardwareSimulatorGUI simulatorGUI = new HardwareSimulatorComponent();
                 final HardwareSimulatorControllerGUI controllerGUI = new HardwareSimulatorControllerComponent();
-                new HardwareSimulatorApplication(controllerGUI, simulatorGUI, "bin/scripts/defaultHW.txt",
-                        "bin/help/hwUsage.html", "bin/help/hwAbout.html");
+                new HardwareSimulatorApplication(controllerGUI, simulatorGUI, "bin/scripts/defaultHW.txt");
                 break;
 
             case 1:

@@ -30,18 +30,11 @@ public abstract class HackApplication {
      * component, the simulator GUI component, the default
      * script name and the names of the help files.
      */
-    public HackApplication(HackSimulator simulator, ControllerGUI controllerComponent,
-                           HackSimulatorGUI simulatorComponent, String defaultScript,
-                           String usageFileName, String aboutFileName) {
+    public HackApplication(HackSimulator simulator, ControllerGUI controllerComponent, String defaultScript) {
         try {
-            simulatorComponent.setUsageFileName(usageFileName);
-            simulatorComponent.setAboutFileName(aboutFileName);
             createController(simulator, controllerComponent, defaultScript);
-        } catch (ScriptException se) {
+        } catch (ScriptException | ControllerException se) {
             System.err.println(se.getMessage());
-            System.exit(-1);
-        } catch (ControllerException ce) {
-            System.err.println(ce.getMessage());
             System.exit(-1);
         } catch (Exception e) {
             System.err.println("Unexpected Error: " + e.getMessage());
@@ -54,9 +47,8 @@ public abstract class HackApplication {
      * Creates the controller with the given simulator, controller gui component
      * and the default script.
      */
-    protected void createController(HackSimulator simulator, ControllerGUI controllerComponent,
-                                    String defaultScript)
-     throws ScriptException, ControllerException {
-        HackController c = new HackController(controllerComponent, simulator, defaultScript);
+    protected void createController(HackSimulator simulator, ControllerGUI controllerComponent, String defaultScript)
+            throws ScriptException, ControllerException {
+        new HackController(controllerComponent, simulator, defaultScript);
     }
 }
