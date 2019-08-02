@@ -119,7 +119,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
     protected JRadioButtonMenuItem partAnimMenuItem, fullAnimMenuItem, noAnimMenuItem;
 
     // the message label (status line)
-    protected JLabel messageLbl = new JLabel();
+    private JTextField messageLbl = new JTextField();
 
     // component for displaying the script, output file and comparison file.
     protected FileDisplayComponent scriptComponent;
@@ -133,6 +133,7 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
      * Constructs a new ControllerComponent.
      */
     public ControllerComponent() {
+        messageLbl.setEditable(false);
         listeners = new Vector<ControllerEventListener>();
         formatCombo = new TitledComboBox("Format:", "Numeric display format",
                                          new String[]{"Decimal", "Hexa", "Binary"}, 75);
