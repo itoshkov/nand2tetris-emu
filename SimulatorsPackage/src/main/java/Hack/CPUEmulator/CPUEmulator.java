@@ -188,7 +188,7 @@ public class CPUEmulator extends HackSimulator implements ComputerPartErrorEvent
 
             if (varName.equals(VAR_A)) {
                 numValue = Integer.parseInt(value);
-                check_ram_address(varName, numValue);
+                check_value(varName, numValue);
                 cpu.getA().store((short)numValue);
             }
             else if (varName.equals(VAR_D)) {

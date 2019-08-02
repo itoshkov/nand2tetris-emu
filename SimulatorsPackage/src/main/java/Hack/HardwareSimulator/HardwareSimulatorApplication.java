@@ -30,18 +30,13 @@ public class HardwareSimulatorApplication extends HackApplication {
      * help files.
      */
     public HardwareSimulatorApplication(HardwareSimulatorControllerGUI controllerComponent,
-                                        HardwareSimulatorGUI simulatorComponent,
-                                        String defaultScript, String contentsFileName,
-                                        String aboutFileName) {
-        super(new HardwareSimulator(simulatorComponent), controllerComponent, simulatorComponent,
-              defaultScript, contentsFileName, aboutFileName);
+                                        HardwareSimulatorGUI simulatorComponent, String defaultScript) {
+        super(new HardwareSimulator(simulatorComponent), controllerComponent, defaultScript);
     }
 
-    protected void createController(HackSimulator simulator, ControllerGUI controllerComponent,
-                                    String defaultScript)
-     throws ScriptException, ControllerException {
-        HardwareSimulatorController c =
-            new HardwareSimulatorController((HardwareSimulatorControllerGUI)controllerComponent,
-                                            (HardwareSimulator)simulator, defaultScript);
+    protected void createController(HackSimulator simulator, ControllerGUI controllerComponent, String defaultScript)
+            throws ScriptException, ControllerException {
+        new HardwareSimulatorController((HardwareSimulatorControllerGUI) controllerComponent,
+                (HardwareSimulator) simulator, defaultScript);
     }
 }

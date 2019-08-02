@@ -135,7 +135,7 @@ class VMProgram extends InteractiveComputerPart implements ProgramEventListener 
         nextPC = 0;
         for (File f : files) {
             String name = f.getName();
-            String className = name.substring(0, name.indexOf("."));
+            String className = fileNameToClassName(name);
             // put some dummy into static range - just to tell the function
             // getAddress in the second pass which classes exist
             staticRange.put(className, true);
@@ -166,7 +166,7 @@ class VMProgram extends InteractiveComputerPart implements ProgramEventListener 
         int currentStaticIndex = Definitions.VAR_START_ADDRESS;
         for (File f : files) {
             String name = f.getName();
-            String className = name.substring(0, name.indexOf("."));
+            String className = fileNameToClassName(name);
 
             largestStaticIndex = -1;
             int[] range = new int[2];
@@ -194,7 +194,7 @@ class VMProgram extends InteractiveComputerPart implements ProgramEventListener 
 				instructionsLength += 1;
 			}
 			short indexInInvisibleCode = 0;
-			// Add a jump to the end (noone should get here since
+			// Add a jump to the end (no-one should get here since
 			// both calls to built-in functions indicate that
 			// that this is a function-based program and not a script
 			// a-la proj7, but just to be on the safe side...).
@@ -252,6 +252,22 @@ class VMProgram extends InteractiveComputerPart implements ProgramEventListener 
         setGUIContents();
 
         notifyProgramListeners(ProgramEvent.LOAD, fileName);
+    }
+
+    private String fileNameToClassName(String name) throws ProgramException {
+        final int index = name.indexOf(".");
+        if (index == -1)
+            throw new ProgramException("File name without extension: " + name);
+
+        return name.substring(0, index);
+    }
+
+    private String functionNameToClassName(String name) throws ProgramException {
+        final int index = name.indexOf(".");
+        if (index == -1)
+            throw new ProgramException("Incorrect function name. Should be <ClassName>.<FunctionName>: " + name);
+
+        return name.substring(0, index);
     }
 
     // Scans the given file and creates symbols for its functions & label names.
@@ -549,7 +565,7 @@ class VMProgram extends InteractiveComputerPart implements ProgramEventListener 
         if (address != null) {
             return address;
         } else {
-            String className = functionName.substring(0, functionName.indexOf("."));
+            String className = functionNameToClassName(functionName);
             if (staticRange.get(className) == null) {
                 // The class is not implemented by a VM file - search for a
                 // built-in implementation later. Display a popup to confirm
