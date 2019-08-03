@@ -82,7 +82,7 @@ public class BusComponent extends JPanel implements ActionListener, BusGUI {
         stepLengths = new double[range];
         delays = new int[range];
         for (int i = 0; i < range; i++) {
-            stepLengths[i] = function[i] * (double)(MAX_STEP_LENGTH - MIN_STEP_LENGTH) + MIN_STEP_LENGTH;
+            stepLengths[i] = function[i] * (MAX_STEP_LENGTH - MIN_STEP_LENGTH) + MIN_STEP_LENGTH;
             delays[i] = (int)(MAX_MS - function[i] * (double)(MAX_MS - MIN_MS));
         }
 
@@ -123,7 +123,7 @@ public class BusComponent extends JPanel implements ActionListener, BusGUI {
         int absX = Math.abs(totalX);
         int absY = Math.abs(totalY);
 
-        dy = (double)(currentStepLength * absY) / (double)(absX + absY);
+        dy = (currentStepLength * absY) / (double)(absX + absY);
         dx = currentStepLength - dy;
         counter = (int)((double)absX / dx);
         if (totalX < 0)
@@ -151,20 +151,6 @@ public class BusComponent extends JPanel implements ActionListener, BusGUI {
      * Resets the content of this BusComponent.
      */
     public void reset() {}
-
-    /**
-     * Sets the font to be used in the bus.
-     */
-    public void setBusFont(Font font) {
-        txtField.setFont(font);
-    }
-
-    /**
-     * Sets the size of the bus according to the given Rectangle.
-     */
-    public void setBusSize(Rectangle r) {
-        txtField.setBounds(r);
-    }
 
     // Initializes this component.
     private void jbInit() {

@@ -26,5 +26,5 @@ public interface EnterPressedListener {
     /**
      * called when the enter button was pressed by the user.
      */
-    public void enterPressed();
+    void enterPressed();
 }

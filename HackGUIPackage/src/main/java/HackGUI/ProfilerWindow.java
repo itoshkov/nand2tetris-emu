@@ -6,12 +6,8 @@ import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -20,12 +16,7 @@ import static java.util.Map.Entry;
 
 public class ProfilerWindow extends JFrame {
     public static final Comparator<Entry<String, AtomicInteger>> ENTRY_COMPARATOR =
-            new Comparator<Entry<String, AtomicInteger>>() {
-                @Override
-                public int compare(Entry<String, AtomicInteger> o1, Entry<String, AtomicInteger> o2) {
-                    return o2.getValue().get() - o1.getValue().get();
-                }
-            };
+            (o1, o2) -> o2.getValue().get() - o1.getValue().get();
     private final Profiler profiler;
     private JTable[] tables;
 
@@ -49,28 +40,15 @@ public class ProfilerWindow extends JFrame {
 
         final JCheckBox enableCheckBox = new JCheckBox("Enable");
         enableCheckBox.setSelected(profiler.isEnabled());
-        enableCheckBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                profiler.setEnabled(e.getStateChange() == ItemEvent.SELECTED);
-            }
-        });
+        enableCheckBox.addItemListener(e -> profiler.setEnabled(e.getStateChange() == ItemEvent.SELECTED));
 
         final JButton update = new JButton("Update");
-        update.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                updateTables();
-            }
-        });
+        update.addActionListener(e -> updateTables());
 
         final JButton reset = new JButton("Reset");
-        reset.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                profiler.reset();
-                updateTables();
-            }
+        reset.addActionListener(e -> {
+            profiler.reset();
+            updateTables();
         });
 
         final JPanel controls = new JPanel(new FlowLayout());
@@ -92,9 +70,9 @@ public class ProfilerWindow extends JFrame {
     private TableModel asTableModel(int tab) {
         final String[] headers = profiler.getTableHeaders(tab);
         final List<Entry<String, AtomicInteger>> data =
-                new ArrayList<Entry<String, AtomicInteger>>(profiler.getData(tab).entrySet());
+                new ArrayList<>(profiler.getData(tab).entrySet());
 
-        Collections.sort(data, ENTRY_COMPARATOR);
+        data.sort(ENTRY_COMPARATOR);
 
         return new AbstractTableModel() {
             @Override

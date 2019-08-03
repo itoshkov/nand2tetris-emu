@@ -25,10 +25,10 @@ public interface MemoryChangeListener {
     /**
      * Called when the a change occured in the memory that requires repaint.
      */
-    public void repaintChange();
+    void repaintChange();
 
     /**
      * Called when the a change occured in the memory that requires revalidate.
      */
-    public void revalidateChange();
+    void revalidateChange();
 }

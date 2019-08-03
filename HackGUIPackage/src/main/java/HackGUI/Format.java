@@ -21,7 +21,7 @@ import Hack.Utilities.Conversions;
 import Hack.Controller.*;
 
 /**
- * A utility class for handling format convsersions.
+ * A utility class for handling format conversions.
  */
 public class Format {
 

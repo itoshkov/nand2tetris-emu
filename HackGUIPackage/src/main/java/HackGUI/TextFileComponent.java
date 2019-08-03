@@ -18,11 +18,11 @@
 package HackGUI;
 
 import Hack.ComputerParts.*;
+
 import javax.swing.*;
 import javax.swing.table.*;
 import java.util.*;
 import java.awt.*;
-import javax.swing.event.*;
 import java.io.*;
 
 /**
@@ -31,11 +31,8 @@ import java.io.*;
 public class TextFileComponent extends JPanel implements TextFileGUI {
 
     // A vector containing the listeners to this component.
-    private Vector listeners;
-    private Vector rowsVector;
-
-    // The model of the table
-    private TextFileTableModel model = new TextFileTableModel();
+    private Vector<TextFileEventListener> listeners;
+    private Vector<String> rowsVector;
 
     // The table.
     private JTable textFileTable;
@@ -47,10 +44,7 @@ public class TextFileComponent extends JPanel implements TextFileGUI {
     private JLabel nameLbl = new JLabel();
 
     // A set of indices of highlighted rows.
-    private Set highlightedLines;
-
-    // A set of indices of emphasized rows.
-    private Set emphasizedLines;
+    private Set<Integer> highlightedLines;
 
     // Indicates whether this component is enabled.
     private boolean isEnabled;
@@ -59,13 +53,14 @@ public class TextFileComponent extends JPanel implements TextFileGUI {
      * Constructs a new TextFileComponent
      */
     public TextFileComponent() {
-        listeners = new Vector();
-        rowsVector = new Vector();
+        listeners = new Vector<>();
+        rowsVector = new Vector<>();
+        // The model of the table
+        TextFileTableModel model = new TextFileTableModel();
         textFileTable = new WideTable(model, 1000);
         textFileTable.setDefaultRenderer(textFileTable.getColumnClass(0), getCellRenderer());
         textFileTable.setTableHeader(null);
-        highlightedLines = new HashSet();
-        emphasizedLines = new HashSet();
+        highlightedLines = new HashSet<>();
         enableUserInput();
         jbInit();
     }
@@ -78,20 +73,12 @@ public class TextFileComponent extends JPanel implements TextFileGUI {
         isEnabled = true;
     }
 
-    /**
-     * Disables user input to the component.
-     */
-    public void disableUserInput() {
-        textFileTable.setRowSelectionAllowed(false);
-        isEnabled = false;
-    }
-
     public void hideSelect() {
         textFileTable.clearSelection();
     }
 
-    public void select (int from, int to) {
-        textFileTable.setRowSelectionInterval(from,to);
+    public void select(int from, int to) {
+        textFileTable.setRowSelectionInterval(from, to);
         Utilities.tableCenterScroll(this, textFileTable, from);
     }
 
@@ -103,7 +90,7 @@ public class TextFileComponent extends JPanel implements TextFileGUI {
         if (clear)
             highlightedLines.clear();
 
-        highlightedLines.add(new Integer(index));
+        highlightedLines.add(index);
         Utilities.tableCenterScroll(this, textFileTable, index);
         repaint();
     }
@@ -114,7 +101,7 @@ public class TextFileComponent extends JPanel implements TextFileGUI {
     }
 
     public String getLineAt(int index) {
-        return (String)rowsVector.elementAt(index);
+        return rowsVector.elementAt(index);
     }
 
     public int getNumberOfLines() {
@@ -135,39 +122,34 @@ public class TextFileComponent extends JPanel implements TextFileGUI {
 
 
     public void notifyTextFileListeners(String row, int rowNum) {
-        TextFileEvent event = new TextFileEvent(this,row,rowNum);
-        for (int i=0;i<listeners.size();i++) {
-           ((TextFileEventListener)listeners.elementAt(i)).rowSelected(event);
-        }
+        TextFileEvent event = new TextFileEvent(this, row, rowNum);
+        listeners.forEach(l -> l.rowSelected(event));
     }
 
-    public void addLine (String line) {
+    public void addLine(String line) {
         rowsVector.addElement(line);
         textFileTable.revalidate();
         repaint();
-        addHighlight(rowsVector.size()-1, false);
+        addHighlight(rowsVector.size() - 1, false);
     }
 
-    public void setContents (String[] lines) {
+    public void setContents(String[] lines) {
         rowsVector.removeAllElements();
-        for (int i=0; i<lines.length; i++) {
-            rowsVector.addElement(lines[i]);
-        }
+        for (String line : lines)
+            rowsVector.addElement(line);
+
         textFileTable.revalidate();
         repaint();
     }
 
-    public void setContents (String fileName) {
-        BufferedReader reader;
+    public void setContents(String fileName) {
         rowsVector.removeAllElements();
-        try {
-            reader = new BufferedReader(new FileReader(fileName));
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
-            while((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null)
                 rowsVector.addElement(line);
-            }
-            reader.close();
-        } catch (IOException ioe) {}
+        } catch (IOException ioe) {
+        }
         textFileTable.clearSelection();
         textFileTable.revalidate();
         repaint();
@@ -192,7 +174,7 @@ public class TextFileComponent extends JPanel implements TextFileGUI {
         scrollPane.setSize(getTableWidth(), tableHeight + 3);
         setPreferredSize(new Dimension(getTableWidth(), tableHeight + 30));
         setSize(getTableWidth(), tableHeight + 30);
-        textFileTable.getParent().setSize(new Dimension(1000,tableHeight));
+        textFileTable.getParent().setSize(new Dimension(1000, tableHeight));
     }
 
     /**
@@ -207,20 +189,18 @@ public class TextFileComponent extends JPanel implements TextFileGUI {
 
         textFileTable.setShowHorizontalLines(false);
         ListSelectionModel rowSM = textFileTable.getSelectionModel();
-        rowSM.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                if (!isEnabled || e.getValueIsAdjusting()) return;
-                ListSelectionModel lsm = (ListSelectionModel)e.getSource();
-                if (!lsm.isSelectionEmpty()) {
-                    int selectedRow = lsm.getMinSelectionIndex();
-                    notifyTextFileListeners((String)rowsVector.elementAt(selectedRow), selectedRow);
-                }
+        rowSM.addListSelectionListener(e -> {
+            if (!isEnabled || e.getValueIsAdjusting()) return;
+            ListSelectionModel lsm = (ListSelectionModel) e.getSource();
+            if (!lsm.isSelectionEmpty()) {
+                int selectedRow = lsm.getMinSelectionIndex();
+                notifyTextFileListeners(rowsVector.elementAt(selectedRow), selectedRow);
             }
         });
         this.setLayout(null);
 
         scrollPane = new JScrollPane(textFileTable);
-        scrollPane.setLocation(0,27);
+        scrollPane.setLocation(0, 27);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollPane.getHorizontalScrollBar().setUnitIncrement(scrollPane.getHorizontalScrollBar().getBlockIncrement());
 
@@ -271,7 +251,7 @@ public class TextFileComponent extends JPanel implements TextFileGUI {
          * Returns true of this table cells are editable, false -
          * otherwise.
          */
-        public boolean isCellEditable(int row, int col){
+        public boolean isCellEditable(int row, int col) {
             return false;
         }
     }
@@ -280,27 +260,23 @@ public class TextFileComponent extends JPanel implements TextFileGUI {
     public class TextFileCellRenderer extends DefaultTableCellRenderer {
 
         public Component getTableCellRendererComponent
-            (JTable table, Object value, boolean selected, boolean focused, int row, int column)
-        {
+                (JTable table, Object value, boolean selected, boolean focused, int row, int column) {
             setForeground(null);
             setBackground(null);
 
-            setRenderer(row, column);
+            setRenderer(row);
             super.getTableCellRendererComponent(table, value, selected, focused, row, column);
 
             return this;
         }
 
-        public void setRenderer(int row, int column) {
-            if (highlightedLines.contains(new Integer(row)))
+        public void setRenderer(int row) {
+            if (highlightedLines.contains(row))
                 setBackground(Color.yellow);
             else
                 setBackground(null);
 
-            if (emphasizedLines.contains(new Integer(row)))
-                setForeground(Color.red);
-            else
-                setForeground(null);
+            setForeground(null);
         }
     }
 }

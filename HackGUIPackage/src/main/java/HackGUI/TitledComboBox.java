@@ -34,20 +34,20 @@ public class TitledComboBox extends JPanel {
     private static final int COMBO_HEIGHT = 22;
 
     // The combo box
-    private JComboBox combo;
+    private JComboBox<String> combo;
 
     // The title
     private JLabel title;
 
     // The listeners to this combo box
-    private LinkedList listeners;
+    private LinkedList<ActionListener> listeners;
 
     /**
      * Constructs a new TitledComboBox.
      */
     public TitledComboBox(String titleText, String toolTipText, String[] items, int width) {
         title = new JLabel(titleText);
-        combo = new JComboBox(items);
+        combo = new JComboBox<>(items);
         combo.setToolTipText(toolTipText);
 
         Dimension d = new Dimension(width, TOTAL_HEIGHT);
@@ -59,18 +59,14 @@ public class TitledComboBox extends JPanel {
         add(title, BorderLayout.NORTH);
         add(combo, BorderLayout.SOUTH);
 
-        combo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                notifyListeners(e);
-            }
-        });
+        combo.addActionListener(this::notifyListeners);
 
         title.setFont(Utilities.thinLabelsFont);
 
         combo.setFont(Utilities.thinLabelsFont);
         combo.setPreferredSize(new Dimension(width, COMBO_HEIGHT));
 
-        listeners = new LinkedList();
+        listeners = new LinkedList<>();
     }
 
     /**
@@ -82,23 +78,15 @@ public class TitledComboBox extends JPanel {
 
     // Notifies the registered listeners on an action in the combo box.
     private void notifyListeners(ActionEvent e) {
-        Iterator iter = listeners.iterator();
-        while(iter.hasNext())
-            ((ActionListener)iter.next()).actionPerformed(e);
+        listeners.forEach(l -> l.actionPerformed(e));
     }
 
     /**
      * Returns true if the given index is the selected one.
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isSelectedIndex(int index) {
         return combo.getSelectedIndex() == index;
-    }
-
-    /**
-     * Return true if the given item is the slected one.
-     */
-    public boolean isSelectedItem(String item) {
-        return combo.getSelectedItem().equals(item);
     }
 
     /**

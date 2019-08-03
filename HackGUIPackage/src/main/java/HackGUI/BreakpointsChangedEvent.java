@@ -17,6 +17,8 @@
 
 package HackGUI;
 
+import Hack.Controller.Breakpoint;
+
 import java.util.EventObject;
 import java.util.Vector;
 
@@ -27,21 +29,21 @@ import java.util.Vector;
 public class BreakpointsChangedEvent extends EventObject {
 
     // The vector of breakpoints
-    private Vector breakpoints = new Vector();
+    private Vector<Breakpoint> breakpoints;
 
     /**
      * Constructs a new BreakpointsChangedEvent with the given source and vector of breakpoints.
      */
-    public BreakpointsChangedEvent(Object source, Vector breakpoints) {
-
+    @SuppressWarnings("unchecked")
+    public BreakpointsChangedEvent(Object source, Vector<Breakpoint> breakpoints) {
         super(source);
-        this.breakpoints = (Vector)breakpoints.clone();
+        this.breakpoints = (Vector<Breakpoint>) breakpoints.clone();
     }
 
     /**
      * Returns the breakpoints vector
      */
-    public Vector getBreakpoints() {
+    public Vector<Breakpoint> getBreakpoints() {
         return breakpoints;
     }
 }

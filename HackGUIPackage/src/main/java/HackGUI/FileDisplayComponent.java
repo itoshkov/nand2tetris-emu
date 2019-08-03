@@ -62,15 +62,6 @@ public class FileDisplayComponent extends JPanel {
     }
 
     /**
-     * Deletes the displayed file (from view only).
-     */
-    public void deleteContent() {
-        rows = new String[0];
-        fileDisplayTable.revalidate();
-        repaint();
-    }
-
-    /**
      * Refreshes the display.
      */
     public void refresh() {
@@ -80,18 +71,15 @@ public class FileDisplayComponent extends JPanel {
     /**
      * Sets the text file to be displayed.
      */
-    public synchronized void setContents (String fileName) {
+    public synchronized void setContents(String fileName) {
         this.fileName = fileName;
-        BufferedReader reader;
-        Vector rowsVector = new Vector();
-        try {
-            reader = new BufferedReader(new FileReader(fileName));
+        Vector<String> rowsVector = new Vector<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
-            while((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null)
                 rowsVector.addElement(line);
-            }
-            reader.close();
-        } catch (IOException ioe) {}
+        } catch (IOException ioe) {
+        }
         rows = new String[rowsVector.size()];
         rowsVector.toArray(rows);
         fileDisplayTable.clearSelection();
@@ -130,10 +118,10 @@ public class FileDisplayComponent extends JPanel {
 
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollPane.getHorizontalScrollBar().setUnitIncrement(scrollPane.getHorizontalScrollBar().getBlockIncrement());
-        scrollPane.setLocation(0,0);
+        scrollPane.setLocation(0, 0);
         scrollPane.setPreferredSize(new Dimension(516, 260));
         scrollPane.setSize(516, 260);
-        setSize(516,260);
+        setSize(516, 260);
 
         this.add(scrollPane, null);
     }
@@ -173,7 +161,7 @@ public class FileDisplayComponent extends JPanel {
          * Returns true of this table cells are editable, false -
          * otherwise.
          */
-        public boolean isCellEditable(int row, int col){
+        public boolean isCellEditable(int row, int col) {
             return false;
         }
     }
@@ -182,19 +170,18 @@ public class FileDisplayComponent extends JPanel {
     class FileDisplayTableCellRenderer extends DefaultTableCellRenderer {
 
         public Component getTableCellRendererComponent
-            (JTable table, Object value, boolean selected, boolean focused, int row, int column)
-        {
+                (JTable table, Object value, boolean selected, boolean focused, int row, int column) {
 
             setForeground(null);
             setBackground(null);
 
-            setRenderer(row, column);
+            setRenderer(row);
             super.getTableCellRendererComponent(table, value, selected, focused, row, column);
 
             return this;
         }
 
-        public void setRenderer(int row, int column) {
+        public void setRenderer(int row) {
 
             if (row == selectedRow)
                 setBackground(Color.yellow);

@@ -29,17 +29,11 @@ public class FileContentWindow extends JFrame {
     // The text area on which the content of the file is shown.
     private JTextArea fileContent = new JTextArea();
 
-    // A reader used for reading the file.
-    private BufferedReader reader;
-
     // The name of the file which is currently displayed.
     private String displayedFileName;
 
     // If true, loads the file's contents even if the filename wasn't changed
     private boolean loadAnyway;
-
-    // The scroll pane of this component.
-    private JScrollPane scrollPane;
 
     /**
      * Constructs a new FileContentWindow.
@@ -54,27 +48,29 @@ public class FileContentWindow extends JFrame {
      * even if its name wasn't changed.
      */
     public void loadAnyway() {
-    	loadAnyway = true;
+        loadAnyway = true;
     }
 
     /**
      * Sets the content of this window.
      */
     public void setContent(File fileName) {
-	if (loadAnyway || !fileName.equals(displayedFileName)) {
+        if (loadAnyway || !fileName.getAbsolutePath().equals(displayedFileName)) {
             displayedFileName = fileName.getAbsolutePath();
             fileContent.setText("");
             try {
-		reader = new BufferedReader(new FileReader(fileName));
-		String line;
-		while((line = reader.readLine()) != null) {
+                // A reader used for reading the file.
+                BufferedReader reader = new BufferedReader(new FileReader(fileName));
+                String line;
+                while ((line = reader.readLine()) != null) {
                     fileContent.append(line);
                     fileContent.append("\n");
-		}
-		reader.close();
-            } catch (IOException ioe) {}
+                }
+                reader.close();
+            } catch (IOException ioe) {
+            }
         }
-        fileContent.select(0,0);
+        fileContent.select(0, 0);
     }
 
     /**
@@ -90,9 +86,10 @@ public class FileContentWindow extends JFrame {
         fileContent.setFont(Utilities.valueFont);
         fileContent.setEnabled(false);
         fileContent.setDisabledTextColor(Color.black);
-        scrollPane = new JScrollPane(fileContent);
+        // The scroll pane of this component.
+        JScrollPane scrollPane = new JScrollPane(fileContent);
         scrollPane.setPreferredSize(new Dimension(190, 330));
-        setSize(375,372);
+        setSize(375, 372);
         this.getContentPane().add(scrollPane, BorderLayout.CENTER);
     }
 }

@@ -26,6 +26,5 @@ public interface BreakpointChangedListener {
      * Called when there was a change in one of the breakpoints.
      * The event contains the changed breakpoint.
      */
-    public void breakpointChanged(BreakpointChangedEvent event);
-
+    void breakpointChanged(BreakpointChangedEvent event);
 }

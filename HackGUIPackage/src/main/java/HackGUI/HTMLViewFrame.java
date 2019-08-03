@@ -29,17 +29,13 @@ import javax.swing.event.*;
  */
 public class HTMLViewFrame extends JFrame {
 
-    // The scroll pane for this frame
-    private JScrollPane scrollPane;
-
-    // The editor pane for displaying the HTML file.
-    private JEditorPane ep = new JEditorPane();
-
     /**
      * Constructs a new HTMLViewFrame for the given HTML file.
      */
     public HTMLViewFrame(URL url) {
         setTitle("Help");
+        // The editor pane for displaying the HTML file.
+        JEditorPane ep = new JEditorPane();
         ep.setEditable(false);
         ep.setContentType("text/html");
 
@@ -51,9 +47,10 @@ public class HTMLViewFrame extends JFrame {
         }
 
         ep.addHyperlinkListener(new Hyperactive());
-        scrollPane = new JScrollPane(ep);
+        // The scroll pane for this frame
+        JScrollPane scrollPane = new JScrollPane(ep);
         setBounds(30,44,750,460);
-        setDefaultCloseOperation(1);
+        setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         getContentPane().add(scrollPane, BorderLayout.CENTER);
     }
 }

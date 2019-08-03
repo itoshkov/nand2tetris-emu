@@ -37,7 +37,7 @@ public class BreakpointVariablesWindow extends JFrame {
     private JTextField valueTxt = new JTextField();
 
     // Creating the combo box of variables.
-    private JComboBox nameCombo = new JComboBox();
+    private JComboBox<String> nameCombo = new JComboBox<>();
 
     // Creating the ok and cancel buttons.
     private JButton okButton = new JButton();
@@ -47,8 +47,8 @@ public class BreakpointVariablesWindow extends JFrame {
     private ImageIcon okIcon = new ImageIcon(Utilities.imagesDir + "ok.gif");
     private ImageIcon cancelIcon = new ImageIcon(Utilities.imagesDir + "cancel.gif");
 
-    // A vector conatining the listeners to this component.
-    private Vector listeners;
+    // A vector containing the listeners to this component.
+    private Vector<BreakpointChangedListener> listeners;
 
     // The breakpoint which is being added or changed.
     private Breakpoint breakpoint;
@@ -58,7 +58,7 @@ public class BreakpointVariablesWindow extends JFrame {
      */
     public BreakpointVariablesWindow() {
         super("Breakpoint Variables");
-        listeners = new Vector();
+        listeners = new Vector<>();
         jbInit();
     }
 
@@ -70,30 +70,21 @@ public class BreakpointVariablesWindow extends JFrame {
     }
 
     /**
-     * Un-registers the given BreakpointChangedListener from being a listener to this component.
-     */
-    public void removeListener (BreakpointChangedListener listener) {
-        listeners.removeElement(listener);
-    }
-
-    /**
      * Notify all the BreakpointChangedListeners on actions taken in it, by creating a
      * BreakpointChangedEvent and sending it using the breakpointChanged method to all
      * of the listeners.
      */
     public void notifyListeners () {
         BreakpointChangedEvent event = new BreakpointChangedEvent(this,breakpoint);
-        for(int i=0;i<listeners.size();i++) {
-            ((BreakpointChangedListener)listeners.elementAt(i)).breakpointChanged(event);
-        }
+        listeners.forEach(l -> l.breakpointChanged(event));
     }
 
     /**
      * Sets the list of recognized variables with the given one.
      */
     public void setVariables(String[] newVars) {
-        for (int i=0;i<newVars.length;i++) {
-            nameCombo.addItem(newVars[i]);
+        for (String newVar : newVars) {
+            nameCombo.addItem(newVar);
         }
     }
 
@@ -138,25 +129,13 @@ public class BreakpointVariablesWindow extends JFrame {
         nameTxt.setBounds(new Rectangle(53, 10, 115, 19));
         valueTxt.setBounds(new Rectangle(53, 42, 115, 19));
         nameCombo.setBounds(new Rectangle(180, 10, 124, 19));
-        nameCombo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                nameCombo_actionPerformed(e);
-            }
-        });
+        nameCombo.addActionListener(this::nameCombo_actionPerformed);
         okButton.setToolTipText("Ok");
         okButton.setIcon(okIcon);
         okButton.setBounds(new Rectangle(61, 74, 63, 44));
-        okButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                okButton_actionPerformed(e);
-            }
-        });
+        okButton.addActionListener(this::okButton_actionPerformed);
         cancelButton.setBounds(new Rectangle(180, 74, 63, 44));
-        cancelButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                cancelButton_actionPerformed(e);
-            }
-        });
+        cancelButton.addActionListener(this::cancelButton_actionPerformed);
         cancelButton.setToolTipText("Cancel");
         cancelButton.setIcon(cancelIcon);
         this.getContentPane().add(nameLbl, null);

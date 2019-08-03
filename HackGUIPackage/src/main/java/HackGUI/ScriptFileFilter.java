@@ -29,20 +29,7 @@ public class ScriptFileFilter extends FileFilter {
      * Determines which files this filter should accept.
      */
     public boolean accept(File f) {
-        if (f.isDirectory()) {
-            return true;
-        }
-
-        String extension = getExtension(f);
-        if (extension != null) {
-            if (extension.equals("tst") )
-                    return true;
-            else {
-                return false;
-            }
-        }
-
-        return false;
+        return f.isDirectory() || "tst".equals(getExtension(f));
     }
 
     /*

@@ -63,7 +63,7 @@ public class PointedMemoryComponent extends MemoryComponent implements PointedMe
         hasFocus = false;
     }
 
-    // An inner class which implemets the cell renderer of the program table, giving
+    // An inner class which implements the cell renderer of the program table, giving
     // the feature of coloring the background of a specific cell.
     public class PointedMemoryTableCellRenderer extends MemoryTableCellRenderer {
 

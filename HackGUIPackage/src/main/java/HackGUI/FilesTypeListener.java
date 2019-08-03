@@ -27,7 +27,7 @@ public interface FilesTypeListener {
      * The event contains the three strings representing the names of the
      * files.
      */
-    public void filesNamesChanged(FilesTypeEvent event);
+    void filesNamesChanged(FilesTypeEvent event);
 }
 
 

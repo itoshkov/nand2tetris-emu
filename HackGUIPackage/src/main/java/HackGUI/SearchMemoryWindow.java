@@ -72,25 +72,13 @@ public class SearchMemoryWindow extends JFrame {
         instructionLbl.setBounds(new Rectangle(9, 22, 132, 23));
         this.getContentPane().setLayout(null);
         rowNumber.setBounds(new Rectangle(102, 25, 158, 18));
-        rowNumber.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                rowNumber_actionPerformed(e);
-            }
-        });
+        rowNumber.addActionListener(this::rowNumber_actionPerformed);
         okButton.setToolTipText("Ok");
         okButton.setIcon(okIcon);
         okButton.setBounds(new Rectangle(49, 60, 63, 44));
-        okButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                okButton_actionPerformed(e);
-            }
-        });
+        okButton.addActionListener(this::okButton_actionPerformed);
         cancelButton.setBounds(new Rectangle(176, 60, 63, 44));
-        cancelButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                cancelButton_actionPerformed(e);
-            }
-        });
+        cancelButton.addActionListener(this::cancelButton_actionPerformed);
         cancelButton.setToolTipText("Cancel");
         cancelButton.setIcon(cancelIcon);
         this.getContentPane().add(instructionLbl, null);
@@ -111,8 +99,7 @@ public class SearchMemoryWindow extends JFrame {
             table.setRowSelectionInterval(row,row);
             Utilities.tableCenterScroll(tableContainer, table, row);
             setVisible(false);
-        } catch (NumberFormatException nfe) {}
-          catch (IllegalArgumentException iae) {}
+        } catch (IllegalArgumentException nfe) {}
 
     }
 

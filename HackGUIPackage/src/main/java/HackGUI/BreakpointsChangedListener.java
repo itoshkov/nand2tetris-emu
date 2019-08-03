@@ -26,6 +26,5 @@ public interface BreakpointsChangedListener {
      * Called when there was a change in the breakpoints vector.
      * The event contains the vector of breakpoints.
      */
-    public void breakpointsChanged(BreakpointsChangedEvent event);
-
+    void breakpointsChanged(BreakpointsChangedEvent event);
 }

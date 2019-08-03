@@ -18,15 +18,16 @@
 package HackGUI;
 
 import Hack.ComputerParts.LabeledPointedMemoryGUI;
+
 import javax.swing.table.*;
 import javax.swing.*;
 import java.awt.*;
 
 /**
- * This class represents a memomy component with additional feature of another
+ * This class represents a memory component with additional feature of another
  * column representing the labels of this memory component.
  */
-public class LabeledMemoryComponent extends PointedMemoryComponent implements LabeledPointedMemoryGUI{
+public class LabeledMemoryComponent extends PointedMemoryComponent implements LabeledPointedMemoryGUI {
 
     // The array of labels of this memory.
     protected String[] labels;
@@ -38,8 +39,8 @@ public class LabeledMemoryComponent extends PointedMemoryComponent implements La
      * Constructs a new LabeledMemoryComponent.
      */
     public LabeledMemoryComponent() {
-        searchButton.setLocation(199,2);
-        clearButton.setLocation(168,2);
+        searchButton.setLocation(199, 2);
+        clearButton.setLocation(168, 2);
         memoryTable.setGridColor(Color.lightGray);
         labels = new String[0];
     }
@@ -85,7 +86,7 @@ public class LabeledMemoryComponent extends PointedMemoryComponent implements La
     }
 
     /**
-     * hides all existing falsh label.
+     * hides all existing flash label.
      */
     public void hideLabelFlash() {
         labelFlashIndex = -1;
@@ -121,17 +122,10 @@ public class LabeledMemoryComponent extends PointedMemoryComponent implements La
      * Determines the width of each column in the table.
      */
     protected void determineColumnWidth() {
-        TableColumn column = null;
         for (int i = 0; i < 2; i++) {
-            column = memoryTable.getColumnModel().getColumn(i);
-            if (i == 0) {
-                column.setMinWidth(1);
-                column.setPreferredWidth(1);
-            }
-            else if (i==1) {
-                column.setMinWidth(1);
-                column.setPreferredWidth(1);
-            }
+            TableColumn column = memoryTable.getColumnModel().getColumn(i);
+            column.setMinWidth(1);
+            column.setPreferredWidth(1);
         }
     }
 
@@ -149,12 +143,10 @@ public class LabeledMemoryComponent extends PointedMemoryComponent implements La
          * Returns the value at a specific row and column.
          */
         public Object getValueAt(int row, int col) {
-            String result ="";
-            if(col==0)
-                result = labels[row];
+            if (col == 0)
+                return labels[row];
             else
-                result = (String)super.getValueAt(row, col - 1);
-            return result;
+                return super.getValueAt(row, col - 1);
         }
 
         /**
@@ -170,7 +162,7 @@ public class LabeledMemoryComponent extends PointedMemoryComponent implements La
 
     }
 
-    // An inner class which implemets the cell renderer of the VMMemoryComponent.
+    // An inner class which implements the cell renderer of the VMMemoryComponent.
     public class LabeledPointedMemoryTableCellRenderer extends PointedMemoryTableCellRenderer {
 
         public void setRenderer(int row, int column) {
@@ -180,7 +172,7 @@ public class LabeledMemoryComponent extends PointedMemoryComponent implements La
                 setHorizontalAlignment(SwingConstants.RIGHT);
                 setFont(Utilities.boldValueFont);
                 setBackground(Color.lightGray);
-                if (row==labelFlashIndex)
+                if (row == labelFlashIndex)
                     setBackground(Color.orange);
             }
         }
