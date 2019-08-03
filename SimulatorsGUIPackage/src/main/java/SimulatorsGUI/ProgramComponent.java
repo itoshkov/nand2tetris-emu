@@ -34,16 +34,13 @@ import Hack.VirtualMachine.*;
 public class ProgramComponent extends JPanel implements VMProgramGUI {
 
     // A vector containing the listeners to this object.
-    private Vector listeners;
+    private Vector<ProgramEventListener> listeners;
 
     // A vector containing the error listeners to this object.
-    private Vector errorEventListeners;
+    private Vector<ErrorEventListener> errorEventListeners;
 
     // The table representing this program
     protected JTable programTable;
-
-    // The model of the table;
-    private ProgramTableModel model;
 
     // The HVMInstructions of this program.
     protected VMEmulatorInstruction[] instructions;
@@ -63,9 +60,6 @@ public class ProgramComponent extends JPanel implements VMProgramGUI {
 
     // The text field with the message (for example "Loading...").
     private JTextField messageTxt = new JTextField();
-
-    // The cell renderer of this table.
-    private ColoredTableCellRenderer coloredRenderer = new ColoredTableCellRenderer();
 
     // Creating the search button.
     private MouseOverJButton searchButton = new MouseOverJButton();
@@ -92,13 +86,16 @@ public class ProgramComponent extends JPanel implements VMProgramGUI {
      * Constructs a new ProgramComponent.
      */
     public ProgramComponent() {
-        listeners = new Vector();
-        errorEventListeners = new Vector();
+        listeners = new Vector<>();
+        errorEventListeners = new Vector<>();
         instructions = new VMEmulatorInstruction[0];
-        model = new ProgramTableModel();
+        // The model of the table;
+        ProgramTableModel model = new ProgramTableModel();
         programTable = new JTable(model);
+        // The cell renderer of this table.
+        ColoredTableCellRenderer coloredRenderer = new ColoredTableCellRenderer();
         programTable.setDefaultRenderer(programTable.getColumnClass(0), coloredRenderer);
-        searchWindow = new SearchProgramWindow(programTable, instructions);
+        searchWindow = new SearchProgramWindow(programTable);
 
         jbInit();
 
@@ -112,22 +109,13 @@ public class ProgramComponent extends JPanel implements VMProgramGUI {
     }
 
     /**
-     * Un-registers the given ProgramEventListener from being a listener to this GUI.
-     */
-    public void removeProgramListener(ProgramEventListener listener) {
-        listeners.removeElement(listener);
-    }
-
-    /**
      * Notifies all the ProgramEventListeners on a change in the program by creating a
      * ProgramEvent (with the new event type and program's directory name) and sending it
      * using the programChanged method to all the listeners.
      */
     public void notifyProgramListeners(byte eventType, String programFileName) {
         ProgramEvent event = new ProgramEvent(this, eventType, programFileName);
-        for(int i=0;i<listeners.size();i++) {
-            ((ProgramEventListener)listeners.elementAt(i)).programChanged(event);
-        }
+        listeners.forEach(l -> l.programChanged(event));
     }
 
     /**
@@ -138,21 +126,13 @@ public class ProgramComponent extends JPanel implements VMProgramGUI {
     }
 
     /**
-     * Un-registers the given ErrorEventListener from being a listener to this GUI.
-     */
-    public void removeErrorListener(ErrorEventListener listener) {
-        errorEventListeners.removeElement(listener);
-    }
-
-    /**
      * Notifies all the ErrorEventListener on an error in this gui by
      * creating an ErrorEvent (with the error message) and sending it
      * using the errorOccured method to all the listeners.
      */
     public void notifyErrorListeners(String errorMessage) {
         ErrorEvent event = new ErrorEvent(this, errorMessage);
-        for (int i=0; i<errorEventListeners.size(); i++)
-            ((ErrorEventListener)errorEventListeners.elementAt(i)).errorOccured(event);
+        errorEventListeners.forEach(l -> l.errorOccurred(event));
     }
 
     /**
@@ -236,16 +216,9 @@ public class ProgramComponent extends JPanel implements VMProgramGUI {
 
     // Determines the width of each column in the table.
     private void determineColumnWidth() {
-        TableColumn column = null;
-        for (int i = 0; i < 3; i++) {
-            column = programTable.getColumnModel().getColumn(i);
-            if (i == 0)
-                column.setPreferredWidth(30);
-            else if (i==1)
-                column.setPreferredWidth(40);
-            else if(i==2)
-                column.setPreferredWidth(100);
-        }
+        programTable.getColumnModel().getColumn(0).setPreferredWidth(30);
+        programTable.getColumnModel().getColumn(1).setPreferredWidth(40);
+        programTable.getColumnModel().getColumn(2).setPreferredWidth(100);
     }
 
     /**
@@ -284,13 +257,6 @@ public class ProgramComponent extends JPanel implements VMProgramGUI {
     }
 
     /**
-     * Sets the name label.
-     */
-    public void setNameLabel (String name) {
-        nameLbl.setText(name);
-    }
-
-    /**
      * Returns the width of the table.
      */
     public int getTableWidth() {
@@ -308,11 +274,7 @@ public class ProgramComponent extends JPanel implements VMProgramGUI {
         browseButton.setToolTipText("Load Program");
         browseButton.setIcon(browseIcon);
         browseButton.setBounds(new Rectangle(119, 2, 31, 24));
-        browseButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                browseButton_actionPerformed(e);
-            }
-        });
+        browseButton.addActionListener(this::browseButton_actionPerformed);
         messageTxt.setBackground(SystemColor.info);
         messageTxt.setEnabled(false);
         messageTxt.setFont(Utilities.labelsFont);
@@ -325,22 +287,14 @@ public class ProgramComponent extends JPanel implements VMProgramGUI {
         searchButton.setToolTipText("Search");
         searchButton.setIcon(searchIcon);
         searchButton.setBounds(new Rectangle(188, 2, 31, 24));
-        searchButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                searchButton_actionPerformed(e);
-            }
-        });
+        searchButton.addActionListener(this::searchButton_actionPerformed);
         this.setForeground(Color.lightGray);
         this.setLayout(null);
         nameLbl.setText("Program");
         nameLbl.setBounds(new Rectangle(5, 5, 73, 20));
         nameLbl.setFont(Utilities.labelsFont);
 
-        clearButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                clearButton_actionPerformed(e);
-            }
-        });
+        clearButton.addActionListener(this::clearButton_actionPerformed);
         clearButton.setBounds(new Rectangle(154, 2, 31, 24));
         clearButton.setIcon(clearIcon);
         clearButton.setToolTipText("Clear");
@@ -391,7 +345,7 @@ public class ProgramComponent extends JPanel implements VMProgramGUI {
                 case 0:
                     short index = instructions[row].getIndexInFunction();
                     if (index >= 0)
-                        return new Short(index);
+                        return index;
                     else
                         return "";
                 case 1:

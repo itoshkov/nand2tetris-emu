@@ -86,20 +86,28 @@ public class ScriptCondition {
                 input.advance();
             }
 
-            if (op.equals("="))
-                comparisonOperator = EQUAL;
-            else if (op.equals(">"))
-                comparisonOperator = GREATER;
-            else if (op.equals(">="))
-                comparisonOperator = GREATER_EQUAL;
-            else if (op.equals("<"))
-                comparisonOperator = LESS;
-            else if (op.equals("<="))
-                comparisonOperator = LESS_EQUAL;
-            else if (op.equals("<>"))
-                comparisonOperator = NOT_EQUAL;
-            else
-                throw new ScriptException("Illegal comparison operator: " + op);
+            switch (op) {
+                case "=":
+                    comparisonOperator = EQUAL;
+                    break;
+                case ">":
+                    comparisonOperator = GREATER;
+                    break;
+                case ">=":
+                    comparisonOperator = GREATER_EQUAL;
+                    break;
+                case "<":
+                    comparisonOperator = LESS;
+                    break;
+                case "<=":
+                    comparisonOperator = LESS_EQUAL;
+                    break;
+                case "<>":
+                    comparisonOperator = NOT_EQUAL;
+                    break;
+                default:
+                    throw new ScriptException("Illegal comparison operator: " + op);
+            }
         }
         else
             throw new ScriptException("Comparison operator expected");

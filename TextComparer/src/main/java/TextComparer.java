@@ -101,7 +101,6 @@ public class TextComparer {
     // Removes the spaces from the given string.
     private static String removeSpaces(String sourceLine) {
         StringBuffer line;
-        int k;
         int i=0;
         int j=0 ;
         line = new StringBuffer(sourceLine);

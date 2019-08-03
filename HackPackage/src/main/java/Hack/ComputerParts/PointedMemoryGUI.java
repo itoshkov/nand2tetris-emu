@@ -26,5 +26,5 @@ public interface PointedMemoryGUI extends MemoryGUI {
     /**
      * Sets the pointer with the given pointer address.
      */
-    public void setPointer(int pointerAddress);
+    void setPointer(int pointerAddress);
 }

@@ -29,71 +29,71 @@ public interface HardwareSimulatorGUI extends HackSimulatorGUI {
     /**
      * Returns the Gates panel.
      */
-    public GatesPanelGUI getGatesPanel();
+    GatesPanelGUI getGatesPanel();
 
     /**
      * Returns the HDLView.
      */
-    public TextFileGUI getHDLView();
+    TextFileGUI getHDLView();
 
     /**
      * Returns the GateInfo component.
      */
-    public GateInfoGUI getGateInfo();
+    GateInfoGUI getGateInfo();
 
     /**
      * Returns the input pins table.
      */
-    public PinsGUI getInputPins();
+    PinsGUI getInputPins();
 
     /**
      * Returns the output pins table.
      */
-    public PinsGUI getOutputPins();
+    PinsGUI getOutputPins();
 
     /**
      * Returns the internal pins table.
      */
-    public PinsGUI getInternalPins();
+    PinsGUI getInternalPins();
 
     /**
      * Returns the part pins table.
      */
-    public PartPinsGUI getPartPins();
+    PartPinsGUI getPartPins();
 
     /**
      * Returns the parts table.
      */
-    public PartsGUI getParts();
+    PartsGUI getParts();
 
     /**
      * Displays the Internal pins table.
      */
-    public void showInternalPins();
+    void showInternalPins();
 
     /**
      * Hides the Internal pins table.
      */
-    public void hideInternalPins();
+    void hideInternalPins();
 
     /**
      * Displays the Part pins table.
      */
-    public void showPartPins();
+    void showPartPins();
 
     /**
      * Hides the Part pins table.
      */
-    public void hidePartPins();
+    void hidePartPins();
 
     /**
      * Displays the Parts table.
      */
-    public void showParts();
+    void showParts();
 
     /**
      * Hides the Parts table.
      */
-    public void hideParts();
+    void hideParts();
 
 }

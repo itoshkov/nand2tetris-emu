@@ -63,12 +63,12 @@ public abstract class GateClass {
     protected Hashtable<String, Integer> namesToNumbers;
 
     // a table that maps a gate name with its GateClass
-    protected static Hashtable<String, GateClass> GateClasses = new Hashtable<String, GateClass>();
+    protected static Hashtable<String, GateClass> GateClasses = new Hashtable<>();
 
     // Constructs a new GateCLass (public access through the getGateClass method)
     protected GateClass(String gateName, PinInfo[] inputPinsInfo, PinInfo[] outputPinsInfo) {
-        namesToTypes = new Hashtable<String, Byte>();
-        namesToNumbers = new Hashtable<String, Integer>();
+        namesToTypes = new Hashtable<>();
+        namesToNumbers = new Hashtable<>();
 
         this.name = gateName;
 
@@ -199,7 +199,7 @@ public abstract class GateClass {
     // Returns an array of pin names read from the input (names may contain width specification).
     protected static String[] readPinNames(HDLTokenizer input)
             throws HDLException {
-        Vector<String> list = new Vector<String>();
+        Vector<String> list = new Vector<>();
         boolean exit = false;
         input.advance();
 

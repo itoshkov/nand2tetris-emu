@@ -93,8 +93,6 @@ public class Jack_Sys extends JackOSClass {
                 errorDescription = "Maximum length must be non-negative";
                 break;
             case STRING_CHARAT_ILLEGAL_INDEX:
-                errorDescription = "String index out of bounds";
-                break;
             case STRING_SETCHARAT_ILLEGAL_INDEX:
                 errorDescription = "String index out of bounds";
                 break;

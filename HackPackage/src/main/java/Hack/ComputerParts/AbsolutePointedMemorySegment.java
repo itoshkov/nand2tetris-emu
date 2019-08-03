@@ -31,15 +31,6 @@ public class AbsolutePointedMemorySegment extends PointedMemorySegment {
         super(mainMemory, gui);
     }
 
-    /**
-     * Constructs a new AbsolutePointedMemorySegment with the given main memory, GUI and
-     * the legal values range.
-     */
-    public AbsolutePointedMemorySegment(Memory mainMemory, PointedMemorySegmentGUI gui,
-                                 short minValue, short maxValue) {
-        super(mainMemory, gui, minValue, maxValue);
-    }
-
     public void setValueAt(int index, short value, boolean quiet) {
         super.setValueAt(index - startAddress, value, quiet);
     }

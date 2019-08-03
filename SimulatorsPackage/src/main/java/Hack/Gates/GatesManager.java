@@ -41,7 +41,7 @@ public class GatesManager {
     private GateErrorEventListener errorHandler;
 
     // The list of built in chips with gui
-    private Vector chips;
+    private Vector<BuiltInGateWithGUI> chips;
 
     // When true, BuiltIn chips with gui should create and update their gui.
     // otherwise, their gui shouldn't be created.
@@ -51,7 +51,7 @@ public class GatesManager {
      * Constructs a new GatesManager.
      */
     private GatesManager() {
-        chips = new Vector();
+        chips = new Vector<>();
         updateChipsGUI = true;
     }
 
@@ -80,7 +80,7 @@ public class GatesManager {
     }
 
     /**
-     * Returnss the BuiltIn HDL dir.
+     * Returns the BuiltIn HDL dir.
      */
     public File getBuiltInDir() {
         return builtInDir;
@@ -115,23 +115,10 @@ public class GatesManager {
      }
 
     /**
-     * Removes the given chip with gui from the chips' list and from the gates panel.
-     */
-     public void removeChip(BuiltInGateWithGUI chip) {
-        chips.remove(chip);
-        chip.removeErrorListener(errorHandler);
-
-        if (gatesPanel != null)
-            gatesPanel.removeGateComponent(chip.getGUIComponent());
-     }
-
-     /**
       * Remove all the chips from the list and from the gates panel.
       */
      public void removeAllChips() {
-        for (int i = 0; i < chips.size(); i++)
-            ((BuiltInGateWithGUI)chips.elementAt(i)).removeErrorListener(errorHandler);
-
+        chips.forEach(l -> l.removeErrorListener(errorHandler));
         chips.removeAllElements();
 
         if (gatesPanel != null)
@@ -143,13 +130,6 @@ public class GatesManager {
      */
     public void setGatesPanel(GatesPanelGUI gatesPanel) {
         this.gatesPanel = gatesPanel;
-    }
-
-    /**
-     * Returns the error handler.
-     */
-    public GateErrorEventListener getErrorHandler() {
-        return errorHandler;
     }
 
     /**

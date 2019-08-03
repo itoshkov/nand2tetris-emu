@@ -17,7 +17,6 @@
 
 package HackGUI;
 
-import HackGUI.*;
 import Hack.ComputerParts.*;
 import javax.swing.*;
 import javax.swing.table.*;
@@ -114,16 +113,6 @@ public class TextFileComponent extends JPanel implements TextFileGUI {
         repaint();
     }
 
-    public void addEmphasis(int index) {
-        emphasizedLines.add(new Integer(index));
-        repaint();
-    }
-
-    public void removeEmphasis(int index) {
-        emphasizedLines.remove(new Integer(index));
-        repaint();
-    }
-
     public String getLineAt(int index) {
         return (String)rowsVector.elementAt(index);
     }
@@ -145,10 +134,6 @@ public class TextFileComponent extends JPanel implements TextFileGUI {
     }
 
 
-    public void removeTextFileListener(TextFileEventListener listener) {
-        listeners.removeElement(listener);
-    }
-
     public void notifyTextFileListeners(String row, int rowNum) {
         TextFileEvent event = new TextFileEvent(this,row,rowNum);
         for (int i=0;i<listeners.size();i++) {
@@ -161,11 +146,6 @@ public class TextFileComponent extends JPanel implements TextFileGUI {
         textFileTable.revalidate();
         repaint();
         addHighlight(rowsVector.size()-1, false);
-    }
-
-    public void setLineAt(int index, String line) {
-        rowsVector.setElementAt(line, index);
-        addHighlight(index, false);
     }
 
     public void setContents (String[] lines) {

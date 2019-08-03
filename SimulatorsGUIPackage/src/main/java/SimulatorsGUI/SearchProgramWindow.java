@@ -52,7 +52,7 @@ public class SearchProgramWindow extends JFrame {
     /**
      * Constructs a new SearchWindow.
      */
-    public SearchProgramWindow(JTable table, HVMInstruction[] instructions) {
+    public SearchProgramWindow(JTable table) {
         super("Search");
         this.table = table;
 
@@ -74,7 +74,7 @@ public class SearchProgramWindow extends JFrame {
         int rowIndex = -1;
         String searchedStr = instruction.getText();
         StringTokenizer tokenizer = new StringTokenizer(searchedStr);
-        String firstToken= "", secondToken="", thirdToken="";
+        String firstToken, secondToken, thirdToken;
         int numOfTokens = tokenizer.countTokens();
         switch(numOfTokens) {
             case 0:
@@ -137,25 +137,13 @@ public class SearchProgramWindow extends JFrame {
         instructionLbl.setBounds(new Rectangle(9, 22, 79, 23));
         this.getContentPane().setLayout(null);
         instruction.setBounds(new Rectangle(82, 25, 220, 18));
-        instruction.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                instruction_actionPerformed(e);
-            }
-        });
+        instruction.addActionListener(this::instruction_actionPerformed);
         okButton.setToolTipText("OK");
         okButton.setIcon(okIcon);
         okButton.setBounds(new Rectangle(66, 68, 63, 44));
-        okButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                okButton_actionPerformed(e);
-            }
-        });
+        okButton.addActionListener(this::okButton_actionPerformed);
         cancelButton.setBounds(new Rectangle(190, 68, 63, 44));
-        cancelButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                cancelButton_actionPerformed(e);
-            }
-        });
+        cancelButton.addActionListener(this::cancelButton_actionPerformed);
         cancelButton.setToolTipText("CANCEL");
         cancelButton.setIcon(cancelIcon);
         this.getContentPane().add(instruction, null);
@@ -179,8 +167,7 @@ public class SearchProgramWindow extends JFrame {
                 table.setRowSelectionInterval(row,row);
                 setVisible(false);
             }
-        } catch (NumberFormatException nfe) {}
-          catch (IllegalArgumentException iae) {}
+        } catch (IllegalArgumentException nfe) {}
     }
 
     /**

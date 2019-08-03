@@ -34,50 +34,44 @@ public interface VMProgramGUI extends InteractiveComputerPartGUI {
     /**
      * Registers the given ProgramEventListener as a listener to this GUI.
      */
-    public void addProgramListener(ProgramEventListener listener);
-
-    /**
-     * Un-registers the given ProgramEventListener from being a listener to this GUI.
-     */
-    public void removeProgramListener(ProgramEventListener listener);
+    void addProgramListener(ProgramEventListener listener);
 
     /**
      * Notifies all the ProgramEventListeners on a change in the program by creating
      * a ProgramEvent (with the new event type and program's file/directory name) and sending it
      * using the programChanged method to all the listeners.
      */
-    public void notifyProgramListeners(byte eventType, String programFileName);
+    void notifyProgramListeners(byte eventType, String programFileName);
 
     /**
      * Sets the contents of the gui with the first instructionsLength
 	 * instructions from the given array of instructions.
      */
-    public void setContents(VMEmulatorInstruction[] instructions,
-							int instructionsLength);
+    void setContents(VMEmulatorInstruction[] instructions, int instructionsLength);
 
     /**
      * Sets the current instruction with the given instruction index.
      */
-    public void setCurrentInstruction(int instructionIndex);
+    void setCurrentInstruction(int instructionIndex);
 
     /**
      * Displays the given message.
      */
-    public void showMessage(String message);
+    void showMessage(String message);
 
     /**
      * Hides the displayed message.
      */
-    public void hideMessage();
+    void hideMessage();
 	
 	/**
 	 * Displays a confirmation window asking the user permission to
 	 * use built-in vm functions
 	 */
-	public boolean confirmBuiltInAccess();
+    boolean confirmBuiltInAccess();
 
 	/**
 	 * Displays a notification window with the given message.
 	 */
-	public void notify(String message);
+    void notify(String message);
 }

@@ -26,5 +26,5 @@ public interface TextFileEventListener {
      * Called when a new row is selected in a Text File.
      * The event contains the source object and the selected row String.
      */
-    public void rowSelected(TextFileEvent event);
+    void rowSelected(TextFileEvent event);
 }

@@ -106,7 +106,7 @@ public class CPU {
         segments[HVMInstructionSet.THAT_SEGMENT_CODE] = thatSegment;
         segments[HVMInstructionSet.TEMP_SEGMENT_CODE] = tempSegment;
 
-        stackFrames = new Vector<Integer>();
+        stackFrames = new Vector<>();
 
         final boolean useBuiltIns = "yes".equalsIgnoreCase(System.getenv("N2T_VM_USE_BUILTINS"));
         if (useBuiltIns || program.getGUI() != null)
@@ -216,8 +216,8 @@ public class CPU {
             case HVMInstructionSet.ADD_CODE:
                 add();
                 break;
-            case HVMInstructionSet.SUBSTRACT_CODE:
-                substract();
+            case HVMInstructionSet.SUBTRACT_CODE:
+                subtract();
                 break;
             case HVMInstructionSet.NEGATE_CODE:
                 negate();
@@ -281,9 +281,9 @@ public class CPU {
     }
 
     /**
-     * 2's complement integer substraction (binary operation)
+     * 2's complement integer subtraction (binary operation)
      */
-    public void substract() throws ProgramException {
+    public void subtract() throws ProgramException {
         calculate(2, Calculator.SUBTRACT);
     }
 
@@ -295,7 +295,7 @@ public class CPU {
     }
 
     /**
-     * Equalaty operation (binary operation). Returns(to the stack)
+     * Equality operation (binary operation). Returns(to the stack)
      * 0xFFFF as true,0x0000 as false
      */
     public void equal() throws ProgramException {
@@ -513,7 +513,7 @@ public class CPU {
 											  Definitions.VAR_END_ADDRESS - 1,
 											  true);
 			}
-			program.setPC((short)(returnAddress-1)); // set previousPC currectly
+			program.setPC((short)(returnAddress-1)); // set previousPC currently
 			program.setPC(returnAddress); // pc = *sp
 		} else {
             error("Illegal return address");
@@ -576,7 +576,7 @@ public class CPU {
 			builtInFunctionsRunner.callBuiltInFunction(functionName, params);
 		} else if (address >= 0 || address < program.getSize()) {
 			program.setPC(address);
-			program.setPC(address); // make sure previouspc isn't pc-1
+			program.setPC(address); // make sure previous pc isn't pc-1
 									// which might happen if the calling
 									// function called this function in the
 									// last line before the "return" and
@@ -644,6 +644,7 @@ public class CPU {
     }
 
     // Push a value from the calculator at the given index into the appropriate stack.
+    @SuppressWarnings("SameParameterValue")
     private void pushFromCalculator(int stackID, int index) throws ProgramException {
         short sp = getSP();
         bus.send(calculator, index,
@@ -655,6 +656,7 @@ public class CPU {
 
     // sends a value from the given segment at the the given index to the appropriate stack (at sp)
     // and increments sp.
+    @SuppressWarnings("SameParameterValue")
     private void pushFromSegment(int stackID, short segmentCode, int index)
      throws ProgramException {
         short sp = getSP();
@@ -670,6 +672,7 @@ public class CPU {
 
     // sends a value from the appropriate stack (at sp-1) to the given segment at the given index
     // and increments sp.
+    @SuppressWarnings("SameParameterValue")
     private void popToSegment(int stackID, short segmentCode, int index) throws ProgramException {
         short newSP = (short)(getSP() - 1);
         MemorySegment segment = (segmentCode == HVMInstructionSet.STATIC_SEGMENT_CODE) ?
@@ -685,6 +688,7 @@ public class CPU {
 
     // Pops the a value from the appropriate stack, decrements sp, and returns
 	// the popped value.
+    @SuppressWarnings("SameParameterValue")
     private short popValue(int stackID) throws ProgramException {
         short newSP = (short)(getSP() - 1);
 		short value;
@@ -713,6 +717,7 @@ public class CPU {
 
     // sends a value from the appropriate stack (at sp-1) to the this pointer
     // and increments sp.
+    @SuppressWarnings("SameParameterValue")
     private void popToThisPointer(int stackID) throws ProgramException {
         short value = ram.getValueAt(getSP() - 1);
         if ((value < Definitions.HEAP_START_ADDRESS || value > Definitions.HEAP_END_ADDRESS)
@@ -725,6 +730,7 @@ public class CPU {
 
     // sends a value from the appropriate stack (at sp-1) to the that pointer
     // and increments sp.
+    @SuppressWarnings("SameParameterValue")
     private void popToThatPointer(int stackID) throws ProgramException {
         short value = ram.getValueAt(getSP() - 1);
         if (!((value >= Definitions.HEAP_START_ADDRESS && value <= Definitions.HEAP_END_ADDRESS) ||
@@ -738,6 +744,7 @@ public class CPU {
 
     // sends a value from the appropriate stack (at sp-1) to the calculator at the given index
     // and increments sp.
+    @SuppressWarnings("SameParameterValue")
     private void popToCalculator(int stackID, int index) throws ProgramException {
         short newSP = (short)(getSP() - 1);
         bus.send((stackID == MAIN_STACK ? stackSegment : workingStackSegment), newSP,

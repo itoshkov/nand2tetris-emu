@@ -27,25 +27,25 @@ public interface CalculatorGUI extends ValueComputerPartGUI {
     /**
      * Sets the operator of the calculator with the given operator.
      */
-    public void setOperator(char operator);
+    void setOperator(char operator);
 
     /**
      * Displays the calculator GUI.
      */
-    public void showCalculator();
+    void showCalculator();
 
     /**
      * Hides the calculator GUI.
      */
-    public void hideCalculator();
+    void hideCalculator();
 
     /**
      * Displays the left input.
      */
-    public void showLeftInput();
+    void showLeftInput();
 
     /**
      * Hides the left input.
      */
-    public void hideLeftInput();
+    void hideLeftInput();
 }

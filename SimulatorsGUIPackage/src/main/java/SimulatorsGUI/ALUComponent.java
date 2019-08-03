@@ -74,9 +74,6 @@ public class ALUComponent extends JPanel implements ALUGUI{
     // The label with the string "ALU".
      private JLabel nameLbl = new JLabel();
 
-    // The border of the alu's command.
-    private Border commandBorder;
-
     // creating the labels of the inputs and outputs.
     private JLabel location0Lbl = new JLabel();
     private JLabel location1Lbl = new JLabel();
@@ -104,28 +101,6 @@ public class ALUComponent extends JPanel implements ALUGUI{
         nullValue = value;
         this.hideNullValue = hideNullValue;
     }
-
-    /**
-     * Translates a given short to a string according to the current format.
-     */
-    protected String translateValueToString(short value) {
-        if(hideNullValue) {
-            if(value == nullValue)
-                return "";
-            else
-                return Format.translateValueToString(value, dataFormat);
-        }
-        else return Format.translateValueToString(value, dataFormat);
-
-    }
-
-    /**
-     * Enabling and diabling user inputs. those methods aren't implemented
-     * because in the ALU the text fields are always disabled.
-     */
-    public void disableUserInput() {}
-    public void enableUserInput() {}
-
 
     /**
      * Flashes the ALU command.
@@ -300,8 +275,8 @@ public class ALUComponent extends JPanel implements ALUGUI{
         g2.setPaint(Color.black);
 
         // fill and stroke GeneralPath
-        int x4Points[] = {START_ALU_X, FINISH_ALU_X, FINISH_ALU_X, START_ALU_X};
-        int y4Points[] = {23, 56, 83, 116};
+        int[] x4Points = {START_ALU_X, FINISH_ALU_X, FINISH_ALU_X, START_ALU_X};
+        int[] y4Points = {23, 56, 83, 116};
 
         GeneralPath filledPolygon = new GeneralPath(GeneralPath.WIND_EVEN_ODD,x4Points.length);
         filledPolygon.moveTo(x4Points[0],y4Points[0]);
@@ -309,7 +284,7 @@ public class ALUComponent extends JPanel implements ALUGUI{
         for (int index = 1; index < x4Points.length; index++) 	{
             filledPolygon.lineTo(x4Points[index], y4Points[index]);
 
-        };
+        }
         filledPolygon.closePath();
         g2.setPaint(aluColor);
         g2.fill(filledPolygon);
@@ -338,7 +313,8 @@ public class ALUComponent extends JPanel implements ALUGUI{
     // Initializes this component.
     private void jbInit()  {
         setOpaque(false);
-        commandBorder = BorderFactory.createLineBorder(Color.black,1);
+        // The border of the alu's command.
+        Border commandBorder = BorderFactory.createLineBorder(Color.black, 1);
         this.setLayout(null);
         location0.setForeground(Color.black);
         location0.setDisabledTextColor(Color.black);

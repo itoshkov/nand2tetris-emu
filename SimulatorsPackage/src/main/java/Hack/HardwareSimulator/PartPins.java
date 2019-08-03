@@ -31,7 +31,7 @@ public class PartPins extends ValueComputerPart {
     private PartPinsGUI gui;
 
     // The part pins.
-    private Vector partPins;
+    private Vector<PartPinInfo> partPins;
 
     // The current gate
     private Gate gate;
@@ -40,7 +40,7 @@ public class PartPins extends ValueComputerPart {
     private GateClass partGateClass;
 
     // mapping from the pins' nodes to their gui adapters.
-    private Hashtable nodes;
+    private Hashtable<Node, Node> nodes;
 
     /**
      * Constructs a new Part Pins with the given gui.
@@ -48,8 +48,8 @@ public class PartPins extends ValueComputerPart {
     public PartPins(PartPinsGUI gui) {
         super(gui != null);
         this.gui = gui;
-        partPins = new Vector();
-        nodes = new Hashtable();
+        partPins = new Vector<>();
+        nodes = new Hashtable<>();
         clearGate();
     }
 
@@ -65,10 +65,10 @@ public class PartPins extends ValueComputerPart {
         partGateClass = null;
 
         // remove all node gui adapters
-        Enumeration en = nodes.keys();
+        Enumeration<Node> en = nodes.keys();
         while (en.hasMoreElements()) {
-            Node node = (Node)en.nextElement();
-            Node nodeAdapter = (Node)nodes.get(node);
+            Node node = en.nextElement();
+            Node nodeAdapter = nodes.get(node);
             node.removeListener(nodeAdapter);
         }
 
@@ -97,9 +97,9 @@ public class PartPins extends ValueComputerPart {
             String cleanGatePinName = gatePinName;
 
             // find names without sub bus specifications
-            if (partPinName.indexOf("[") >= 0)
+            if (partPinName.contains("["))
                 cleanPartPinName = partPinName.substring(0, partPinName.indexOf("["));
-            if (gatePinName.indexOf("[") >= 0)
+            if (gatePinName.contains("["))
                 cleanGatePinName = gatePinName.substring(0, gatePinName.indexOf("["));
 
             // prepare part pin info
@@ -142,7 +142,7 @@ public class PartPins extends ValueComputerPart {
             }
 
             // create node adapter for notifying gui on value changes
-            Node nodeAdapter = null;
+            Node nodeAdapter;
             if (info.gatePinSubBus == null)
                 nodeAdapter = new NodePartPinsAdapter(this, partPins.size());
             else
@@ -163,7 +163,7 @@ public class PartPins extends ValueComputerPart {
     }
 
     public short getValueAt(int index) {
-        return ((PartPinInfo)partPins.elementAt(index)).value;
+        return partPins.elementAt(index).value;
     }
 
     public void refreshGUI() {

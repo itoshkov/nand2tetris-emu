@@ -20,8 +20,7 @@ package Hack.Controller;
 /**
  * An exception for errors in command definitions.
  */
-public class CommandException extends Exception
-{
+public class CommandException extends Exception {
     /**
      * Constructs a new CommandException with the given message and command.
      */
@@ -30,10 +29,6 @@ public class CommandException extends Exception
     }
 
     private static String commandString(String[] command) {
-        StringBuffer message = new StringBuffer();
-        for (int i = 0; i < command.length; i++)
-            message.append(command[i] + " ");
-
-        return message.toString();
+        return String.join(" ", command);
     }
 }

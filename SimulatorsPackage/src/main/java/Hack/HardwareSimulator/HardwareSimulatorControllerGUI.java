@@ -27,21 +27,20 @@ public interface HardwareSimulatorControllerGUI extends ControllerGUI {
     /**
      * Enables the TickTock button.
      */
-    public void enableTickTock();
+    void enableTickTock();
 
     /**
      * Disables the TickTock button.
      */
-    public void disableTickTock();
+    void disableTickTock();
 
     /**
      * Enables the Eval button.
      */
-    public void enableEval();
+    void enableEval();
 
     /**
      * Disables the Eval button.
      */
-    public void disableEval();
-
+    void disableEval();
 }

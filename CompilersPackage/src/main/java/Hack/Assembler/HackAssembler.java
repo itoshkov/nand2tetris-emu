@@ -35,9 +35,9 @@ public class HackAssembler extends HackTranslator {
     private String comparisonFileName;
 
     // the symbol table
-    private Hashtable symbolTable;
+    private Hashtable<String, Short> symbolTable;
 
-    // The comarison program array
+    // The comparison program array
     private short[] comparisonProgram;
 
     // The HackAssembler translator;
@@ -57,20 +57,6 @@ public class HackAssembler extends HackTranslator {
     public HackAssembler(String fileName, int size, short nullValue, boolean save)
      throws HackTranslatorException {
         super(fileName, size, nullValue, save);
-    }
-
-    /**
-     * Constructs a new HackAssembler with the size of the program memory.
-     * The given null value will be used to fill the program initially.
-     * A non null sourceFileName specifies a source file to be loaded.
-     * The gui is assumed to be not null.
-     */
-    public HackAssembler(HackAssemblerGUI gui, int size, short nullValue, String sourceFileName)
-     throws HackTranslatorException {
-        super(gui, size, nullValue, sourceFileName);
-
-        gui.enableLoadComparison();
-        gui.hideComparison();
     }
 
     protected String getSourceExtension() {
@@ -166,7 +152,7 @@ public class HackAssembler extends HackTranslator {
 
                         input.ensureEnd();
 
-                        symbolTable.put(label,new Short(pc));
+                        symbolTable.put(label, pc);
                     }
                     else if (input.contains("["))
                         pc += 2;
@@ -181,7 +167,7 @@ public class HackAssembler extends HackTranslator {
         }
     }
 
-    protected void initCompilation() throws HackTranslatorException {
+    protected void initCompilation() {
         if (gui != null && (inFullCompilation || !compilationStarted))
             ((HackAssemblerGUI)gui).disableLoadComparison();
     }
@@ -191,7 +177,7 @@ public class HackAssembler extends HackTranslator {
             super.successfulCompilation();
         else {
             if (gui != null)
-                ((HackAssemblerGUI)gui).displayMessage("File compilation & comparison succeeded", false);
+                gui.displayMessage("File compilation & comparison succeeded", false);
         }
     }
 
@@ -297,9 +283,9 @@ public class HackAssembler extends HackTranslator {
                     }
 
                     if (!numeric) {
-                        Short address = (Short)symbolTable.get(label);
+                        Short address = symbolTable.get(label);
                         if (address == null) {
-                            address = new Short(varIndex++);
+                            address = varIndex++;
                             symbolTable.put(label, address);
                         }
 

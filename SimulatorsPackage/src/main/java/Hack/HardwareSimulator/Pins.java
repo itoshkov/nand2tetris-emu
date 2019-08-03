@@ -49,7 +49,7 @@ public class Pins extends InteractiveValueComputerPart {
         pins = new PinInfo[0];
         nodes = new Node[0];
 
-        if (hasGUI) {
+        if (gui != null) {
             gui.addListener(this);
             gui.addErrorListener(this);
             gui.setContents(pins);
@@ -64,20 +64,13 @@ public class Pins extends InteractiveValueComputerPart {
         pins = new PinInfo[nodes.length];
         for (int i = 0; i < pins.length; i++) {
             pins[i] = gateClass.getPinInfo(type, i);
-            pins[i].value = (short)nodes[i].get();
+            pins[i].value = nodes[i].get();
 
             nodes[i].addListener(new NodePinsAdapter(this, i));
         }
 
         if (hasGUI)
             gui.setContents(pins);
-    }
-
-    /**
-     * Returns the Info for the pin at the given index.
-     */
-    public PinInfo getPinInfo(int index) {
-        return pins[index];
     }
 
     public ComputerPartGUI getGUI() {
@@ -89,29 +82,22 @@ public class Pins extends InteractiveValueComputerPart {
     }
 
     public short getValueAt(int index) {
-        return (short)nodes[index].get();
+        return nodes[index].get();
     }
 
     public void refreshGUI() {
         if (displayChanges) {
             for (int i = 0; i < pins.length; i++)
-                pins[i].value = (short)nodes[i].get();
+                pins[i].value = nodes[i].get();
             gui.setContents(pins);
         }
     }
 
     public void reset() {
         gui.reset();
-        for (int i = 0; i < nodes.length; i++)
-            nodes[i].set((short)0);
+        for (Node node : nodes)
+            node.set((short) 0);
         refreshGUI();
-    }
-
-    /**
-     * Returns the number of pins.
-     */
-    public int getCount() {
-        return nodes.length;
     }
 
     /**
@@ -135,7 +121,7 @@ public class Pins extends InteractiveValueComputerPart {
             setValueAt(index, value, true);
         else {
             notifyErrorListeners("Value doesn't match the pin's width");
-            quietUpdateGUI(index, (short)nodes[event.getIndex()].get());
+            quietUpdateGUI(index, nodes[event.getIndex()].get());
         }
     }
 }

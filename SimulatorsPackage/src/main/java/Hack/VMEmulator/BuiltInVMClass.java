@@ -27,8 +27,7 @@ import Hack.Utilities.Definitions;
  * should be static.
  */
 public abstract class BuiltInVMClass {
-	private static Hashtable<Thread, BuiltInFunctionsRunner> builtInFunctionsRunnerByThread =
-			new Hashtable<Thread, BuiltInFunctionsRunner>();
+	private static Hashtable<Thread, BuiltInFunctionsRunner> builtInFunctionsRunnerByThread = new Hashtable<>();
 
 	/* Some definitions regarding the memory. */
     public static final short SCREEN_START_ADDRESS = Definitions.SCREEN_START_ADDRESS;

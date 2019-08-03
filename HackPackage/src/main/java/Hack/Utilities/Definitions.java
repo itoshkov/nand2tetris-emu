@@ -124,11 +124,6 @@ public class Definitions {
      */
     public static final short TEMP_START_ADDRESS = 5;
 
-    /**
-     * The end address of the temp memory segment
-     */
-    public static final short TEMP_END_ADDRESS = 12;
-
 
     // pointers addresses
 
@@ -239,11 +234,6 @@ public class Definitions {
      * The address of the R15 register
      */
     public static final short R15_ADDRESS = 15;
-
-    /**
-     * Symbolizes an unknown address
-     */
-    public static final short UNKNOWN_ADDRESS = -1;
 
 
     // Assembly symbols
@@ -434,15 +424,15 @@ public class Definitions {
         if (zero1)
             input1 = 0;
         if (negate0)
-            input0 = (short)(~input0);
+            input0 = (short) (~input0);
         if (negate1)
-            input1 = (short)(~input1);
+            input1 = (short) (~input1);
         if (ADDorAND)
-            result = (short)(input0 + input1);
+            result = (short) (input0 + input1);
         else
-            result = (short)(input0 & input1);
+            result = (short) (input0 & input1);
         if (negateOutput)
-            result = (short)(~result);
+            result = (short) (~result);
 
         return result;
     }
@@ -450,8 +440,9 @@ public class Definitions {
     /**
      * Returns the translation table from pointer names to addresses.
      */
-    public Hashtable getAddressesTable() {
-        return (Hashtable)addresses.clone();
+    @SuppressWarnings("unchecked")
+    public Hashtable<String, Short> getAddressesTable() {
+        return (Hashtable<String, Short>) addresses.clone();
     }
 
     /**
@@ -459,8 +450,8 @@ public class Definitions {
      */
     public short getKeyCode(KeyEvent e) {
         short key;
-        int letter = (int)e.getKeyChar();
-        short code = (short)e.getKeyCode();
+        int letter = e.getKeyChar();
+        short code = (short) e.getKeyCode();
 
         if (letter == KeyEvent.CHAR_UNDEFINED)
             key = actionKeyCodes[code];
@@ -476,7 +467,7 @@ public class Definitions {
             else if (letter == 127)
                 key = DELETE_KEY;
             else
-                key = (short)letter;
+                key = (short) letter;
         }
 
         return key;
@@ -488,12 +479,12 @@ public class Definitions {
     public String getKeyName(KeyEvent e) {
         String modifiers = KeyEvent.getKeyModifiersText(e.getModifiers());
         return modifiers + (modifiers.length() > 0 ? "+" : "")
-                        + KeyEvent.getKeyText(e.getKeyCode());
+                + KeyEvent.getKeyText(e.getKeyCode());
     }
 
     // initializes address translation table
     private void initAddresses() {
-        addresses = new Hashtable<String, Short>();
+        addresses = new Hashtable<>();
         addresses.put(SP_NAME, SP_ADDRESS);
         addresses.put(LOCAL_POINTER_NAME, LOCAL_POINTER_ADDRESS);
         addresses.put(ARG_POINTER_NAME, ARG_POINTER_ADDRESS);

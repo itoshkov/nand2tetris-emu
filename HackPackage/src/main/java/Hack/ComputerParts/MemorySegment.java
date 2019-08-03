@@ -100,15 +100,6 @@ public class MemorySegment extends InteractiveValueComputerPart {
     }
 
     /**
-     * Scrolls the memory such that the given address will be on top.
-     * (assumes legal address).
-     */
-    public void scrollTo(int address) {
-        if (displayChanges)
-            gui.scrollTo(startAddress + address);
-    }
-
-    /**
      * Hides all selections.
      */
     public void hideSelect() {

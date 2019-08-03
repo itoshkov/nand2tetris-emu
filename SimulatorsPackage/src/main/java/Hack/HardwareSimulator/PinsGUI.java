@@ -29,11 +29,11 @@ public interface PinsGUI extends InteractiveValueComputerPartGUI {
     /**
      * Sets the pins list's contents with the given array of PinInfo objects.
      */
-    public void setContents(PinInfo[] pins);
+    void setContents(PinInfo[] pins);
 
     /**
      * Set the pins to be dimmed or not dimmed.
      */
-    public void setDimmed(boolean cond);
+    void setDimmed(boolean cond);
 
 }

@@ -17,7 +17,7 @@
 
 package Hack.CPUEmulator;
 
-import Hack.ComputerParts.*;
+import Hack.ComputerParts.ValueComputerPartGUI;
 
 /**
  * An interface for the GUI of the ALU.
@@ -29,25 +29,25 @@ public interface ALUGUI extends ValueComputerPartGUI {
     /**
      * Sets the command of the ALU with the given command.
      */
-    public void setCommand(String command);
+    void setCommand(String command);
 
     /**
      * Flashes the ALU body.
      */
-    public void bodyFlash();
+    void bodyFlash();
 
     /**
      * Hides the ALU's body flash.
      */
-    public void hideBodyFlash();
+    void hideBodyFlash();
 
     /**
      * Flashes the ALU command.
      */
-    public void commandFlash();
+    void commandFlash();
 
     /**
      * Hides the ALU's command flash.
      */
-    public void hideCommandFlash();
+    void hideCommandFlash();
 }

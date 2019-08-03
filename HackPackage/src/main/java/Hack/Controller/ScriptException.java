@@ -30,13 +30,6 @@ public class ScriptException extends Exception
     }
 
     /**
-     * Constructs a new ScriptException with the given message and script name.
-     */
-    public ScriptException(String message, String scriptName) {
-        super("In script " + scriptName + ", " + message);
-    }
-
-    /**
      * Constructs a new ScriptException with the given message.
      */
     public ScriptException(String message) {

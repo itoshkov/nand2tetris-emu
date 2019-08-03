@@ -25,5 +25,5 @@ public interface ComputerPartGUI {
     /**
      * Resets the contents of the computer part GUI.
      */
-    public void reset();
+    void reset();
 }

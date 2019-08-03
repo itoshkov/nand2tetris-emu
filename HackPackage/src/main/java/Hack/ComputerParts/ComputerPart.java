@@ -23,7 +23,7 @@ package Hack.ComputerParts;
 public abstract class ComputerPart {
 
     // If true, changes to the computer part's values will be displayed in its gui.
-    protected boolean displayChanges = true;
+    protected boolean displayChanges;
 
     // If true, changes to the computer part's values will be animated.
     protected boolean animate;

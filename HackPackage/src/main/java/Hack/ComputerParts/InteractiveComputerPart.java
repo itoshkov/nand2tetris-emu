@@ -25,13 +25,13 @@ import java.util.*;
  * This is the abstract base class for all interactive computer parts.
  * This computer part notifies its listeners on errors using the ComputerPartErrorEvent.
  * It also listens to ComputerPartGUIErrorEvents from the GUI (and therefore should register
- * as a ComputerPartGUIErrorEventlistener to it). When such an event occures,
+ * as a ComputerPartGUIErrorEventlistener to it). When such an event occurs,
  * the error is sent to the error listeners of the computer part itself.
  */
 public abstract class InteractiveComputerPart extends ComputerPart
  implements ErrorEventListener {
 
-    private Vector errorListeners;
+    private Vector<ComputerPartErrorEventListener> errorListeners;
 
     /**
      * Constructs a new interactive computer part.
@@ -39,7 +39,7 @@ public abstract class InteractiveComputerPart extends ComputerPart
      */
     public InteractiveComputerPart(boolean hasGUI) {
         super(hasGUI);
-        errorListeners = new Vector();
+        errorListeners = new Vector<>();
     }
 
     /**
@@ -50,23 +50,13 @@ public abstract class InteractiveComputerPart extends ComputerPart
     }
 
     /**
-     * Un-registers the given ComputerPartErrorEventListener from being a listener
-     * to this ComputerPart.
-     */
-    public void removeErrorListener(ComputerPartErrorEventListener listener) {
-        errorListeners.removeElement(listener);
-    }
-
-    /**
-     * Notifies all the ComputerPartErrorEventListeners on an error that occured in the
+     * Notifies all the ComputerPartErrorEventListeners on an error that occurred in the
      * computer part by creating a ComputerPartErrorEvent (with the error message)
-     * and sending it using the computerPartErrorOccured method to all the listeners.
+     * and sending it using the computerPartErrorOccurred method to all the listeners.
      */
     public void notifyErrorListeners(String errorMessage) {
         ComputerPartErrorEvent event = new ComputerPartErrorEvent(this, errorMessage);
-
-        for (int i = 0; i < errorListeners.size(); i++)
-            ((ComputerPartErrorEventListener)errorListeners.elementAt(i)).computerPartErrorOccured(event);
+        errorListeners.forEach(l -> l.computerPartErrorOccurred(event));
     }
 
     /**
@@ -74,16 +64,14 @@ public abstract class InteractiveComputerPart extends ComputerPart
      */
     public void clearErrorListeners() {
         ComputerPartErrorEvent event = new ComputerPartErrorEvent(this, null);
-
-        for (int i = 0; i < errorListeners.size(); i++)
-            ((ComputerPartErrorEventListener)errorListeners.elementAt(i)).computerPartErrorOccured(event);
+        errorListeners.forEach(l -> l.computerPartErrorOccurred(event));
     }
 
     /**
-     * Called when an error occured in the GUI.
+     * Called when an error occurred in the GUI.
      * The event contains the source object and the error message.
      */
-    public void errorOccured(ErrorEvent event) {
+    public void errorOccurred(ErrorEvent event) {
         notifyErrorListeners(event.getErrorMessage());
     }
 }

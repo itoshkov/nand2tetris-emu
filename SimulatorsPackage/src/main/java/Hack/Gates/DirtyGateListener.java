@@ -26,10 +26,10 @@ public interface DirtyGateListener {
     /**
      * Executed when a gate becomes dirty.
      */
-    public void gotDirty();
+    void gotDirty();
 
     /**
      * Executed when a gate becomes clean.
      */
-    public void gotClean();
+    void gotClean();
 }

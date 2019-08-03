@@ -27,19 +27,19 @@ public class CompositeGate extends Gate {
 
     protected void clockUp() {
         if (gateClass.isClocked)
-            for (int i = 0; i < parts.length; i++)
-                parts[i].tick();
+            for (Gate part : parts)
+                part.tick();
     }
 
     protected void clockDown() {
         if (gateClass.isClocked)
-            for (int i = 0; i < parts.length; i++)
-                parts[i].tock();
+            for (Gate part : parts)
+                part.tock();
     }
 
     protected void reCompute() {
-        for (int i = 0; i < parts.length; i++)
-            parts[i].eval();
+        for (Gate part : parts)
+            part.eval();
     }
 
     /**

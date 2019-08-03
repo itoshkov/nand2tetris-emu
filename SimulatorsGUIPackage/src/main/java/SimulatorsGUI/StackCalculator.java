@@ -28,7 +28,7 @@ import java.awt.geom.*;
  */
 public class StackCalculator extends JPanel implements CalculatorGUI {
 
-    // The input, command and output textfields.
+    // The input, command and output text fields.
     private JTextField firstInput = new JTextField();
     private JTextField command = new JTextField();
     private JTextField secondInput = new JTextField();
@@ -51,18 +51,6 @@ public class StackCalculator extends JPanel implements CalculatorGUI {
 
         jbInit();
     }
-
-    /**
-     * Disabling user inputs. this method isn't implemented
-     * because in this component the text fields are always disabled.
-     */
-    public void disableUserInput() {}
-
-    /**
-     * Enabling user inputs. this method isn't implemented
-     * because in this component the text fields are always disabled.
-     */
-    public void enableUserInput() {}
 
     /**
      * Sets the null value of this component.
@@ -148,7 +136,7 @@ public class StackCalculator extends JPanel implements CalculatorGUI {
     }
 
     /**
-     * Hides all highlightes.
+     * Hides all highlights.
      */
     public void hideHighlight() {
         firstInput.setForeground(Color.black);
@@ -270,7 +258,7 @@ public class StackCalculator extends JPanel implements CalculatorGUI {
         secondInput.setHorizontalAlignment(SwingConstants.RIGHT);
         secondInput.setBounds(new Rectangle(18, 34, 124, 19));
         secondInput.setBackground(UIManager.getColor("Button.background"));
-        secondInput.setFont(new java.awt.Font("Courier New", 0, 12));
+        secondInput.setFont(new java.awt.Font("Courier New", Font.PLAIN, 12));
         output.setHorizontalAlignment(SwingConstants.RIGHT);
         output.setBounds(new Rectangle(18, 70, 124, 19));
         output.setBackground(UIManager.getColor("Button.background"));

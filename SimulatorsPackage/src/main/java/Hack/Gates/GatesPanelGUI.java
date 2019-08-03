@@ -28,15 +28,10 @@ public interface GatesPanelGUI {
     /**
      * Adds the given gate component to the gates panel.
      */
-    public void addGateComponent(Component gateComponent);
-
-    /**
-     * Removes the given gate component from the gates panel.
-     */
-    public void removeGateComponent(Component gateComponent);
+    void addGateComponent(Component gateComponent);
 
     /**
      * Removes all the gate components from the gates panel.
      */
-    public void removeAllGateComponents();
+    void removeAllGateComponents();
 }

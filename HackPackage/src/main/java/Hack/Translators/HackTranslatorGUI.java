@@ -26,144 +26,117 @@ import java.io.*;
 public interface HackTranslatorGUI {
 
     /**
-     * Registers the given HackTranslatorEventListener as a listener to this GUI.
-     */
-    public void addHackTranslatorListener(HackTranslatorEventListener listener);
-
-    /**
-     * Un-registers the given HackTranslatorEventListener from being a listener to this GUI.
-     */
-    public void removeHackTranslatorListener(HackTranslatorEventListener listener);
-
-    /**
-     * Notify all the HackTranslatorEventListeners on actions taken in it, by creating
-     * a HackTranslatorEvent (with the action and supplied data) and sending it using
-     * the actionPerformed method to all the listeners.
-     */
-    public void notifyHackTranslatorListeners(byte action, Object data);
-
-    /**
      * Displays the given message, according to the given type.
      */
-    public void displayMessage(String message, boolean error);
+    void displayMessage(String message, boolean error);
 
     /**
      * Sets the title of the translator with the given title.
      */
-    public void setTitle(String title);
+    void setTitle(String title);
 
     /**
      * Returns the GUI of the Source file.
      */
-    public TextFileGUI getSource();
+    TextFileGUI getSource();
 
     /**
      * Returns the GUI of the Destination file.
      */
-    public TextFileGUI getDestination();
+    TextFileGUI getDestination();
 
     /**
      * Sets the name of the Source file with the given name.
      */
-    public void setSourceName(String name);
+    void setSourceName(String name);
 
     /**
      * Sets the name of the Destination file with the given name.
      */
-    public void setDestinationName(String name);
+    void setDestinationName(String name);
 
     /**
      * Sets the working dir name with the given one.
      */
-    public void setWorkingDir(File file);
-
-    /**
-     * Sets the name of the html file that contains the help usage.
-     */
-    public void setUsageFileName(String fileName);
-
-    /**
-     * Sets the name of the html file that contains the "about" information.
-     */
-    public void setAboutFileName(String fileName);
+    void setWorkingDir(File file);
 
     /**
      * Enables the single step action.
      */
-    public void enableSingleStep();
+    void enableSingleStep();
 
     /**
      * Disables the single step action.
      */
-    public void disableSingleStep();
+    void disableSingleStep();
 
     /**
      * Enables the fast forward action.
      */
-    public void enableFastForward();
+    void enableFastForward();
 
     /**
      * Disables the fast forward action.
      */
-    public void disableFastForward();
+    void disableFastForward();
 
     /**
      * Enables the stop action.
      */
-    public void enableStop();
+    void enableStop();
 
     /**
      * Disables the stop action.
      */
-    public void disableStop();
+    void disableStop();
 
     /**
      * Enables the rewind action.
      */
-    public void enableRewind();
+    void enableRewind();
 
     /**
      * Disables the rewind action.
      */
-    public void disableRewind();
+    void disableRewind();
 
     /**
      * Enables the full compilation action.
      */
-    public void enableFullCompilation();
+    void enableFullCompilation();
 
     /**
      * Disables the full compilation action.
      */
-    public void disableFullCompilation();
+    void disableFullCompilation();
 
     /**
      * Enables the save action.
      */
-    public void enableSave();
+    void enableSave();
 
     /**
      * Disables the save action.
      */
-    public void disableSave();
+    void disableSave();
 
     /**
      * Enables loading a new source file.
      */
-    public void enableLoadSource();
+    void enableLoadSource();
 
     /**
      * Disables loading a new source file.
      */
-    public void disableLoadSource();
+    void disableLoadSource();
 
     /**
      * Enables selecting a row in the source.
      */
-    public void enableSourceRowSelection();
+    void enableSourceRowSelection();
 
     /**
      * Disables selecting a row in the source.
      */
-    public void disableSourceRowSelection();
+    void disableSourceRowSelection();
 }

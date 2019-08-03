@@ -29,6 +29,7 @@ import Hack.VirtualMachine.HVMInstructionSet;
 import java.io.*;
 import java.util.Hashtable;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -239,10 +240,9 @@ class VMProgram extends InteractiveComputerPart implements ProgramEventListener 
 
 		if (!addCallBuiltInSysInit) {
             Short sysInitAddress = symbols.get("Sys.init");
-            if (sysInitAddress == null) // Single file, no Sys.init - start at 0
-                startAddress = 0;
-            else // Implemented Sys.init - start there
-                startAddress = sysInitAddress;
+            // Single file, no Sys.init - start at 0
+            // Implemented Sys.init - start there
+            startAddress = Objects.requireNonNullElse(sysInitAddress, (short) 0);
         }
 
         if (displayChanges)

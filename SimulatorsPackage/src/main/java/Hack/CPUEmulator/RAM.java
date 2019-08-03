@@ -25,8 +25,6 @@ import Hack.ComputerParts.*;
  */
 public class RAM extends PointedMemory
 {
-    // The amount of miliseconds that a label should flash.
-    private static final int LABEL_FLASH_TIME = 500;
 
     private static final short[] emptyScreen = new short[Definitions.SCREEN_SIZE_IN_WORDS];
 
@@ -78,30 +76,6 @@ public class RAM extends PointedMemory
     }
 
     /**
-     * Sets a name for the label at the given address
-     */
-    public synchronized void setLabel(int address, String name, boolean quiet) {
-        if (hasGUI && gui instanceof LabeledPointedMemoryGUI) {
-            ((LabeledPointedMemoryGUI)gui).setLabel(address, name);
-            if (!quiet) {
-                ((LabeledPointedMemoryGUI)gui).labelFlash(address);
-                try {
-                    wait(LABEL_FLASH_TIME);
-                } catch (InterruptedException ie) {}
-                ((LabeledPointedMemoryGUI)gui).hideLabelFlash();
-            }
-        }
-    }
-
-    /**
-     * Clears all labels.
-     */
-    public void clearLabels() {
-        if (hasGUI && gui instanceof LabeledPointedMemoryGUI)
-            ((LabeledPointedMemoryGUI)gui).clearLabels();
-    }
-
-    /**
      * Resets the contents of the computer part.
      */
     public void reset() {
@@ -111,7 +85,7 @@ public class RAM extends PointedMemory
     }
 
     /**
-     * Clears the contenets of the screen.
+     * Clears the contents of the screen.
      */
     public void clearScreen() {
         setContents(emptyScreen, Definitions.SCREEN_START_ADDRESS);

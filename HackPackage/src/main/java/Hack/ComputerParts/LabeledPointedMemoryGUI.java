@@ -24,20 +24,20 @@ public interface LabeledPointedMemoryGUI extends PointedMemoryGUI {
     /**
      * Sets a name for the label at the given address
      */
-    public void setLabel(int address, String name);
+    void setLabel(int address, String name);
 
     /**
      * Clears all labels.
      */
-    public void clearLabels();
+    void clearLabels();
 
     /**
      * Flashes the label at the given address.
      */
-    public void labelFlash(int address);
+    void labelFlash(int address);
 
     /**
      * Hides the existing flash.
      */
-    public void hideLabelFlash();
+    void hideLabelFlash();
 }

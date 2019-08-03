@@ -194,18 +194,6 @@ public class HardwareSimulatorComponent extends HackSimulatorComponent implement
         parts.setVisible(false);
     }
 
-    /**
-     * Displays the given message. The display color is chosen according to
-     * the 'error' parameter.
-     */
-    public void displayMessage (String message, boolean error) {
-        if(error)
-            messageLbl.setForeground(Color.red);
-        else
-            messageLbl.setForeground(UIManager.getColor("Label.foreground"));
-        messageLbl.setText(message);
-    }
-
     public Point getAdditionalDisplayLocation() {
         return new Point(496, 13);
     }
@@ -254,18 +242,6 @@ public class HardwareSimulatorComponent extends HackSimulatorComponent implement
                 nullLayoutGatesPanel.repaint();
             }
         }
-    }
-
-    /**
-     * Removes the given gate component from the gates panel.
-     */
-    public void removeGateComponent(Component gateComponent) {
-        nullLayoutGatesPanel.remove(gateComponent);
-        flowLayoutGatesPanel.remove(gateComponent);
-        nullLayoutGatesPanel.revalidate();
-        flowLayoutGatesPanel.revalidate();
-        nullLayoutGatesPanel.repaint();
-        flowLayoutGatesPanel.repaint();
     }
 
     /**

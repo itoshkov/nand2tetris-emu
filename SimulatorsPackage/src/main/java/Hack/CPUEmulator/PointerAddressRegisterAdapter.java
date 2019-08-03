@@ -17,7 +17,10 @@
 
 package Hack.CPUEmulator;
 
-import Hack.ComputerParts.*;
+import Hack.ComputerParts.ComputerPartEvent;
+import Hack.ComputerParts.PointedMemory;
+import Hack.ComputerParts.Register;
+import Hack.ComputerParts.RegisterGUI;
 
 /**
  * A register which receives a PointedMemory object.

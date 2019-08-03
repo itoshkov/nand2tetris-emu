@@ -111,13 +111,6 @@ public class RegisterComponent extends JPanel implements RegisterGUI {
     }
 
     /**
-     * Un-registers the given ErrorEventListener from being a listener to this GUI.
-     */
-    public void removeErrorListener(ErrorEventListener listener) {
-        errorEventListeners.removeElement(listener);
-    }
-
-    /**
      * Notifies all the ErrorEventListener on an error in this gui by
      * creating an ErrorEvent (with the error message) and sending it
      * using the errorOccured method to all the listeners.
@@ -125,7 +118,7 @@ public class RegisterComponent extends JPanel implements RegisterGUI {
     public void notifyErrorListeners(String errorMessage) {
         ErrorEvent event = new ErrorEvent(this, errorMessage);
         for (int i=0; i<errorEventListeners.size(); i++)
-            ((ErrorEventListener)errorEventListeners.elementAt(i)).errorOccured(event);
+            ((ErrorEventListener)errorEventListeners.elementAt(i)).errorOccurred(event);
     }
 
     /**

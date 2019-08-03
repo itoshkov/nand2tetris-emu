@@ -26,6 +26,6 @@ public interface PointedMemorySegmentGUI extends MemorySegmentGUI {
     /**
      * Sets the pointer with the given pointer address (absolute address).
      */
-    public void setPointer(int pointerAddress);
+    void setPointer(int pointerAddress);
 
 }

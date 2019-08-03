@@ -28,6 +28,6 @@ public interface PinValueListener {
      * a boolean which is true if the user pressed the 'ok' button and false
      * if the user pressed the 'cancel' button.
      */
-    public void pinValueChanged (PinValueEvent e);
+    void pinValueChanged(PinValueEvent e);
 }
 

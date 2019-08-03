@@ -17,10 +17,12 @@
 
 package Hack.Controller;
 
-import java.util.*;
-import Hack.Events.*;
-import Hack.ComputerParts.*;
-import java.io.*;
+import Hack.ComputerParts.ComputerPartErrorEventListener;
+import Hack.Events.ProgramEvent;
+import Hack.Events.ProgramEventListener;
+
+import java.io.File;
+import java.util.Vector;
 
 /**
  * An abstract base class for a simulator that can be controlled by the Hack Controller.
@@ -28,10 +30,10 @@ import java.io.*;
 public abstract class HackSimulator implements ProgramEventListener, ComputerPartErrorEventListener
 {
     // The vector of listeners
-    private Vector listeners;
+    private Vector<ControllerEventListener> listeners;
 
     // The vector of program listeners
-    private Vector programListeners;
+    private Vector<ProgramEventListener> programListeners;
 
     // The current working dir
     protected File workingDir;
@@ -40,8 +42,8 @@ public abstract class HackSimulator implements ProgramEventListener, ComputerPar
      * Constructs a new hack simulator.
      */
     public HackSimulator() {
-        listeners = new Vector();
-        programListeners = new Vector();
+        listeners = new Vector<>();
+        programListeners = new Vector<>();
     }
 
     /**
@@ -181,7 +183,7 @@ public abstract class HackSimulator implements ProgramEventListener, ComputerPar
     }
 
     /**
-     * Registers the given ControllerrEventListener as a listener to this simulator.
+     * Registers the given ControllerEventListener as a listener to this simulator.
      */
     public void addListener(ControllerEventListener listener) {
         listeners.addElement(listener);
@@ -201,9 +203,7 @@ public abstract class HackSimulator implements ProgramEventListener, ComputerPar
      */
     public void notifyListeners(byte action, Object data) {
         ControllerEvent event = new ControllerEvent(this, action, data);
-
-        for (int i = 0; i < listeners.size(); i++)
-            ((ControllerEventListener)listeners.elementAt(i)).actionPerformed(event);
+        listeners.forEach(l -> l.actionPerformed(event));
     }
 
     /**
@@ -214,23 +214,13 @@ public abstract class HackSimulator implements ProgramEventListener, ComputerPar
     }
 
     /**
-     * Un-registers the given ProgramEventListener from being a listener to this GUI.
-     */
-    public void removeProgramListener(ProgramEventListener listener) {
-        programListeners.remove(listener);
-    }
-
-    /**
      * Notifies all the ProgramEventListeners on a change in the current program by creating
      * a ProgramEvent (with the new event type and program's file name) and sends it using the
      * programChanged method to all the listeners.
      */
     protected void notifyProgramListeners(byte eventType, String programFileName) {
         ProgramEvent event = new ProgramEvent(this, eventType, programFileName);
-
-        for (int i = 0; i < programListeners.size(); i++) {
-            ((ProgramEventListener)programListeners.elementAt(i)).programChanged(event);
-        }
+        programListeners.forEach(l -> l.programChanged(event));
     }
 
     public void programChanged(ProgramEvent event) {

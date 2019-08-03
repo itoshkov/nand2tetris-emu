@@ -156,7 +156,7 @@ public class HardwareSimulator extends HackSimulator
             throw new VariableException("cannot get var's value since no gate is currently loaded", varName);
 
         if (varName.equals(VAR_TIME))
-            result = String.valueOf(time) + (clockUp ? "+" : " ");
+            result = time + (clockUp ? "+" : " ");
         else {
             Node node = gate.getNode(varName);
             if (node != null)
@@ -314,85 +314,92 @@ public class HardwareSimulator extends HackSimulator
      * Throws ProgramException if an error occurs in the program.
      */
     public void doCommand(String[] command)
-     throws CommandException, ProgramException, VariableException {
+     throws CommandException, VariableException {
         if (command.length == 0)
             throw new CommandException("Empty command", command);
 
         // execute the appropriate command
-        if (command[0].equals(COMMAND_TICK)) {
-            if (command.length != 1)
-                throw new CommandException("Illegal number of arguments to command", command);
-            else if (gate == null)
-                throw new CommandException("Illegal command since no gate is currently loaded", command);
-            else if (clockUp)
-                throw new CommandException("Illegal command since clock is already up", command);
+        switch (command[0]) {
+            case COMMAND_TICK:
+                if (command.length != 1)
+                    throw new CommandException("Illegal number of arguments to command", command);
+                else if (gate == null)
+                    throw new CommandException("Illegal command since no gate is currently loaded", command);
+                else if (clockUp)
+                    throw new CommandException("Illegal command since clock is already up", command);
 
-            performTick();
-        }
-        else if (command[0].equals(COMMAND_TOCK)) {
-            if (command.length != 1)
-                throw new CommandException("Illegal number of arguments to command", command);
-            else if (gate == null)
-                throw new CommandException("Illegal command since no gate is currently loaded", command);
-            else if (!clockUp)
-                throw new CommandException("Illegal command since clock is already down", command);
+                performTick();
+                break;
 
-            performTock();
-        }
-        else if (command[0].equals(COMMAND_EVAL)) {
-            if (command.length != 1)
-                throw new CommandException("Illegal number of arguments to command", command);
-            else if (gate == null)
-                throw new CommandException("Illegal command since no gate is currently loaded", command);
+            case COMMAND_TOCK:
+                if (command.length != 1)
+                    throw new CommandException("Illegal number of arguments to command", command);
+                else if (gate == null)
+                    throw new CommandException("Illegal command since no gate is currently loaded", command);
+                else if (!clockUp)
+                    throw new CommandException("Illegal command since clock is already down", command);
 
-            performEval();
-        }
-        else if (command[0].equals(COMMAND_SETVAR)) {
-            if (command.length != 3)
-                throw new CommandException("Illegal number of arguments to command", command);
-            setValue(command[1], command[2]);
-        }
-        else if (command[0].equals(COMMAND_LOAD)) {
-            if (command.length != 2)
-                throw new CommandException("Illegal number of arguments to command", command);
+                performTock();
+                break;
 
-            if (gui != null && gui.getGateInfo() != null)
-                gui.getGateInfo().setChip(command[1]);
+            case COMMAND_EVAL:
+                if (command.length != 1)
+                    throw new CommandException("Illegal number of arguments to command", command);
+                else if (gate == null)
+                    throw new CommandException("Illegal command since no gate is currently loaded", command);
 
-            try {
-                if (!command[1].endsWith(".hdl"))
-                    throw new CommandException("A .hdl file is expected", command);
+                performEval();
+                break;
 
-                if (command[1].indexOf("/") >= 0)
-                    throw new CommandException("The gate name must not contain path specification",
-                                               command);
+            case COMMAND_SETVAR:
+                if (command.length != 3)
+                    throw new CommandException("Illegal number of arguments to command", command);
+                setValue(command[1], command[2]);
+                break;
 
-                // use gate name without the .hdl extension
-                String gateName = command[1].substring(0, command[1].length() - 4);
-                loadGate(gateName, false);
-                notifyProgramListeners(ProgramEvent.LOAD, GatesManager.getInstance().getHDLFileName(gateName));
-            } catch (GateException ge) {
-                throw new CommandException(ge.getMessage(), command);
-            }
-        }
-        else {
-            boolean found = false;
+            case COMMAND_LOAD:
+                if (command.length != 2)
+                    throw new CommandException("Illegal number of arguments to command", command);
 
-            // try to re-direct command to a part with gui
-            BuiltInGateWithGUI guiChip = getGUIChip(command[0]);
-            if (guiChip != null) {
-                found = true;
-                String[] newCommand = new String[command.length - 1];
-                System.arraycopy(command, 1, newCommand, 0, newCommand.length);
+                if (gui != null && gui.getGateInfo() != null)
+                    gui.getGateInfo().setChip(command[1]);
+
                 try {
-                    guiChip.doCommand(newCommand);
+                    if (!command[1].endsWith(".hdl"))
+                        throw new CommandException("A .hdl file is expected", command);
+
+                    if (command[1].contains("/"))
+                        throw new CommandException("The gate name must not contain path specification",
+                                                   command);
+
+                    // use gate name without the .hdl extension
+                    String gateName = command[1].substring(0, command[1].length() - 4);
+                    loadGate(gateName, false);
+                    notifyProgramListeners(ProgramEvent.LOAD, GatesManager.getInstance().getHDLFileName(gateName));
                 } catch (GateException ge) {
                     throw new CommandException(ge.getMessage(), command);
                 }
-            }
+                break;
 
-            if (!found)
-                throw new CommandException("Unknown command or component name", command);
+            default:
+                boolean found = false;
+
+                // try to re-direct command to a part with gui
+                BuiltInGateWithGUI guiChip = getGUIChip(command[0]);
+                if (guiChip != null) {
+                    found = true;
+                    String[] newCommand = new String[command.length - 1];
+                    System.arraycopy(command, 1, newCommand, 0, newCommand.length);
+                    try {
+                        guiChip.doCommand(newCommand);
+                    } catch (GateException ge) {
+                        throw new CommandException(ge.getMessage(), command);
+                    }
+                }
+
+                if (!found)
+                    throw new CommandException("Unknown command or component name", command);
+                break;
         }
     }
 
@@ -518,7 +525,7 @@ public class HardwareSimulator extends HackSimulator
     // If containsPath is true, the gateName should contain the full path.
     protected synchronized void loadGate(String gateName, boolean containsPath) throws GateException {
 
-        GateClass gateClass = null;
+        GateClass gateClass;
 
         if (gui != null)
             displayMessage("Loading chip...", false);
@@ -587,10 +594,8 @@ public class HardwareSimulator extends HackSimulator
                 gui.hidePartPins();
                 gui.hideParts();
             }
-        } catch (HDLException he) {
-            throw new GateException(he.getMessage());
-        } catch (InstantiationException ie) {
-            throw new GateException(ie.getMessage());
+        } catch (HDLException | InstantiationException he) {
+            throw new GateException(he);
         }
 
         if (gui != null)
@@ -676,7 +681,7 @@ public class HardwareSimulator extends HackSimulator
      * Called when an error occured in a computer part.
      * The event contains the source object and the error message.
      */
-    public void computerPartErrorOccured(ComputerPartErrorEvent event) {
+    public void computerPartErrorOccurred(ComputerPartErrorEvent event) {
         displayMessage(event.getErrorMessage(), true);
     }
 
@@ -684,7 +689,7 @@ public class HardwareSimulator extends HackSimulator
      * Called when an error occured in a gate's component.
      * The event contains the source object and the error message.
      */
-    public void gateErrorOccured(GateErrorEvent event) {
+    public void gateErrorOccurred(GateErrorEvent event) {
         displayMessage(event.getErrorMessage(), true);
     }
 
@@ -774,24 +779,9 @@ public class HardwareSimulator extends HackSimulator
         }
     }
 
-    // receives a variable name of the form xxx[i] and returns the numeric
-    // value of i.
-    // Throws VariableException if i is negative.
-    private static short getIndex(String varName) throws VariableException {
-        if (varName.indexOf("]") == -1)
-            throw new VariableException("Missing ']'", varName);
-
-        String indexStr = varName.substring(varName.indexOf("[") + 1, varName.indexOf("]"));
-        int index = Integer.parseInt(indexStr);
-        if (index < 0)
-            throw new VariableException("Illegal variable index", varName);
-
-        return (short)index;
-    }
-
     // Returns the given pin name including its sub bus specification.
     public static String getFullPinName(String name, byte[] subBus) {
-        StringBuffer result = new StringBuffer(name);
+        StringBuilder result = new StringBuilder(name);
 
         if (subBus != null
             && !name.equals(CompositeGateClass.TRUE_NODE_INFO.name)
@@ -800,7 +790,7 @@ public class HardwareSimulator extends HackSimulator
             result.append("[");
             result.append(subBus[0]);
             if (subBus[0] != subBus[1])
-                result.append(".." + subBus[1]);
+                result.append("..").append(subBus[1]);
             result.append("]");
         }
 

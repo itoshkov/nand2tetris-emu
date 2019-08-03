@@ -29,20 +29,7 @@ public class HDLFileFilter extends FileFilter {
      * Determines which files this filter should accept.
      */
     public boolean accept(File f) {
-        if (f.isDirectory()) {
-            return true;
-        }
-
-        String extension = getExtension(f);
-        if (extension != null) {
-            if (extension.equals("hdl") )
-                    return true;
-            else {
-                return false;
-            }
-        }
-
-        return false;
+        return f.isDirectory() || "hdl".equals(getExtension(f));
     }
 
 
@@ -54,9 +41,9 @@ public class HDLFileFilter extends FileFilter {
         String s = f.getName();
         int i = s.lastIndexOf('.');
 
-        if (i > 0 &&  i < s.length() - 1) {
-            ext = s.substring(i+1).toLowerCase();
-        }
+        if (i > 0 &&  i < s.length() - 1)
+            ext = s.substring(i + 1).toLowerCase();
+
         return ext;
     }
 

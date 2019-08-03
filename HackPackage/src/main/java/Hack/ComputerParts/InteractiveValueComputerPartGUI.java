@@ -26,40 +26,40 @@ public interface InteractiveValueComputerPartGUI
     /**
      * Registers the given ComputerPartEventListener as a listener to this GUI.
      */
-    public void addListener(ComputerPartEventListener listener);
+    void addListener(ComputerPartEventListener listener);
 
     /**
      * Un-registers the given ComputerPartEventListener from being a listener to this GUI.
      */
-    public void removeListener(ComputerPartEventListener listener);
+    void removeListener(ComputerPartEventListener listener);
 
     /**
      * Notifies all the ComputerPartEventListeners on a change in the computer part by creating
      * a ComputerPartEvent (with the changed index and value) and sending it using the
      * valueChanged method to all the listeners.
      */
-    public void notifyListeners(int index, short value);
+    void notifyListeners(int index, short value);
 
     /**
      * Notifies all the ComputerPartEventListeners that the gui gained focus by creating
      * a ComputerPartEvent and sending it using the guiGainedFocus method to all the listeners.
      */
-    public void notifyListeners();
+    void notifyListeners();
 
     /**
      * Enables user input into the computer part.
      */
-    public void enableUserInput();
+    void enableUserInput();
 
     /**
      * Disables user input into the computer part.
      */
-    public void disableUserInput();
+    void disableUserInput();
 
     /**
      * Sets the enabled range of this segment.
      * Any address outside this range will be disabled for user input.
      * If gray is true, addresses outside the range will be gray colored.
      */
-    public void setEnabledRange(int start, int end, boolean gray);
+    void setEnabledRange(int start, int end, boolean gray);
 }

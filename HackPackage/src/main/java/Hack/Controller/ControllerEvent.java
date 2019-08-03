@@ -89,18 +89,6 @@ public class ControllerEvent extends EventObject {
     public static final byte ADDITIONAL_DISPLAY_CHANGE = 12;
 
     /**
-     * Action code for showing the controller.
-     * supplied data = null
-     */
-    public static final byte SHOW_CONTROLLER = 13;
-
-    /**
-     * Action code for hiding the controller.
-     * supplied data = null
-     */
-    public static final byte HIDE_CONTROLLER = 14;
-
-    /**
      * Action code for disabling change of animation modes in the controller.
      * supplied data = null
      */

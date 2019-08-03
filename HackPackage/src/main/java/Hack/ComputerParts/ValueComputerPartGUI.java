@@ -27,47 +27,47 @@ public interface ValueComputerPartGUI extends ComputerPartGUI {
     /**
      * Returns the coordinates of the top left corner of the value at the given index.
      */
-    public Point getCoordinates(int index);
+    Point getCoordinates(int index);
 
     /**
      * Sets the element at the given index with the given value.
      */
-    public void setValueAt(int index, short value);
+    void setValueAt(int index, short value);
 
     /**
      * Returns the value at the given index in its string representation.
      */
-    public String getValueAsString(int index);
+    String getValueAsString(int index);
 
     /**
      * Highlights the value at the given index.
      */
-    public void highlight(int index);
+    void highlight(int index);
 
     /**
-     * Hides all highlightes.
+     * Hides all highlights.
      */
-    public void hideHighlight();
+    void hideHighlight();
 
     /**
      * flashes the value at the given index.
      */
-    public void flash(int index);
+    void flash(int index);
 
     /**
      * hides the existing flash.
      */
-    public void hideFlash();
+    void hideFlash();
 
     /**
      * Sets the numeric format with the given code (out of the format constants in HackController).
      */
-    public void setNumericFormat(int formatCode);
+    void setNumericFormat(int formatCode);
 
     /**
      * Sets the null value (default value) of this computer part with the given value.
      * If hideNullValue is true, values which are equal to the null value will be
      * hidden.
      */
-    public void setNullValue(short value, boolean hideNullValue);
+    void setNullValue(short value, boolean hideNullValue);
 }

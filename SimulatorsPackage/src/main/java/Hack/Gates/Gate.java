@@ -27,12 +27,12 @@ public abstract class Gate {
     /**
      * The special "true" node.
      */
-    public static final Node TRUE_NODE = new Node((short)-1);
+    public static final Node TRUE_NODE = new Node((short) -1);
 
     /**
      * The special "false" node.
      */
-    public static final Node FALSE_NODE = new Node((short)0);
+    public static final Node FALSE_NODE = new Node((short) 0);
 
     /**
      * The special "clock" node.
@@ -52,15 +52,12 @@ public abstract class Gate {
     protected boolean isDirty;
 
     // A list of listeners to the isDirty property.
-    private Vector dirtyGateListeners;
+    private final Vector<DirtyGateListener> dirtyGateListeners = new Vector<>();
 
     /**
      * Adds the given listener as a listener to the isDirty property.
      */
     public void addDirtyGateListener(DirtyGateListener listener) {
-        if (dirtyGateListeners == null)
-            dirtyGateListeners = new Vector(1, 1);
-
         dirtyGateListeners.add(listener);
     }
 
@@ -68,8 +65,7 @@ public abstract class Gate {
      * Removes the given listener from being a listener to the isDirty property.
      */
     public void removeDirtyGateListener(DirtyGateListener listener) {
-        if (dirtyGateListeners != null)
-            dirtyGateListeners.remove(listener);
+        dirtyGateListeners.remove(listener);
     }
 
     /**
@@ -95,9 +91,7 @@ public abstract class Gate {
         isDirty = true;
 
         // notify listeners
-        if (dirtyGateListeners != null)
-            for (int i = 0; i < dirtyGateListeners.size(); i++)
-                ((DirtyGateListener)dirtyGateListeners.elementAt(i)).gotDirty();
+        dirtyGateListeners.forEach(DirtyGateListener::gotDirty);
     }
 
     /**
@@ -158,9 +152,7 @@ public abstract class Gate {
             isDirty = false;
 
             // notify listeners
-            if (dirtyGateListeners != null)
-                for (int i = 0; i < dirtyGateListeners.size(); i++)
-                    ((DirtyGateListener)dirtyGateListeners.elementAt(i)).gotClean();
+            dirtyGateListeners.forEach(DirtyGateListener::gotClean);
         }
 
         reCompute();
@@ -183,5 +175,4 @@ public abstract class Gate {
         clockDown();
         doEval();
     }
-
 }

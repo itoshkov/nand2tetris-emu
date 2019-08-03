@@ -18,7 +18,6 @@
 package HackGUI;
 
 import javax.swing.table.*;
-import javax.swing.*;
 import java.awt.*;
 
 /**
@@ -61,8 +60,6 @@ public class TrimmedValuesOnlyAbsoluteMemorySegmentComponent extends AbsolutePoi
      * Scrolls the table to the pointer location.
      */
     protected void scrollToPointer() {
-        JScrollBar bar = scrollPane.getVerticalScrollBar();
-        int beforeScrollValue = bar.getValue();
         Rectangle r = segmentTable.getCellRect(pointerAddress - startAddress - 1, 0, true);
         segmentTable.scrollRectToVisible(r);
         repaint();
@@ -72,7 +69,6 @@ public class TrimmedValuesOnlyAbsoluteMemorySegmentComponent extends AbsolutePoi
      * Returns the coordinates of the top left corner of the value at the given index.
      */
     public Point getCoordinates(int index) {
-        JScrollBar bar = scrollPane.getVerticalScrollBar();
         double visibleRowsCount = Utilities.computeVisibleRowsCount(segmentTable);
         int location = (int)Math.max(Math.min(index - startAddress, visibleRowsCount - 1), 0);
         Rectangle r = segmentTable.getCellRect(location, 0, true);

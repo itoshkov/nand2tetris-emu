@@ -11,10 +11,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class VMProfiler implements Profiler {
 
-    private final Stack<String> callStack = new Stack<String>();
-    private final Map<String, AtomicInteger> calls = new TreeMap<String, AtomicInteger>();
-    private final Map<String, AtomicInteger> instructionsPerFunction = new TreeMap<String, AtomicInteger>();
-    private final Map<String, AtomicInteger> instructionCounts = new TreeMap<String, AtomicInteger>();
+    private final Stack<String> callStack = new Stack<>();
+    private final Map<String, AtomicInteger> calls = new TreeMap<>();
+    private final Map<String, AtomicInteger> instructionsPerFunction = new TreeMap<>();
+    private final Map<String, AtomicInteger> instructionCounts = new TreeMap<>();
     private String currentFunction;
     private boolean enabled = false;
 

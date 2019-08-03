@@ -26,5 +26,5 @@ public interface ClearEventListener {
      * Called when clear is requested.
      * The event contains the source object.
      */
-    public void clearRequested(ClearEvent event);
+    void clearRequested(ClearEvent event);
 }

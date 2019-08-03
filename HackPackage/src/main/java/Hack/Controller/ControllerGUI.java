@@ -29,205 +29,200 @@ public interface ControllerGUI {
     /**
      * Registers the given ControllerEventListener as a listener to this GUI.
      */
-    public void addControllerListener(ControllerEventListener listener);
-
-    /**
-     * Un-registers the given ControllerEventListener from being a listener to this GUI.
-     */
-    public void removeControllerListener(ControllerEventListener listener);
+    void addControllerListener(ControllerEventListener listener);
 
     /**
      * Notify all the ControllerEventListeners on actions taken in it, by creating
      * a ControllerEvent (with the action and supplied data) and sending it using
      * the actionPerformed method to all the listeners.
      */
-    public void notifyControllerListeners(byte action, Object data);
+    void notifyControllerListeners(byte action, Object data);
 
     /**
      * Sets the simulator component
      */
-    public void setSimulator(HackSimulatorGUI simulator);
+    void setSimulator(HackSimulatorGUI simulator);
 
     /**
      * Sets the title of the translator with the given title.
      */
-    public void setTitle(String title);
+    void setTitle(String title);
 
     /**
      * Displays the given message, according to the given type.
      */
-    public void displayMessage(String message, boolean error);
+    void displayMessage(String message, boolean error);
 
     /**
      * Sets the working dir name with the given one.
      */
-    public void setWorkingDir(File file);
+    void setWorkingDir(File file);
 
     /**
      * Sets the script file name with the given one.
      */
-    public void setScriptFile(String fileName);
+    void setScriptFile(String fileName);
 
     /**
      * Sets the current script line.
      */
-    public void setCurrentScriptLine(int line);
+    void setCurrentScriptLine(int line);
 
     /**
      * Returns the script file component.
      */
-    public JComponent getScriptComponent();
+    JComponent getScriptComponent();
 
     /**
      * Sets the output file name with the given one.
      */
-    public void setOutputFile(String fileName);
+    void setOutputFile(String fileName);
 
     /**
      * Sets the current output line.
      */
-    public void setCurrentOutputLine(int line);
+    void setCurrentOutputLine(int line);
 
     /**
      * Returns the output file component.
      */
-    public JComponent getOutputComponent();
+    JComponent getOutputComponent();
 
     /**
      * Sets the comparison file name with the given one.
      */
-    public void setComparisonFile(String fileName);
+    void setComparisonFile(String fileName);
 
     /**
      * Sets the current comparison line.
      */
-    public void setCurrentComparisonLine(int line);
+    void setCurrentComparisonLine(int line);
 
     /**
      * Returns the comparison file component.
      */
-    public JComponent getComparisonComponent();
+    JComponent getComparisonComponent();
 
     /**
      * Sets the additional display (int code, out of the possible additional display
      * constants in HackController)
      */
-    public void setAdditionalDisplay(int additionalDisplayCode);
+    void setAdditionalDisplay(int additionalDisplayCode);
 
     /**
      * Sets the breakpoints list with the given one.
      */
-    public void setBreakpoints(Collection<Breakpoint> breakpoints);
+    void setBreakpoints(Collection<Breakpoint> breakpoints);
 
     /**
      * Sets the list of recognized variables with the given one.
      */
-    public void setVariables(String[] vars);
+    void setVariables(String[] vars);
 
     /**
-     * Sets the speed (int code, between 1 and HackController.NUMBER_OF_SPEED_UNTIS)
+     * Sets the speed (int code, between 1 and HackController.NUMBER_OF_SPEED_UNITS)
      */
-    public void setSpeed(int speed);
+    void setSpeed(int speed);
 
     /**
      * Sets the animation mode (int code, out of the possible animation constants in HackController)
      */
-    public void setAnimationMode(int animationMode);
+    void setAnimationMode(int animationMode);
 
     /**
      * Sets the numeric format (int code, out of the possible format constants in HackController)
      */
-    public void setNumericFormat(int formatCode);
+    void setNumericFormat(int formatCode);
 
     /**
      * Opens the breakpoints panel.
      */
-    public void showBreakpoints();
+    void showBreakpoints();
 
     /**
      * Called when the output file is updated.
      */
-    public void outputFileUpdated();
+    void outputFileUpdated();
 
     /**
      * Enables the single step action.
      */
-    public void enableSingleStep();
+    void enableSingleStep();
 
     /**
      * Disables the single step action.
      */
-    public void disableSingleStep();
+    void disableSingleStep();
 
     /**
      * Enables the fast forward action.
      */
-    public void enableFastForward();
+    void enableFastForward();
 
     /**
      * Disables the fast forward action.
      */
-    public void disableFastForward();
+    void disableFastForward();
 
     /**
      * Enables the stop action.
      */
-    public void enableStop();
+    void enableStop();
 
     /**
      * Disables the stop action.
      */
-    public void disableStop();
+    void disableStop();
 
     /**
      * Enables the open script action.
      */
-    public void enableScript();
+    void enableScript();
 
     /**
      * Disables the open script action.
      */
-    public void disableScript();
+    void disableScript();
 
     /**
      * Enables the rewind action.
      */
-    public void enableRewind();
+    void enableRewind();
 
     /**
      * Disables the rewind action.
      */
-    public void disableRewind();
+    void disableRewind();
 
     /**
      * Enables the load program action.
      */
-    public void enableLoadProgram();
+    void enableLoadProgram();
 
     /**
      * Disables the load program action.
      */
-    public void disableLoadProgram();
+    void disableLoadProgram();
 
     /**
      * Enables the speed slider.
      */
-    public void enableSpeedSlider();
+    void enableSpeedSlider();
 
     /**
      * Disables the speed slider.
      */
-    public void disableSpeedSlider();
+    void disableSpeedSlider();
 
     /**
      * Enables the animation mode buttons.
      */
-    public void enableAnimationModes();
+    void enableAnimationModes();
 
     /**
      * Disables the animation mode buttons.
      */
-    public void disableAnimationModes();
+    void disableAnimationModes();
 
-    public void setProfiler(Profiler profiler);
+    void setProfiler(Profiler profiler);
 }

@@ -20,7 +20,7 @@ package Hack.Controller;
 /**
  * A Hack Application. Creates a controller to control the given given simulator using the
  * given GUI components.
- * The createController method may be overwridden by simulators that inherit the
+ * The createController method may be overridden by simulators that inherit the
  * HackController.
  */
 public abstract class HackApplication {

@@ -17,19 +17,22 @@
 
 package Hack.Gates;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * A GateClass for Built In gates.
  */
 public class BuiltInGateClass extends GateClass {
 
     // the java class that holds the basic gate functionality
-    private Class javaGateClass;
+    private Class<BuiltInGate> javaGateClass;
 
     /**
      * Constructs a new BuiltInGateClass with the given gate name and the HDLTokenizer
      * input which is positioned just after the BUILTIN declaration.
      * The HDL's input and output pin names are also given.
      */
+    @SuppressWarnings("unchecked")
     public BuiltInGateClass(String gateName, HDLTokenizer input, PinInfo[] inputPinsInfo, PinInfo[] outputPinsInfo)
      throws HDLException {
         super(gateName, inputPinsInfo, outputPinsInfo);
@@ -43,13 +46,17 @@ public class BuiltInGateClass extends GateClass {
         String fullName = GatesManager.getInstance().getBuiltInDir() + "." + classFileName;
 
         try {
-            javaGateClass = Class.forName(fullName);
+            final Class<?> aClass = Class.forName(fullName);
+            if (BuiltInGate.class.isAssignableFrom(aClass))
+                javaGateClass = (Class<BuiltInGate>) aClass;
+            else
+                input.HDLError("Class " + classFileName + " does not inherit from " + BuiltInGate.class.getCanonicalName());
         } catch (ClassNotFoundException cnfe) {
             input.HDLError("Can't find " + classFileName + " java class");
         }
 
         // check that the class is a subclass of BuiltInGate
-        Class currentClass = javaGateClass;
+        Class<?> currentClass = javaGateClass;
         boolean found;
         do {
             currentClass = currentClass.getSuperclass();
@@ -79,13 +86,13 @@ public class BuiltInGateClass extends GateClass {
             // read clocked input pins list
             String[] clockedNames = readPinNames(input);
 
-            for (int i = 0; i < clockedNames.length; i++) {
+            for (String clockedName : clockedNames) {
                 boolean inputFound = false;
                 boolean outputFound = false;
                 // check if clocked name is an input pin
                 for (int j = 0; j < isInputClocked.length && !inputFound; j++) {
                     if (!isInputClocked[j]) {
-                        inputFound = inputPinsInfo[j].name.equals(clockedNames[i]);
+                        inputFound = inputPinsInfo[j].name.equals(clockedName);
                         isInputClocked[j] = inputFound;
                     }
                 }
@@ -93,7 +100,7 @@ public class BuiltInGateClass extends GateClass {
                     // check if clocked name is an output pin
                     for (int j = 0; j < isOutputClocked.length && !outputFound; j++) {
                         if (!isOutputClocked[j]) {
-                            outputFound = outputPinsInfo[j].name.equals(clockedNames[i]);
+                            outputFound = outputPinsInfo[j].name.equals(clockedName);
                             isOutputClocked[j] = outputFound;
                         }
                     }
@@ -124,8 +131,8 @@ public class BuiltInGateClass extends GateClass {
             outputNodes[i] = new Node();
 
         try {
-            result = (BuiltInGate)javaGateClass.newInstance();
-        } catch (IllegalAccessException iae) {
+            result = javaGateClass.getDeclaredConstructor().newInstance();
+        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException iae) {
             throw new InstantiationException(iae.getMessage());
         }
 

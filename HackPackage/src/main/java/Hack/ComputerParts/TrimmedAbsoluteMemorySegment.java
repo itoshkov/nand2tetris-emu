@@ -17,8 +17,6 @@
 
 package Hack.ComputerParts;
 
-import Hack.ComputerParts.*;
-
 /**
  * An AbsolutePointedMemorySegment in which the pointer is always set to the address just
  * after the last updated address.
@@ -31,15 +29,6 @@ public class TrimmedAbsoluteMemorySegment extends AbsolutePointedMemorySegment {
      */
     public TrimmedAbsoluteMemorySegment(Memory mainMemory, PointedMemorySegmentGUI gui) {
         super(mainMemory, gui);
-    }
-
-    /**
-     * Constructs a new TrimmedAbsoluteMemorySegment with the given main memory, GUI and the legal
-     * values range.
-     */
-    public TrimmedAbsoluteMemorySegment(Memory mainMemory, PointedMemorySegmentGUI gui,
-                                        short minValue, short maxValue) {
-        super(mainMemory, gui, minValue, maxValue);
     }
 
     public void setValueAt(int index, short value, boolean quiet) {

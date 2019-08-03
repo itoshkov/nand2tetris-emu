@@ -75,7 +75,7 @@ public class GateInfoComponent extends JPanel implements GateInfoGUI {
 
     public void setTime (int time) {
          if (clockUp)
-            timeTxt.setText(String.valueOf(time) + "+");
+            timeTxt.setText(time + "+");
         else
             timeTxt.setText(String.valueOf(time));
     }

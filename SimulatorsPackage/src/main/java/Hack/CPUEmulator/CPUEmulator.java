@@ -24,7 +24,7 @@ import Hack.Utilities.*;
 
 /**
  * A CPU Emulator. Emulates machine code (In HACK format).
- *
+ * <p>
  * Recognizes the following variables:
  * A - the address register (short)
  * D - the data register (short)
@@ -32,7 +32,7 @@ import Hack.Utilities.*;
  * RAM[i] - the contents of the RAM at location i (short)
  * ROM[i] - the contents of the ROM at location i (short)
  * time - the time that passed since the program started running (long) - READ ONLY
- *
+ * <p>
  * Recognizes the following commands:
  * load <HACK file name> - loads the given file into the ROM
  * TickTock - advances the clock by one time unit (executes one instruction)
@@ -167,12 +167,10 @@ public class CPUEmulator extends HackSimulator implements ComputerPartErrorEvent
         else if (varName.startsWith(VAR_RAM + "[")) {
             short index = getRamIndex(varName);
             return String.valueOf(cpu.getRAM().getValueAt(index));
-        }
-        else if (varName.startsWith(VAR_ROM + "[")) {
+        } else if (varName.startsWith(VAR_ROM + "[")) {
             short index = getRomIndex(varName);
             return String.valueOf(cpu.getROM().getValueAt(index));
-        }
-        else
+        } else
             throw new VariableException("Unknown variable", varName);
     }
 
@@ -189,33 +187,28 @@ public class CPUEmulator extends HackSimulator implements ComputerPartErrorEvent
             if (varName.equals(VAR_A)) {
                 numValue = Integer.parseInt(value);
                 check_value(varName, numValue);
-                cpu.getA().store((short)numValue);
-            }
-            else if (varName.equals(VAR_D)) {
+                cpu.getA().store((short) numValue);
+            } else if (varName.equals(VAR_D)) {
                 numValue = Integer.parseInt(value);
                 check_value(varName, numValue);
-                cpu.getD().store((short)numValue);
-            }
-            else if (varName.equals(VAR_PC)) {
+                cpu.getD().store((short) numValue);
+            } else if (varName.equals(VAR_PC)) {
                 numValue = Integer.parseInt(value);
                 check_rom_address(varName, numValue);
-                cpu.getPC().store((short)numValue);
-            }
-            else if (varName.equals(VAR_TIME))
+                cpu.getPC().store((short) numValue);
+            } else if (varName.equals(VAR_TIME))
                 throw new VariableException("Read Only variable", varName);
             else if (varName.startsWith(VAR_RAM + "[")) {
                 short index = getRamIndex(varName);
                 numValue = Integer.parseInt(value);
                 check_value(varName, numValue);
-                cpu.getRAM().setValueAt(index, (short)numValue, false);
-            }
-            else if (varName.startsWith(VAR_ROM + "[")) {
+                cpu.getRAM().setValueAt(index, (short) numValue, false);
+            } else if (varName.startsWith(VAR_ROM + "[")) {
                 short index = getRomIndex(varName);
                 numValue = Integer.parseInt(value);
                 check_value(varName, numValue);
-                cpu.getROM().setValueAt(index, (short)numValue, false);
-            }
-            else
+                cpu.getROM().setValueAt(index, (short) numValue, false);
+            } else
                 throw new VariableException("Unknown variable", varName);
         } catch (NumberFormatException nfe) {
             throw new VariableException("'" + value + "' is not a legal value for variable",
@@ -229,43 +222,48 @@ public class CPUEmulator extends HackSimulator implements ComputerPartErrorEvent
      * Throws ProgramException if an error occurs in the program.
      */
     public void doCommand(String[] command)
-     throws CommandException, ProgramException, VariableException {
+            throws CommandException, ProgramException, VariableException {
         if (command.length == 0)
             throw new CommandException("Empty command", command);
 
         // hide gui highlights
         if (animationMode != HackController.NO_DISPLAY_CHANGES)
-            hideHighlightes();
+            hideHighlights();
 
         // execute the appropriate command
-        if (command[0].equals(COMMAND_TICKTOCK)) {
-            if (command.length != 1)
-                throw new CommandException("Illegal number of arguments to command", command);
+        switch (command[0]) {
+            case COMMAND_TICKTOCK:
+                if (command.length != 1)
+                    throw new CommandException("Illegal number of arguments to command", command);
 
-            cpu.executeInstruction();
-        }
-        else if (command[0].equals(COMMAND_SETVAR)) {
-            if (command.length != 3)
-                throw new CommandException("Illegal number of arguments to command", command);
-            setValue(command[1], command[2]);
-        }
-        else if (command[0].equals(COMMAND_ROMLOAD)) {
-            if (command.length != 2)
-                throw new CommandException("Illegal number of arguments to command", command);
+                cpu.executeInstruction();
+                break;
 
-            String fileName = workingDir.getAbsolutePath() + "/" + command[1];
-            cpu.getROM().loadProgram(fileName);
-            int oldAnimationMode = animationMode;
-            setAnimationMode(HackController.DISPLAY_CHANGES);
-            cpu.initProgram();
-            setAnimationMode(oldAnimationMode);
+            case COMMAND_SETVAR:
+                if (command.length != 3)
+                    throw new CommandException("Illegal number of arguments to command", command);
+                setValue(command[1], command[2]);
+                break;
+
+            case COMMAND_ROMLOAD:
+                if (command.length != 2)
+                    throw new CommandException("Illegal number of arguments to command", command);
+
+                String fileName = workingDir.getAbsolutePath() + "/" + command[1];
+                cpu.getROM().loadProgram(fileName);
+                int oldAnimationMode = animationMode;
+                setAnimationMode(HackController.DISPLAY_CHANGES);
+                cpu.initProgram();
+                setAnimationMode(oldAnimationMode);
+                break;
+
+            default:
+                throw new CommandException("Unknown simulator command", command);
         }
-        else
-            throw new CommandException("Unknown simulator command", command);
     }
 
     // Hides all highlights in GUIs.
-    private void hideHighlightes() {
+    private void hideHighlights() {
         cpu.getRAM().hideHighlight();
         cpu.getROM().hideHighlight();
         cpu.getA().hideHighlight();
@@ -408,10 +406,10 @@ public class CPUEmulator extends HackSimulator implements ComputerPartErrorEvent
     }
 
     /**
-     * Called when an error occured in a computer part.
+     * Called when an error occurred in a computer part.
      * The event contains the source computer part and the error message.
      */
-    public void computerPartErrorOccured(ComputerPartErrorEvent event) {
+    public void computerPartErrorOccurred(ComputerPartErrorEvent event) {
         displayMessage(event.getErrorMessage(), true);
     }
 
@@ -419,7 +417,7 @@ public class CPUEmulator extends HackSimulator implements ComputerPartErrorEvent
     // value of i, which is an address in the RAM.
     // Throws VariableException if i is not a legal address in the RAM.
     private static short getRamIndex(String varName) throws VariableException {
-        if (varName.indexOf("]") == -1)
+        if (!varName.contains("]"))
             throw new VariableException("Missing ']'", varName);
 
         String indexStr = varName.substring(varName.indexOf("[") + 1, varName.indexOf("]"));
@@ -427,14 +425,14 @@ public class CPUEmulator extends HackSimulator implements ComputerPartErrorEvent
         if (index < 0 || index >= Definitions.RAM_SIZE)
             throw new VariableException("Illegal variable index", varName);
 
-        return (short)index;
+        return (short) index;
     }
 
     // receives a variable name of the form xxx[i] and returns the numeric
     // value of i, which is an address in the ROM.
     // Throws VariableException if i is not a legal address in the ROM.
     private static short getRomIndex(String varName) throws VariableException {
-        if (varName.indexOf("]") == -1)
+        if (!varName.contains("]"))
             throw new VariableException("Missing ']'", varName);
 
         String indexStr = varName.substring(varName.indexOf("[") + 1, varName.indexOf("]"));
@@ -442,27 +440,20 @@ public class CPUEmulator extends HackSimulator implements ComputerPartErrorEvent
         if (index < 0 || index >= Definitions.ROM_SIZE)
             throw new VariableException("Illegal variable index", varName);
 
-        return (short)index;
+        return (short) index;
     }
 
     // Checks that the given value is a legal 16-bit value
     private void check_value(String varName, int value) throws VariableException {
         if (value < -32768 || value >= 32768)
             throw new VariableException(value +
-                " is an illegal value for variable", varName);
-    }
-
-    // Checks that the given value is a legal 16-bit address
-    private void check_ram_address(String varName, int value) throws VariableException {
-        if (value < 0 || value >= Definitions.RAM_SIZE)
-            throw new VariableException(value +
-                " is an illegal value for", varName);
+                                                " is an illegal value for variable", varName);
     }
 
     // Checks that the given value is a legal 16-bit address
     private void check_rom_address(String varName, int value) throws VariableException {
         if (value < 0 || value >= Definitions.ROM_SIZE)
             throw new VariableException(value +
-                " is an illegal value for", varName);
+                                                " is an illegal value for", varName);
     }
 }

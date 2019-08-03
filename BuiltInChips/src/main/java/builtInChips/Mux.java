@@ -29,6 +29,6 @@ public class Mux extends BuiltInGate {
         short a = inputPins[0].get();
         short b = inputPins[1].get();
         short sel = inputPins[2].get();
-        outputPins[0].set((short)(sel == 0 ? a : b));
+        outputPins[0].set(sel == 0 ? a : b);
     }
 }

@@ -17,9 +17,10 @@
 
 package Hack.CPUEmulator;
 
-import Hack.Controller.*;
-import Hack.ComputerParts.*;
-import java.awt.event.*;
+import Hack.ComputerParts.BusGUI;
+import Hack.ComputerParts.PointedMemoryGUI;
+import Hack.ComputerParts.RegisterGUI;
+import Hack.Controller.HackSimulatorGUI;
 
 /**
  * An interface for a GUI of the CPU emulator.
@@ -29,55 +30,50 @@ public interface CPUEmulatorGUI extends HackSimulatorGUI {
     /**
      * Returns the bus GUI component.
      */
-    public BusGUI getBus();
+    BusGUI getBus();
 
     /**
      * Returns the screen GUI component.
      */
-    public ScreenGUI getScreen();
+    ScreenGUI getScreen();
 
     /**
      * Returns the keyboard GUI component.
      */
-    public KeyboardGUI getKeyboard();
+    KeyboardGUI getKeyboard();
 
     /**
      * Returns the RAM GUI component.
      */
-    public PointedMemoryGUI getRAM();
+    PointedMemoryGUI getRAM();
 
     /**
      * Returns the ROM GUI component.
      */
-    public ROMGUI getROM();
+    ROMGUI getROM();
 
     /**
      * Returns the A register GUI component.
      */
-    public RegisterGUI getA();
+    RegisterGUI getA();
 
     /**
      * Returns the D register GUI component.
      */
-    public RegisterGUI getD();
+    RegisterGUI getD();
 
     /**
      * Returns the PC register GUI component.
      */
-    public RegisterGUI getPC();
+    RegisterGUI getPC();
 
     /**
      * Returns the ALU GUI component.
      */
-    public ALUGUI getALU();
-
-    /**
-     * Registers the given listener to listen to key events.
-     */
-    public void addKeyListener(KeyListener listener);
+    ALUGUI getALU();
 
     /**
      * Sets the focus on the CPUEmulator's frame
      */
-    public void requestFocus();
+    void requestFocus();
 }

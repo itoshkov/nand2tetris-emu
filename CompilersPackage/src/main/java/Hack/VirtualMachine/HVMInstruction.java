@@ -100,13 +100,6 @@ public class HVMInstruction {
     }
 
     /**
-     * Returns the number of arguments.
-     */
-    public short getNumberOfArgs() {
-        return numberOfArgs;
-    }
-
-    /**
      * Returns an array of 3 Strings. The first is the operation name, the second is
      * the first argument and the third is the second argument.
      */
@@ -132,11 +125,7 @@ public class HVMInstruction {
                 }
                 break;
             case HVMInstructionSet.LABEL_CODE:
-                result[1] = stringArg;
-                break;
             case HVMInstructionSet.GOTO_CODE:
-                result[1] = stringArg;
-                break;
             case HVMInstructionSet.IF_GOTO_CODE:
                 result[1] = stringArg;
                 break;
@@ -156,7 +145,7 @@ public class HVMInstruction {
 
     public String toString() {
         String[] formatted = getFormattedStrings();
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         if (!formatted[0].equals("")) {
             result.append(formatted[0]);
 

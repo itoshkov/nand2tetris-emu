@@ -20,7 +20,7 @@ package Hack.ComputerParts;
 import Hack.Events.*;
 
 /**
- * An event for notifying a ComputerPartErrorEventListener on an error that occured
+ * An event for notifying a ComputerPartErrorEventListener on an error that occurred
  * in a computer part.
  */
 public class ComputerPartErrorEvent extends ErrorEvent {

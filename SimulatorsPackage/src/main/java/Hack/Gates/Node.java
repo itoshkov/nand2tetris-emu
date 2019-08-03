@@ -17,6 +17,8 @@
 
 package Hack.Gates;
 
+import java.util.Vector;
+
 /**
  * A node - a wire (or a complete bus) in a circuit.
  */
@@ -26,7 +28,7 @@ public class Node {
     protected short value;
 
     // listeners list
-    protected NodeSet listeners;
+    protected final Vector<Node> listeners = new Vector<>();
 
     /**
      * Constructs a new node.
@@ -45,9 +47,6 @@ public class Node {
      * Adds the given node as a listener.
      */
     public void addListener(Node node) {
-        if (listeners == null)
-            listeners = new NodeSet();
-
         listeners.add(node);
     }
 
@@ -55,8 +54,7 @@ public class Node {
      * Removes the given node from being a listener.
      */
     public void removeListener(Node node) {
-        if (listeners != null)
-            listeners.remove(node);
+        listeners.remove(node);
     }
 
     /**
@@ -73,10 +71,7 @@ public class Node {
     public void set(short value) {
         if (this.value != value) {
             this.value = value;
-
-            if (listeners != null)
-                for (int i = 0; i < listeners.size(); i++)
-                    listeners.getNodeAt(i).set(get());
+            listeners.forEach(l -> l.set(get()));
         }
     }
 }

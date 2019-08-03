@@ -29,7 +29,7 @@ public class HackFileFilter implements FilenameFilter {
     private String extension;
 
     /**
-     * Constucts a new HackFileFilter with the given extension
+     * Constructs a new HackFileFilter with the given extension
      * @param extension The given extension
      */
     public HackFileFilter(String extension) {
@@ -38,12 +38,5 @@ public class HackFileFilter implements FilenameFilter {
 
     public boolean accept(File directory, String name) {
         return name.endsWith(extension);
-    }
-
-    /**
-     * Returns the accepted extension
-     */
-    public String getAcceptedExtension() {
-        return extension;
     }
 }

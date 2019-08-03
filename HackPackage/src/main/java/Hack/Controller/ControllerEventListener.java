@@ -27,5 +27,5 @@ public interface ControllerEventListener {
      * The given event contains the source object, the performed action's code
      * and the action's supplied data object.
      */
-    public void actionPerformed(ControllerEvent event);
+    void actionPerformed(ControllerEvent event);
 }

@@ -20,7 +20,7 @@ package Hack.Gates;
 import Hack.Events.*;
 
 /**
- * An event for notifying a GateErrorEventListener on an error that occured
+ * An event for notifying a GateErrorEventListener on an error that occurred
  * in a gate.
  */
 public class GateErrorEvent extends ErrorEvent {

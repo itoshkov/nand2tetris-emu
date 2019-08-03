@@ -115,15 +115,6 @@ public class Memory extends InteractiveValueComputerPart implements ClearEventLi
             gui.setContents(mem);
     }
 
-    /**
-     * Scrolls the memory such that the given address will be on top.
-     * (assumes legal address).
-     */
-    public void scrollTo(int address) {
-        if (displayChanges)
-            gui.scrollTo(address);
-    }
-
     public void clearRequested(ClearEvent event) {
         reset();
     }

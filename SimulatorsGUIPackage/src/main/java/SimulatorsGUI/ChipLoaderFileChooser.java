@@ -17,12 +17,15 @@
 
 package SimulatorsGUI;
 
-import HackGUI.*;
+import HackGUI.FileChooserComponent;
+import HackGUI.FilesTypeEvent;
+import HackGUI.FilesTypeListener;
+import HackGUI.Utilities;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import java.io.*;
+import java.awt.event.ActionEvent;
+import java.util.Vector;
 
 /**
  * This class represents the gui of the chip loader file chooser.
@@ -42,25 +45,17 @@ public class ChipLoaderFileChooser extends JFrame {
     private JButton cancelButton = new JButton();
 
     // the vector containing the listeners to this component.
-    private Vector listeners;
+    private Vector<FilesTypeListener> listeners;
 
     /**
      * Constructs a new ChipLoaderFileChooser.
      */
     public ChipLoaderFileChooser() {
         super ("Directories Selection");
-        listeners = new Vector();
+        listeners = new Vector<>();
         setSelectionToDirectory();
         setNames();
         jbInit();
-    }
-
-    /**
-     * Shows the file chooser.
-     */
-    public void showWindow() {
-        setVisible(true);
-        workingDir.getTextField().requestFocus();
     }
 
     /**
@@ -71,39 +66,13 @@ public class ChipLoaderFileChooser extends JFrame {
     }
 
     /**
-     * Un-registers the given FilesTypeListener from being a listener to this component.
-     */
-    public void removeListener (FilesTypeListener listener) {
-        listeners.removeElement(listener);
-    }
-
-    /**
      * Notify all the FilesTypeListeners on actions taken in it, by creating a
      * FilesTypeEvent and sending it using the filesNamesChanged method to all
      * of the listeners.
      */
     public void notifyListeners (String working, String builtIn/*, String composite*/) {
         FilesTypeEvent event = new FilesTypeEvent(this,working, builtIn, null/*, composite*/);
-
-        for(int i=0;i<listeners.size();i++) {
-            ((FilesTypeListener)listeners.elementAt(i)).filesNamesChanged(event);
-        }
-    }
-
-    /**
-     * Sets the current HDL directory.
-     */
-    public void setWorkingDir(File file) {
-        workingDir.setCurrentFileName(file.getName());
-        workingDir.showCurrentFileName();
-    }
-
-    /**
-     * Sets the BuiltIn HDL directory.
-     */
-    public void setBuiltInDir (File file) {
-        builtInDir.setCurrentFileName(file.getName());
-        builtInDir.showCurrentFileName();
+        listeners.forEach(l -> l.filesNamesChanged(event));
     }
 
     // Sets the selection mode to directories only.
@@ -126,17 +95,9 @@ public class ChipLoaderFileChooser extends JFrame {
         okButton.setToolTipText("OK");
         okButton.setIcon(okIcon);
         okButton.setBounds(new Rectangle(90, 95, 63, 44));
-        okButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                okButton_actionPerformed(e);
-            }
-        });
+        okButton.addActionListener(this::okButton_actionPerformed);
         cancelButton.setBounds(new Rectangle(265, 95, 63, 44));
-        cancelButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                cancelButton_actionPerformed(e);
-            }
-        });
+        cancelButton.addActionListener(this::cancelButton_actionPerformed);
         cancelButton.setToolTipText("CANCEL");
         cancelButton.setIcon(cancelIcon);
         this.getContentPane().add(workingDir, null);

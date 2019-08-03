@@ -29,36 +29,26 @@ public interface MemoryGUI extends InteractiveValueComputerPartGUI {
     /**
      * Registers the given ClearEventListener as a listener to this GUI.
      */
-    public void addClearListener(ClearEventListener listener);
-
-    /**
-     * Un-registers the given ClearEventListener from being a listener to this GUI.
-     */
-    public void removeClearListener(ClearEventListener listener);
+    void addClearListener(ClearEventListener listener);
 
     /**
      * Notifies all the ClearEventListeners on a a request for clear by creating
      * a ClearEvent and sending it using the clearRequested method to all the listeners.
      */
-    public void notifyClearListeners();
+    void notifyClearListeners();
 
     /**
      * Sets the memory contents with the given values array.
      */
-    public void setContents(short[] values);
+    void setContents(short[] values);
 
     /**
      * Selects the commands in the range fromIndex..toIndex
      */
-    public void select(int fromIndex, int toIndex);
+    void select(int fromIndex, int toIndex);
 
     /**
      * Hides all selections.
      */
-    public void hideSelect();
-
-    /**
-     * Scrolls the memory such that the given address will be on top.
-     */
-    public void scrollTo(int address);
+    void hideSelect();
 }

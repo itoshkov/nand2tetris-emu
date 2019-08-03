@@ -28,7 +28,7 @@ public class LineTokenizer extends StreamTokenizer {
      * Constructs a new LineTokenizer for the given line.
      * Throws IOException if an IO error occured
      */
-    public LineTokenizer(String line) throws IOException {
+    public LineTokenizer(String line) {
         super(new StringReader(line));
         slashSlashComments(true);
     }
@@ -49,7 +49,7 @@ public class LineTokenizer extends StreamTokenizer {
      * Return the current token, or null if no more tokens.
      */
     public String token() {
-        String token = null;
+        String token;
 
         switch (ttype) {
             case StreamTokenizer.TT_NUMBER:
@@ -77,16 +77,6 @@ public class LineTokenizer extends StreamTokenizer {
     }
 
     /**
-     * If the current token is a symbol, returns it. Otherwise returns 0.
-     */
-    public char symbol() {
-        if (ttype > 0)
-            return (char)ttype;
-        else
-            return 0;
-    }
-
-    /**
      * Checks whether the current token matches the given token
      */
     public boolean isToken(String token) {
@@ -94,24 +84,10 @@ public class LineTokenizer extends StreamTokenizer {
     }
 
     /**
-     * Checks whether the current token is a word.
-     */
-    public boolean isWord() {
-        return ttype == TT_WORD;
-    }
-
-    /**
      * Checks whether the current token is a number.
      */
     public boolean isNumber() {
         return ttype == TT_NUMBER;
-    }
-
-    /**
-     * Checks whether the current token is a symbol.
-     */
-    public boolean isSymbol() {
-        return ttype > 0;
     }
 
     /**

@@ -26,10 +26,10 @@ public interface ComputerPartEventListener {
      * Called when the contents of the ComputerPart are changed.
      * The event contains the source object, the changed index and the new value.
      */
-    public void valueChanged(ComputerPartEvent event);
+    void valueChanged(ComputerPartEvent event);
 
     /**
      * Called when the ComputerPart's GUI gained focus.
      */
-    public void guiGainedFocus();
+    void guiGainedFocus();
 }

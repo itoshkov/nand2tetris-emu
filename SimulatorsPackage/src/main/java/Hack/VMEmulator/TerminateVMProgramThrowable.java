@@ -21,6 +21,7 @@ package Hack.VMEmulator;
  * Object to be thrown down the built-in code stack upon terminating
  * a program while it's running exception for errors in the program.
  */
+@SuppressWarnings("unused")
 public class TerminateVMProgramThrowable extends Throwable
 {
     /**

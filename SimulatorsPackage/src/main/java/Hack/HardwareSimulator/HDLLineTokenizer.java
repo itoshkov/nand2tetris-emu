@@ -34,7 +34,7 @@ public class HDLLineTokenizer extends HDLTokenizer {
              ByteArrayInputStream(line.getBytes())));
 
         try {
-            initizalizeInput(input);
+            initializeInput(input);
         } catch (IOException ioe) {
             throw new HDLException("Error while initializing HDL for reading");
         }

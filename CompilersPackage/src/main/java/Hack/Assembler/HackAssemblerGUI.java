@@ -28,32 +28,32 @@ public interface HackAssemblerGUI extends HackTranslatorGUI {
     /**
      * Returns the GUI of the Comparison file.
      */
-    public TextFileGUI getComparison();
+    TextFileGUI getComparison();
 
     /**
      * Sets the name of the Comparison file with the given name.
      */
-    public void setComparisonName(String name);
+    void setComparisonName(String name);
 
     /**
      * Enables loading a comparison file.
      */
-    public void enableLoadComparison();
+    void enableLoadComparison();
 
     /**
      * Disables loading a comparison file.
      */
-    public void disableLoadComparison();
+    void disableLoadComparison();
 
     /**
      * Shows the comparison file
      */
-    public void showComparison();
+    void showComparison();
 
     /**
      * Hides the comparison file
      */
-    public void hideComparison();
+    void hideComparison();
 
 
 }

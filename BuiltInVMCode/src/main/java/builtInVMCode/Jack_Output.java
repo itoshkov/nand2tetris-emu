@@ -34,7 +34,7 @@ public class Jack_Output extends JackOSClass {
 
     static int wordInLine, address;
     static boolean firstInWord;
-    static int map[][];
+    static int[][] map;
 
     public static void init() {
         firstInWord = true;
@@ -198,7 +198,7 @@ public class Jack_Output extends JackOSClass {
                 if (wordInLine == (SCREEN_WIDTH >> 4)) {
                     println();
                 } else {
-                    firstInWord = !firstInWord;
+                    firstInWord = true;
                 }
             } else {
                 firstInWord = false;
@@ -218,7 +218,7 @@ public class Jack_Output extends JackOSClass {
             printChar((short) iter.current());
     }
 
-    public static void println() throws TerminateVMProgramThrowable {
+    public static void println() {
         address = (address + 11 * (SCREEN_WIDTH >> 4)) - wordInLine;
         wordInLine = 0;
         firstInWord = true;

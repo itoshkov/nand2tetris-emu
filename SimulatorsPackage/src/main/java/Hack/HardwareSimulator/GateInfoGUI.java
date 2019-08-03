@@ -27,30 +27,30 @@ public interface GateInfoGUI extends ComputerPartGUI {
     /**
      * Sets the current time.
      */
-    public void setTime(int time);
+    void setTime(int time);
 
     /**
      * Sets the clocked flag - whether the chip is clocked or not clocked.
      */
-    public void setClocked(boolean clocked);
+    void setClocked(boolean clocked);
 
     /**
      * If up is true, sets the clock to be up. otherwise, sets the clock to be down.
      */
-    public void setClock(boolean up);
+    void setClock(boolean up);
 
     /**
      * Sets the current chip name with the given name.
      */
-    public void setChip(String chipName);
+    void setChip(String chipName);
 
     /**
      * Enables the time display.
      */
-    public void enableTime();
+    void enableTime();
 
     /**
      * Disables the time display.
      */
-    public void disableTime();
+    void disableTime();
 }

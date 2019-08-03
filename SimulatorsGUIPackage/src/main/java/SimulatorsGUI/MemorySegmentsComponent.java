@@ -28,20 +28,8 @@ import HackGUI.*;
  */
 public class MemorySegmentsComponent extends JPanel {
 
-    // The spllit pane containing static and local.
+    // The split pane containing static and local.
     private JSplitPane segmentsSplitPane1;
-
-    // The split pane between arg and the previous split pane.
-    private JSplitPane segmentsSplitPane2;
-
-    // The split pane between this and the previous split pane.
-    private JSplitPane segmentsSplitPane3;
-
-    // The split pane between that and the previous split pane.
-    private JSplitPane segmentsSplitPane4;
-
-    // The split pane between temp and the previous split pane.
-    private JSplitPane segmentsSplitPane5;
 
     // 'Static' memory segment
     private MemorySegmentComponent staticSegment;
@@ -80,10 +68,14 @@ public class MemorySegmentsComponent extends JPanel {
         tempSegment.setSegmentName("Temp");
 
         // creating the split panes.
-        segmentsSplitPane5 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, thatSegment, tempSegment);
-        segmentsSplitPane4 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, thisSegment, segmentsSplitPane5);
-        segmentsSplitPane3 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, argSegment, segmentsSplitPane4);
-        segmentsSplitPane2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, localSegment, segmentsSplitPane3);
+        // The split pane between temp and the previous split pane.
+        JSplitPane segmentsSplitPane5 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, thatSegment, tempSegment);
+        // The split pane between that and the previous split pane.
+        JSplitPane segmentsSplitPane4 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, thisSegment, segmentsSplitPane5);
+        // The split pane between this and the previous split pane.
+        JSplitPane segmentsSplitPane3 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, argSegment, segmentsSplitPane4);
+        // The split pane between arg and the previous split pane.
+        JSplitPane segmentsSplitPane2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, localSegment, segmentsSplitPane3);
         segmentsSplitPane1 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, staticSegment, segmentsSplitPane2);
 
         // providing a one touch expandable feature to the split panes.
@@ -111,7 +103,7 @@ public class MemorySegmentsComponent extends JPanel {
     }
 
     /**
-     * Returns the split pane which contains all of the other split peanes.
+     * Returns the split pane which contains all of the other split panes.
      */
     public JSplitPane getSplitPane() {
         return segmentsSplitPane1;

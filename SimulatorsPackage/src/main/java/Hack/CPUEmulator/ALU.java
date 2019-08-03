@@ -25,7 +25,7 @@ import Hack.ComputerParts.*;
  */
 public class ALU extends ValueComputerPart {
 
-    // The amount of miliseconds that the ALU will flash when computing its value.
+    // The amount of milliseconds that the ALU will flash when computing its value.
     private static final int BODY_FLASH_TIME = 500;
     private static final int COMMAND_FLASH_TIME = 500;
 
@@ -34,9 +34,6 @@ public class ALU extends ValueComputerPart {
 
     // The output of the ALU
     private short output;
-
-    // The dscription of the command
-    private String commandDescription;
 
     // The gui of the ALU
     private ALUGUI gui;
@@ -84,7 +81,7 @@ public class ALU extends ValueComputerPart {
     public synchronized void setCommand(String description,  boolean zero0, boolean negate0,
                                         boolean zero1, boolean negate1, boolean ADDorAND,
                                         boolean negateOutput) {
-        commandDescription = description;
+        // The dscription of the command
         this.zero0 = zero0;
         this.negate0 = negate0;
         this.zero1 = zero1;
@@ -123,20 +120,6 @@ public class ALU extends ValueComputerPart {
                                               negate1, ADDorAND, negateOutput);
 
         setValueAt(2, result, false);
-    }
-
-    /**
-     * Sets the first input of the ALU with the given value.
-     */
-    public void setInput0(short value) {
-        setValueAt(0, value, false);
-    }
-
-    /**
-     * Sets the second input of the ALU with the given value.
-     */
-    public void setInput1(short value) {
-        setValueAt(1, value, false);
     }
 
     /**

@@ -20,6 +20,7 @@ package SimulatorsGUI;
 import HackGUI.*;
 import Hack.Gates.*;
 import Hack.HardwareSimulator.*;
+
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
@@ -31,8 +32,8 @@ import java.awt.event.*;
 public class PartsComponent extends JPanel implements PartsGUI {
 
     // The strings representing a composite and BuiltIn gates.
-    private final static String BUILTIN_GATE  = "BuiltIn";
-    private final static String COMPOSITE_GATE  = "Composite";
+    private final static String BUILTIN_GATE = "BuiltIn";
+    private final static String COMPOSITE_GATE = "Composite";
 
     // The table containing the parts data
     private JTable partsTable;
@@ -43,9 +44,6 @@ public class PartsComponent extends JPanel implements PartsGUI {
     // The scroll pane in which the table is placed.
     private JScrollPane scrollPane;
 
-    // The model of this table.
-    private PartsTableModel model;
-
     // The name of this component.
     private JLabel nameLbl = new JLabel();
 
@@ -54,7 +52,8 @@ public class PartsComponent extends JPanel implements PartsGUI {
      */
     public PartsComponent() {
         parts = new Gate[0];
-        model = new PartsTableModel();
+        // The model of this table.
+        PartsTableModel model = new PartsTableModel();
         partsTable = new JTable(model);
         jbInit();
     }
@@ -79,7 +78,7 @@ public class PartsComponent extends JPanel implements PartsGUI {
     /**
      * Sets the name of this component.
      */
-    public void setName (String name) {
+    public void setName(String name) {
         nameLbl.setText(name);
     }
 
@@ -103,20 +102,13 @@ public class PartsComponent extends JPanel implements PartsGUI {
 
     // Determines the width of each column in the table.
     private void determineColumnWidth() {
-        TableColumn column = null;
-        for (int i = 0; i < 3; i++) {
-            column = partsTable.getColumnModel().getColumn(i);
-            if (i == 0)
-                column.setPreferredWidth(110);
-            else if (i==1)
-                column.setPreferredWidth(72);
-            else if (i==2)
-                column.setPreferredWidth(55);
-        }
+        partsTable.getColumnModel().getColumn(0).setPreferredWidth(110);
+        partsTable.getColumnModel().getColumn(1).setPreferredWidth(72);
+        partsTable.getColumnModel().getColumn(2).setPreferredWidth(55);
     }
 
     // Initialization of this component.
-    private void jbInit()  {
+    private void jbInit() {
         this.setLayout(null);
         partsTable.setFont(Utilities.valueFont);
         partsTable.getTableHeader().setReorderingAllowed(false);
@@ -185,25 +177,25 @@ public class PartsComponent extends JPanel implements PartsGUI {
          * Returns the value at a specific row and column.
          */
         public Object getValueAt(int row, int col) {
-            Object result = null;
-            if(col==0)
-                result =  parts[row].getGateClass().getName();
-            else if (col==1) {
+            if (col == 0)
+                return parts[row].getGateClass().getName();
+
+            if (col == 1) {
                 if (parts[row] instanceof CompositeGate)
-                    result = COMPOSITE_GATE;
+                    return COMPOSITE_GATE;
                 else if (parts[row] instanceof BuiltInGate)
-                    result = BUILTIN_GATE;
+                    return BUILTIN_GATE;
+            } else if (col == 2) {
+                return parts[row].getGateClass().isClocked();
             }
-            else if (col==2)
-                result = new Boolean(parts[row].getGateClass().isClocked());
-            return result;
+            return null;
         }
 
         /**
          * Returns true of this table cells are editable, false -
          * otherwise.
          */
-        public boolean isCellEditable(int row, int col){
+        public boolean isCellEditable(int row, int col) {
             return false;
         }
 

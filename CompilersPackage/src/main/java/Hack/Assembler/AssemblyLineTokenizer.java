@@ -65,7 +65,7 @@ public class AssemblyLineTokenizer extends LineTokenizer {
 	 * Removes space characters from the given string.
 	 */
 	private static String removeSpaces(String line) {
-		StringBuffer nospc = new StringBuffer();
+		StringBuilder nospc = new StringBuilder();
         StringCharacterIterator i = new StringCharacterIterator(line);
         for (i.first(); i.current() != CharacterIterator.DONE; i.next()) {
 			if (i.current() != ' ') {

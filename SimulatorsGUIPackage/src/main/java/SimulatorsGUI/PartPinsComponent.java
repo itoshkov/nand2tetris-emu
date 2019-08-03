@@ -19,6 +19,7 @@ package SimulatorsGUI;
 
 import HackGUI.*;
 import Hack.HardwareSimulator.*;
+
 import javax.swing.table.*;
 import javax.swing.*;
 import java.awt.*;
@@ -35,12 +36,6 @@ public class PartPinsComponent extends PinsComponent implements PartPinsGUI {
     // The values of the pins in a String representation.
     private String[] valuesStr;
 
-    // The renderer of the pins table.
-    private PartPinsTableCellRenderer renderer = new PartPinsTableCellRenderer();
-
-    // a boolean field specifying if the user can enter values into the table.
-    private boolean isEnabled = true;
-
     // The part name
     private JLabel partNameLbl = new JLabel();
 
@@ -51,6 +46,8 @@ public class PartPinsComponent extends PinsComponent implements PartPinsGUI {
         super();
         partPins = new PartPinInfo[0];
         valuesStr = new String[0];
+        // The renderer of the pins table.
+        PartPinsTableCellRenderer renderer = new PartPinsTableCellRenderer();
         pinsTable.setDefaultRenderer(pinsTable.getColumnClass(0), renderer);
 
         jbInit();
@@ -68,14 +65,12 @@ public class PartPinsComponent extends PinsComponent implements PartPinsGUI {
      * Enables user input into the source.
      */
     public void enableUserInput() {
-        isEnabled = true;
     }
 
     /**
      * Disables user input into the source.
      */
     public void disableUserInput() {
-        isEnabled = false;
     }
 
 
@@ -99,9 +94,9 @@ public class PartPinsComponent extends PinsComponent implements PartPinsGUI {
      * a boolean which is true if the user pressed the 'ok' button and false
      * if the user pressed the 'cancel' button.
      */
-    public void pinValueChanged (PinValueEvent e) {
+    public void pinValueChanged(PinValueEvent e) {
         pinsTable.setEnabled(true);
-        if(e.getIsOk()) {
+        if (e.getIsOk()) {
             valuesStr[pinsTable.getSelectedRow()] = e.getValueStr();
             partPins[pinsTable.getSelectedRow()].value = Format.translateValueToShort(e.getValueStr(), dataFormat);
         }
@@ -111,22 +106,22 @@ public class PartPinsComponent extends PinsComponent implements PartPinsGUI {
     /**
      * Returns the coordinates of the top left corner of the value at the given index.
      */
-    public Point getCoordinates (int index) {
+    public Point getCoordinates(int index) {
         JScrollBar bar = scrollPane.getVerticalScrollBar();
         Rectangle r = pinsTable.getCellRect(index, 2, true);
         pinsTable.scrollRectToVisible(r);
-        return new Point((int)(r.getX() + topLevelLocation.getX()),
-                         (int)(r.getY() + topLevelLocation.getY() - bar.getValue()));
+        return new Point((int) (r.getX() + topLevelLocation.getX()),
+                         (int) (r.getY() + topLevelLocation.getY() - bar.getValue()));
     }
 
     /**
      * Sets the pins list's contents with the given vector of PartPinInfo objects.
      */
-    public void setContents(Vector newPins) {
+    public void setContents(Vector<PartPinInfo> newPins) {
         partPins = new PartPinInfo[newPins.size()];
         valuesStr = new String[newPins.size()];
         newPins.toArray(partPins);
-        for (int i=0; i<partPins.length;i++)
+        for (int i = 0; i < partPins.length; i++)
             valuesStr[i] = Format.translateValueToString(partPins[i].value, dataFormat);
         pinsTable.clearSelection();
         pinsTable.revalidate();
@@ -136,7 +131,7 @@ public class PartPinsComponent extends PinsComponent implements PartPinsGUI {
     /**
      * Returns the value at the given index in its string representation.
      */
-    public String getValueAsString (int index) {
+    public String getValueAsString(int index) {
         return valuesStr[index];
     }
 
@@ -162,16 +157,9 @@ public class PartPinsComponent extends PinsComponent implements PartPinsGUI {
 
     // Determines the width of each column in the table.
     protected void determineColumnWidth() {
-        TableColumn column = null;
-        for (int i = 0; i < 2; i++) {
-            column = pinsTable.getColumnModel().getColumn(i);
-            if (i == 0)
-                column.setPreferredWidth(20);
-            else if(i==1)
-                column.setPreferredWidth(20);
-            else if(i==2)
-                column.setPreferredWidth(180);
-        }
+        pinsTable.getColumnModel().getColumn(0).setPreferredWidth(20);
+        pinsTable.getColumnModel().getColumn(1).setPreferredWidth(20);
+        pinsTable.getColumnModel().getColumn(2).setPreferredWidth(180);
     }
 
 
@@ -191,7 +179,7 @@ public class PartPinsComponent extends PinsComponent implements PartPinsGUI {
          * Returns the number of rows.
          */
         public int getRowCount() {
-            if(partPins == null)
+            if (partPins == null)
                 return 0;
             else
                 return partPins.length;
@@ -208,12 +196,12 @@ public class PartPinsComponent extends PinsComponent implements PartPinsGUI {
          * Returns the value at a specific row and column.
          */
         public Object getValueAt(int row, int col) {
-            String result ="";
-            if(col==0)
+            String result = "";
+            if (col == 0)
                 result = HardwareSimulator.getFullPinName(partPins[row].partPinName, partPins[row].partPinSubBus);
-            else if (col==1)
+            else if (col == 1)
                 result = HardwareSimulator.getFullPinName(partPins[row].gatePinName, partPins[row].gatePinSubBus);
-            else if (col==2)
+            else if (col == 2)
                 result = valuesStr[row];
             return result;
         }
@@ -222,7 +210,7 @@ public class PartPinsComponent extends PinsComponent implements PartPinsGUI {
          * Returns true of this table cells are editable, false -
          * otherwise.
          */
-        public boolean isCellEditable(int row, int col){
+        public boolean isCellEditable(int row, int col) {
             return false;
         }
 
@@ -231,13 +219,12 @@ public class PartPinsComponent extends PinsComponent implements PartPinsGUI {
          */
         public void setValueAt(Object value, int row, int col) {
 
-            String data = ((String)value).trim();
+            String data = ((String) value).trim();
             try {
                 valuesStr[row] = data;
                 partPins[row].value = Format.translateValueToShort(data, dataFormat);
-                notifyListeners((short)row,partPins[row].value);
-            }
-            catch(NumberFormatException nfe) {
+                notifyListeners((short) row, partPins[row].value);
+            } catch (NumberFormatException nfe) {
                 notifyErrorListeners("Illegal value");
                 valuesStr[row] = Format.translateValueToString(partPins[row].value, dataFormat);
             }
@@ -250,28 +237,25 @@ public class PartPinsComponent extends PinsComponent implements PartPinsGUI {
     class PartPinsTableCellRenderer extends DefaultTableCellRenderer {
 
         public Component getTableCellRendererComponent
-            (JTable table, Object value, boolean selected, boolean focused, int row, int column)
-        {
+                (JTable table, Object value, boolean selected, boolean focused, int row, int column) {
             setEnabled(table == null || table.isEnabled());
 
-            if(column==0 || column==1) {
+            if (column == 0 || column == 1) {
                 setHorizontalAlignment(SwingConstants.CENTER);
                 setForeground(null);
                 setBackground(null);
-            }
-            else {
+            } else {
                 setHorizontalAlignment(SwingConstants.RIGHT);
-                for (int i=0;i<highlightIndex.size(); i++) {
-                    if(row == ((Integer)highlightIndex.elementAt(i)).intValue()) {
+                for (int i = 0; i < highlightIndex.size(); i++)
+                    if (row == highlightIndex.elementAt(i)) {
                         setForeground(Color.blue);
                         break;
-                    }
-                    else
+                    } else {
                         setForeground(null);
-                }
-                if (row == flashIndex) {
+                    }
+
+                if (row == flashIndex)
                     setBackground(Color.orange);
-                }
                 else
                     setBackground(null);
 
@@ -283,7 +267,7 @@ public class PartPinsComponent extends PinsComponent implements PartPinsGUI {
     }
 
     // Initializes this component
-    private void jbInit()  {
+    private void jbInit() {
         partNameLbl.setFont(Utilities.bigLabelsFont);
         partNameLbl.setHorizontalAlignment(SwingConstants.CENTER);
         partNameLbl.setText("keyboard");

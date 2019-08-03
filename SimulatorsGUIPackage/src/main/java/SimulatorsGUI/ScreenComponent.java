@@ -19,7 +19,9 @@ package SimulatorsGUI;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Arrays;
 import javax.swing.*;
+
 import Hack.CPUEmulator.*;
 import Hack.Utilities.*;
 
@@ -45,7 +47,7 @@ public class ScreenComponent extends JPanel implements ScreenGUI, ActionListener
     protected Timer timer;
 
     /**
-     * Constructs a new Sceen with given height & width (in words)
+     * Constructs a new Screen with given height & width (in words)
      * and amount of bits per word.
      */
     public ScreenComponent() {
@@ -66,7 +68,7 @@ public class ScreenComponent extends JPanel implements ScreenGUI, ActionListener
         x[0] = borderInsets.left;
         y[0] = borderInsets.top;
 
-        // updates pixels indice
+        // updates pixels indices
         for (int i = 1; i < Definitions.SCREEN_SIZE; i++) {
             x[i] = x[i - 1] + Definitions.BITS_PER_WORD;
             y[i] = y[i - 1];
@@ -101,9 +103,8 @@ public class ScreenComponent extends JPanel implements ScreenGUI, ActionListener
     /**
      * Resets the content of this component.
      */
-    public void reset(){
-        for (int i = 0; i < data.length; i++)
-            data[i] = 0;
+    public void reset() {
+        Arrays.fill(data, (short) 0);
 
         redraw = true;
     }
@@ -151,7 +152,7 @@ public class ScreenComponent extends JPanel implements ScreenGUI, ActionListener
 
         for (int i = 0; i < Definitions.SCREEN_SIZE; i++) {
             if (data[i] != 0) {
-                if (data[i] == 0xffff) // draw a full line
+                if (data[i] == 0xff) // draw a full line
                     g.drawLine(x[i], y[i], x[i] + 15, y[i]);
                 else {
                     short value = data[i];
@@ -160,7 +161,7 @@ public class ScreenComponent extends JPanel implements ScreenGUI, ActionListener
                             // since there's no drawPixel, uses drawLine to draw one pixel
                             g.drawLine(x[i] + j, y[i], x[i] + j, y[i]);
 
-                        value = (short)(value >> 1);
+                        value = (short) (value >> 1);
                     }
                 }
             }

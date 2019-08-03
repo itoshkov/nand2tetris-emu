@@ -38,9 +38,6 @@ public abstract class HackTranslator implements HackTranslatorEventListener, Act
 
     private static final String DIRECTORY = "directory";
 
-    // The delay in ms between each step in fast forward
-    private static final int FAST_FORWARD_DELAY = 750;
-
     // the writer of the destination file
     private PrintWriter writer;
 
@@ -130,43 +127,6 @@ public abstract class HackTranslator implements HackTranslatorEventListener, Act
     }
 
     /**
-     * Constructs a new HackTranslator with the size of the program memory.
-     * The given null value will be used to fill the program initially.
-     * A non null sourceFileName specifies a source file to be loaded.
-     * The gui is assumed to be not null.
-     */
-    public HackTranslator(HackTranslatorGUI gui, int size, short nullValue, String sourceFileName)
-            throws HackTranslatorException {
-        this.gui = gui;
-        gui.addHackTranslatorListener(this);
-        gui.getSource().addTextFileListener(this);
-        gui.setTitle(getName() + getVersionString());
-        singleStepTask = new SingleStepTask();
-        fullCompilationTask = new FullCompilationTask();
-        fastForwardTask = new FastForwardTask();
-        loadSourceTask = new LoadSourceTask();
-        timer = new Timer(FAST_FORWARD_DELAY, this);
-        init(size, nullValue);
-
-        File workingDir = loadWorkingDir();
-        gui.setWorkingDir(workingDir);
-
-        if (sourceFileName == null) {
-            gui.disableSingleStep();
-            gui.disableFastForward();
-            gui.disableStop();
-            gui.disableRewind();
-            gui.disableFullCompilation();
-            gui.disableSave();
-            gui.enableLoadSource();
-            gui.disableSourceRowSelection();
-        } else {
-            loadSource(sourceFileName);
-            gui.setSourceName(sourceFileName);
-        }
-    }
-
-    /**
      * Returns the extension of the source file names.
      */
     protected abstract String getSourceExtension();
@@ -245,7 +205,7 @@ public abstract class HackTranslator implements HackTranslatorEventListener, Act
      * Restarts the compilation from the beginning of the source.
      */
     protected void restartCompilation() {
-        compilationMap = new Hashtable<Integer, int[]>();
+        compilationMap = new Hashtable<>();
         sourcePC = 0;
         destPC = 0;
 
@@ -268,7 +228,7 @@ public abstract class HackTranslator implements HackTranslatorEventListener, Act
     // Loads the given source file and displays it in the Source GUI
     private void loadSource(String fileName) throws HackTranslatorException {
         String line;
-        Vector<String> formattedLines = new Vector<String>();
+        Vector<String> formattedLines = new Vector<>();
         Vector<String> lines;
         String errorMessage = null;
 
@@ -289,7 +249,7 @@ public abstract class HackTranslator implements HackTranslatorEventListener, Act
             checkSourceFile(fileName);
             sourceFileName = fileName;
 
-            lines = new Vector<String>();
+            lines = new Vector<>();
             BufferedReader sourceReader = new BufferedReader(new FileReader(sourceFileName));
 
             while ((line = sourceReader.readLine()) != null) {
@@ -597,13 +557,6 @@ public abstract class HackTranslator implements HackTranslatorEventListener, Act
      */
     protected int[] rowIndexToRange(int rowIndex) {
         return compilationMap.get(rowIndex);
-    }
-
-    // Returns the working dir that is saved in the data file, or "" if data file doesn't exist.
-    protected File loadWorkingDir() {
-        final Preferences preferences = Preferences.userNodeForPackage(HackTranslator.class);
-        final String dir = preferences.get(DIRECTORY, ".");
-        return new File(dir);
     }
 
     /**

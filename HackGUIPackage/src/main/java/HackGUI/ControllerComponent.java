@@ -201,13 +201,6 @@ public class ControllerComponent extends JFrame implements ControllerGUI,
     }
 
     /**
-     * Un-registers the given ControllerEventListener from being a listener to this GUI.
-     */
-    public void removeControllerListener(ControllerEventListener listener){
-        listeners.removeElement(listener);
-    }
-
-    /**
      * Notify all the ControllerEventListeners on actions taken in it, by creating a
      * ControllerEvent (with the action and supplied data) and sending it using the
      * actionPerformed method to all the listeners.

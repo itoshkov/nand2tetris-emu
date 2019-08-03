@@ -17,8 +17,8 @@
 
 package SimulatorsGUI;
 
-import java.io.File;
 import javax.swing.filechooser.FileFilter;
+import java.io.File;
 
 /**
  * A file filter of '.hack' or '.asm' files, for the use of the ROMComponent.
@@ -29,20 +29,11 @@ public class ROMFileFilter extends FileFilter {
      * Determines which files this filter should accept.
      */
     public boolean accept(File f) {
-        if (f.isDirectory()) {
+        if (f.isDirectory())
             return true;
-        }
 
         String extension = getExtension(f);
-        if (extension != null) {
-            if (extension.equals("hack") || extension.equals("asm") )
-                    return true;
-            else {
-                return false;
-            }
-        }
-
-        return false;
+        return "hack".equals(extension) || "asm".equals(extension);
     }
 
 

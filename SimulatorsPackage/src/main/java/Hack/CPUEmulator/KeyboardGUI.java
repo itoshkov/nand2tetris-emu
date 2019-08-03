@@ -17,9 +17,9 @@
 
 package Hack.CPUEmulator;
 
-import java.awt.event.*;
+import Hack.ComputerParts.ComputerPartGUI;
+
 import javax.swing.*;
-import Hack.ComputerParts.*;
 
 /**
  * An interface for the GUI of a computer Keyboard.
@@ -31,15 +31,15 @@ public interface KeyboardGUI extends ComputerPartGUI {
     /**
      * Displayes the given key name.
      */
-    public void setKey(String keyName);
+    void setKey(String keyName);
 
     /**
      * Clears the key display.
      */
-    public void clearKey();
+    void clearKey();
 
     /**
      * Returns the GUI component that handles Key events.
      */
-    public JComponent getKeyEventHandler();
+    JComponent getKeyEventHandler();
 }

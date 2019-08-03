@@ -39,9 +39,6 @@ public class CallStackComponent extends JPanel implements CallStackGUI {
     // The table representing this callStack.
     private JTable callStackTable;
 
-    // The model of the table;
-    private CallStackTableModel model;
-
     // The containing scroll panel
     private JScrollPane scrollPane;
 
@@ -53,7 +50,8 @@ public class CallStackComponent extends JPanel implements CallStackGUI {
      */
     public CallStackComponent() {
         methodNames = new Vector();
-        model = new CallStackTableModel();
+        // The model of the table;
+        CallStackTableModel model = new CallStackTableModel();
         callStackTable = new JTable(model);
         jbInit();
 
