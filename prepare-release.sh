@@ -9,7 +9,7 @@ cd $(dirname $0)
 
 rm -rf $RELEASE_DIR
 
-mvn clean package
+mvn clean verify
 
 DIR=$(mktemp -d)
 INST_DIR="${DIR}/${DIST_NAME}/bin"
