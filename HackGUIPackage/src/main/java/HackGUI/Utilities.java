@@ -17,6 +17,8 @@
 
 package HackGUI;
 
+import org.jetbrains.annotations.NotNull;
+
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import java.awt.*;
@@ -132,9 +134,22 @@ public class Utilities {
         return table.getParent().getBounds().getHeight() / table.getRowHeight();
     }
 
-    public static void fixSize(Component component, Dimension dimension) {
+    public static void fixSize(@NotNull Component component, Dimension dimension) {
         component.setPreferredSize(dimension);
         component.setMinimumSize(dimension);
         component.setMaximumSize(dimension);
+    }
+
+    /**
+     * Swing containers have internal flags, which indicate whether the preferred, minimum
+     * and maximum sizes were set explicitly. If not, those sizes are often ignored. This
+     * method will set those flags for all non-{@code null} sizes.
+     *
+     * @param container The container.
+     */
+    public static void respectSizes(@NotNull Container container) {
+        container.setPreferredSize(container.getPreferredSize());
+        container.setMinimumSize(container.getMinimumSize());
+        container.setMaximumSize(container.getMaximumSize());
     }
 }

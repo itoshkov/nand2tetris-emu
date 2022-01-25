@@ -15,12 +15,12 @@
  * mark your changes clearly, for the benefit of others.                        *
  ********************************************************************************/
 
-import Hack.Controller.ControllerGUI;
 import Hack.Controller.HackController;
 import Hack.VMEmulator.VMEmulator;
 import Hack.VMEmulator.VMEmulatorApplication;
 import Hack.VMEmulator.VMEmulatorGUI;
 import HackGUI.ControllerComponent;
+import HackGUI.Utilities;
 import SimulatorsGUI.VMEmulatorComponent;
 
 import javax.swing.*;
@@ -41,7 +41,8 @@ public class VMEmulatorMain {
                 }
 
                 final VMEmulatorGUI simulatorGUI = new VMEmulatorComponent();
-                final ControllerGUI controllerGUI = new ControllerComponent();
+                final ControllerComponent controllerGUI = new ControllerComponent();
+                Utilities.respectSizes(controllerGUI);
                 new VMEmulatorApplication(controllerGUI, simulatorGUI, "bin/scripts/defaultVM.txt");
                 break;
 
@@ -55,4 +56,3 @@ public class VMEmulatorMain {
         }
     }
 }
-

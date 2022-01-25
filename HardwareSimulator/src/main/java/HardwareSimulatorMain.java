@@ -18,8 +18,8 @@
 import Hack.Controller.HackController;
 import Hack.HardwareSimulator.HardwareSimulator;
 import Hack.HardwareSimulator.HardwareSimulatorApplication;
-import Hack.HardwareSimulator.HardwareSimulatorControllerGUI;
 import Hack.HardwareSimulator.HardwareSimulatorGUI;
+import HackGUI.Utilities;
 import SimulatorsGUI.HardwareSimulatorComponent;
 import SimulatorsGUI.HardwareSimulatorControllerComponent;
 
@@ -41,7 +41,8 @@ public class HardwareSimulatorMain {
                 }
 
                 final HardwareSimulatorGUI simulatorGUI = new HardwareSimulatorComponent();
-                final HardwareSimulatorControllerGUI controllerGUI = new HardwareSimulatorControllerComponent();
+                final HardwareSimulatorControllerComponent controllerGUI = new HardwareSimulatorControllerComponent();
+                Utilities.respectSizes(controllerGUI);
                 new HardwareSimulatorApplication(controllerGUI, simulatorGUI, "bin/scripts/defaultHW.txt");
                 break;
 

@@ -18,9 +18,9 @@
 import Hack.CPUEmulator.CPUEmulator;
 import Hack.CPUEmulator.CPUEmulatorApplication;
 import Hack.CPUEmulator.CPUEmulatorGUI;
-import Hack.Controller.ControllerGUI;
 import Hack.Controller.HackController;
 import HackGUI.ControllerComponent;
+import HackGUI.Utilities;
 import SimulatorsGUI.CPUEmulatorComponent;
 
 import javax.swing.*;
@@ -41,7 +41,8 @@ public class CPUEmulatorMain {
                 }
 
                 final CPUEmulatorGUI simulatorGUI = new CPUEmulatorComponent();
-                final ControllerGUI controllerGUI = new ControllerComponent();
+                final ControllerComponent controllerGUI = new ControllerComponent();
+                Utilities.respectSizes(controllerGUI);
                 new CPUEmulatorApplication(controllerGUI, simulatorGUI, "bin/scripts/defaultCPU.txt");
                 break;
 
