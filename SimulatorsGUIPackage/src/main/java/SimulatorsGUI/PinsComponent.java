@@ -52,10 +52,10 @@ public class PinsComponent extends JPanel implements PinsGUI, MouseListener, Pin
     protected int dataFormat;
 
     // A vector containing the listeners to this object.
-    private Vector<ComputerPartEventListener> listeners;
+    private final Vector<ComputerPartEventListener> listeners;
 
     // A vector containing the error listeners to this object.
-    private Vector<ErrorEventListener> errorEventListeners;
+    private final Vector<ErrorEventListener> errorEventListeners;
 
     // The scroll pane on which the table is placed.
     protected JScrollPane scrollPane;
@@ -70,7 +70,7 @@ public class PinsComponent extends JPanel implements PinsGUI, MouseListener, Pin
     protected Point topLevelLocation;
 
     // The name of this pins component.
-    private JLabel nameLbl = new JLabel();
+    private final JLabel nameLbl = new JLabel();
 
     // a boolean field specifying if the user can enter values into the table.
     private boolean isEnabled = true;
@@ -174,7 +174,7 @@ public class PinsComponent extends JPanel implements PinsGUI, MouseListener, Pin
     /**
      * Notifies all the ErrorEventListener on an error in this gui by
      * creating an ErrorEvent (with the error message) and sending it
-     * using the errorOccured method to all the listeners.
+     * using the errorOccurred method to all the listeners.
      */
     public void notifyErrorListeners(String errorMessage) {
         ErrorEvent event = new ErrorEvent(this, errorMessage);
@@ -446,7 +446,6 @@ public class PinsComponent extends JPanel implements PinsGUI, MouseListener, Pin
         setBorder(BorderFactory.createEtchedBorder());
 
         binary.setSize(new Dimension(240, 52));
-        binary.setLayout(null);
         binary.setVisible(false);
         binary.addListener(this);
         determineColumnWidth();

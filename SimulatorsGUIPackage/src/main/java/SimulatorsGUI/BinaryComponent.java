@@ -17,14 +17,16 @@
 
 package SimulatorsGUI;
 
-import HackGUI.*;
 import Hack.Utilities.Conversions;
+import HackGUI.Utilities;
 
-import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
-import java.util.*;
-import javax.swing.border.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.Vector;
 
 /**
  * This class represents a 16-bits binary number.
@@ -36,10 +38,6 @@ public class BinaryComponent extends JPanel implements MouseListener, KeyListene
 
     // The value of this component in a String representation.
     private StringBuffer valueStr;
-
-    // Creating buttons.
-    private final JButton okButton = new JButton();
-    private final JButton cancelButton = new JButton();
 
     // Creating icons.
     private final ImageIcon okIcon = new ImageIcon(Utilities.imagesDir + "smallok.gif");
@@ -118,8 +116,8 @@ public class BinaryComponent extends JPanel implements MouseListener, KeyListene
     // Updates the value of this component.
     private void updateValue() {
         valueStr = new StringBuffer(16);
-        char currentChar;
         for (JTextField bit : bits) {
+            char currentChar;
             if (bit.getText().equals(""))
                 currentChar = '0';
             else
@@ -183,35 +181,55 @@ public class BinaryComponent extends JPanel implements MouseListener, KeyListene
 
     // Initialization of this component.
     private void jbInit() {
-        // The border of this component.
-        Border binaryBorder = BorderFactory.createLineBorder(Color.black, 3);
-        this.setLayout(null);
-        okButton.setHorizontalTextPosition(SwingConstants.CENTER);
-        okButton.setIcon(okIcon);
-        okButton.setBounds(new Rectangle(97, 29, 23, 20));
-        okButton.addActionListener(this::okButton_actionPerformed);
-        cancelButton.setHorizontalTextPosition(SwingConstants.CENTER);
-        cancelButton.setIcon(cancelIcon);
-        cancelButton.setBounds(new Rectangle(125, 29, 23, 20));
-        cancelButton.addActionListener(this::cancelButton_actionPerformed);
-        this.setBorder(binaryBorder);
-
-        for (int i = 0; i < bits.length; i++) {
+        final JPanel bitsPanel = new JPanel();
+        bitsPanel.setLayout(new BoxLayout(bitsPanel, BoxLayout.X_AXIS));
+        bitsPanel.add(Box.createHorizontalGlue());
+        for (int i = bits.length - 1; i >= 0; i--) {
             final JTextField bit = new JTextField(1);
             bit.setFont(Utilities.valueFont);
             bit.setText("0");
             bit.setHorizontalAlignment(SwingConstants.RIGHT);
-            bit.setBounds(new Rectangle(16 + 13 * (bits.length - i - 1), 8, 13, 19));
+            fixSize(bit, new Dimension(20, 19));
             bit.addMouseListener(this);
             bit.addKeyListener(this);
 
             bits[i] = bit;
 
-            this.add(bit);
+            bitsPanel.add(bit);
         }
+        bitsPanel.add(Box.createHorizontalGlue());
+        bitsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        this.add(cancelButton, null);
-        this.add(okButton, null);
+        final JButton okButton = new JButton();
+        okButton.setHorizontalTextPosition(SwingConstants.CENTER);
+        okButton.setIcon(okIcon);
+        okButton.addActionListener(e -> approve());
+        fixSize(okButton, new Dimension(23, 20));
+
+        final JButton cancelButton = new JButton();
+        cancelButton.setHorizontalTextPosition(SwingConstants.CENTER);
+        cancelButton.setIcon(cancelIcon);
+        cancelButton.addActionListener(e -> hideBinary());
+        fixSize(cancelButton, new Dimension(23, 20));
+
+        final JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.X_AXIS));
+        buttonsPanel.add(okButton);
+        buttonsPanel.add(cancelButton);
+        buttonsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.add(Box.createVerticalGlue());
+        this.add(bitsPanel);
+        this.add(buttonsPanel);
+        this.setBorder(BorderFactory.createLineBorder(Color.black, 3));
+    }
+
+    // TODO Move this to a better place
+    public static void fixSize(Component component, Dimension dimension) {
+        component.setPreferredSize(dimension);
+        component.setMinimumSize(dimension);
+        component.setMaximumSize(dimension);
     }
 
     /**
@@ -222,20 +240,6 @@ public class BinaryComponent extends JPanel implements MouseListener, KeyListene
         updateValue();
         notifyListeners();
         setVisible(false);
-    }
-
-    /**
-     * Implementing the action of pressing the ok button.
-     */
-    public void okButton_actionPerformed(ActionEvent e) {
-        approve();
-    }
-
-    /**
-     * Implementing the action of pressing the cancel button.
-     */
-    public void cancelButton_actionPerformed(ActionEvent e) {
-        hideBinary();
     }
 
     /**
