@@ -445,7 +445,7 @@ public class PinsComponent extends JPanel implements PinsGUI, MouseListener, Pin
         scrollPane.setLocation(0, 27);
         setBorder(BorderFactory.createEtchedBorder());
 
-        binary.setSize(new Dimension(240, 52));
+        binary.setSize(240, 52);
         binary.setVisible(false);
         binary.addListener(this);
         determineColumnWidth();

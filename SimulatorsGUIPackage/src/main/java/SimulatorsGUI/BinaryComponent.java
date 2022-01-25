@@ -40,8 +40,8 @@ public class BinaryComponent extends JPanel implements MouseListener, KeyListene
     private StringBuffer valueStr;
 
     // Creating icons.
-    private final ImageIcon okIcon = new ImageIcon(Utilities.imagesDir + "smallok.gif");
-    private final ImageIcon cancelIcon = new ImageIcon(Utilities.imagesDir + "smallcancel.gif");
+    private static final ImageIcon okIcon = new ImageIcon(Utilities.imagesDir + "smallok.gif");
+    private static final ImageIcon cancelIcon = new ImageIcon(Utilities.imagesDir + "smallcancel.gif");
 
     // A vector containing the listeners to this component.
     private final Vector<PinValueListener> listeners;
@@ -189,7 +189,7 @@ public class BinaryComponent extends JPanel implements MouseListener, KeyListene
             bit.setFont(Utilities.valueFont);
             bit.setText("0");
             bit.setHorizontalAlignment(SwingConstants.RIGHT);
-            fixSize(bit, new Dimension(20, 19));
+            Utilities.fixSize(bit, new Dimension(20, 19));
             bit.addMouseListener(this);
             bit.addKeyListener(this);
 
@@ -204,13 +204,13 @@ public class BinaryComponent extends JPanel implements MouseListener, KeyListene
         okButton.setHorizontalTextPosition(SwingConstants.CENTER);
         okButton.setIcon(okIcon);
         okButton.addActionListener(e -> approve());
-        fixSize(okButton, new Dimension(23, 20));
+        Utilities.fixSize(okButton, new Dimension(okIcon.getIconWidth(), okIcon.getIconHeight()));
 
         final JButton cancelButton = new JButton();
         cancelButton.setHorizontalTextPosition(SwingConstants.CENTER);
         cancelButton.setIcon(cancelIcon);
         cancelButton.addActionListener(e -> hideBinary());
-        fixSize(cancelButton, new Dimension(23, 20));
+        Utilities.fixSize(cancelButton, new Dimension(cancelIcon.getIconWidth(), cancelIcon.getIconHeight()));
 
         final JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.X_AXIS));
@@ -223,13 +223,6 @@ public class BinaryComponent extends JPanel implements MouseListener, KeyListene
         this.add(bitsPanel);
         this.add(buttonsPanel);
         this.setBorder(BorderFactory.createLineBorder(Color.black, 3));
-    }
-
-    // TODO Move this to a better place
-    public static void fixSize(Component component, Dimension dimension) {
-        component.setPreferredSize(dimension);
-        component.setMinimumSize(dimension);
-        component.setMaximumSize(dimension);
     }
 
     /**

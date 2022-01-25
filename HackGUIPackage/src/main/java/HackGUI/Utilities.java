@@ -17,9 +17,9 @@
 
 package HackGUI;
 
-import java.awt.*;
 import javax.swing.*;
-import javax.swing.plaf.*;
+import javax.swing.plaf.FontUIResource;
+import java.awt.*;
 
 /**
  * A class of utility methods.
@@ -130,5 +130,11 @@ public class Utilities {
      */
     public static double computeVisibleRowsCount(JTable table) {
         return table.getParent().getBounds().getHeight() / table.getRowHeight();
+    }
+
+    public static void fixSize(Component component, Dimension dimension) {
+        component.setPreferredSize(dimension);
+        component.setMinimumSize(dimension);
+        component.setMaximumSize(dimension);
     }
 }
