@@ -34,13 +34,13 @@ public class TitledComboBox extends JPanel {
     private static final int COMBO_HEIGHT = 22;
 
     // The combo box
-    private JComboBox<String> combo;
+    private final JComboBox<String> combo;
 
     // The title
-    private JLabel title;
+    private final JLabel title;
 
     // The listeners to this combo box
-    private LinkedList<ActionListener> listeners;
+    private final LinkedList<ActionListener> listeners;
 
     /**
      * Constructs a new TitledComboBox.
@@ -82,14 +82,6 @@ public class TitledComboBox extends JPanel {
     }
 
     /**
-     * Returns true if the given index is the selected one.
-     */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public boolean isSelectedIndex(int index) {
-        return combo.getSelectedIndex() == index;
-    }
-
-    /**
      * Returns the selected index.
      */
     public int getSelectedIndex() {
@@ -100,7 +92,8 @@ public class TitledComboBox extends JPanel {
      * Sets the selected index.
      */
     public void setSelectedIndex(int index) {
-        combo.setSelectedIndex(index);
+        if (combo.getSelectedIndex() != index)
+            combo.setSelectedIndex(index);
     }
 
     public void setEnabled(boolean value) {
