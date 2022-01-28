@@ -38,7 +38,7 @@ public class PinInfo {
     public short value;
 
     // Initialization marking.
-    private boolean[] initialized;
+    private final boolean[] initialized;
 
     /**
      * Constructs a new empty PinInfo.

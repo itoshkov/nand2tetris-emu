@@ -28,6 +28,7 @@ import javax.swing.table.*;
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This class represents the gui of a pins list. Every pin row contains the pin's name
@@ -36,11 +37,14 @@ import java.awt.event.*;
  */
 public class PinsComponent extends JPanel implements PinsGUI, MouseListener, PinValueListener {
 
+    private static final String CARD_BASE = "base";
+    private static final String CARD_BINARY = "binary";
+
     // A component which represents the binary value of the pin.
-    protected BinaryComponent binary;
+    private final BinaryComponent binary;
 
     // The table of the input component.
-    protected JTable pinsTable;
+    protected final JTable pinsTable;
 
     // An array containing the info of the pins.
     private PinInfo[] pins;
@@ -105,7 +109,14 @@ public class PinsComponent extends JPanel implements PinsGUI, MouseListener, Pin
         listeners = new Vector<>();
         errorEventListeners = new Vector<>();
         highlightIndex = new Vector<>();
-        binary = new BinaryComponent();
+        final AtomicBoolean isBinaryVisible = new AtomicBoolean(false);
+        final CardLayout cardLayout = new CardLayout();
+        this.setLayout(cardLayout);
+        binary = new BinaryComponent(isBinaryVisible::get,
+                                     show -> {
+                                         cardLayout.show(this, show ? CARD_BINARY : CARD_BASE);
+                                         isBinaryVisible.set(show);
+                                     });
         pinsTable = new JTable(getTableModel());
         // The renderer of the table containing the pins list.
         PinsTableCellRenderer renderer = new PinsTableCellRenderer();
@@ -114,7 +125,6 @@ public class PinsComponent extends JPanel implements PinsGUI, MouseListener, Pin
         pinsTable.getColumnModel().getColumn(getValueColumn()).setCellEditor(editor);
 
         jbInit();
-
     }
 
     /**
@@ -324,7 +334,7 @@ public class PinsComponent extends JPanel implements PinsGUI, MouseListener, Pin
      */
     public void mouseClicked(MouseEvent e) {
         if (isEnabled && (e.getModifiers() & InputEvent.BUTTON1_MASK) != 0) {
-            if (binary.isVisible()) {
+            if (binary.isShown()) {
                 binary.hideBinary();
                 // The pinsTable didn't get the selection message since it
                 // was disabled. Enable it and select the correct row.
@@ -365,12 +375,6 @@ public class PinsComponent extends JPanel implements PinsGUI, MouseListener, Pin
      */
     public void setTopLevelLocation(Component top) {
         topLevelLocation = Utilities.getTopLevelLocation(top, pinsTable);
-    }
-
-    // Determines the width of each column in the table.
-    protected void determineColumnWidth() {
-        pinsTable.getColumnModel().getColumn(0).setPreferredWidth(116);
-        pinsTable.getColumnModel().getColumn(1).setPreferredWidth(124);
     }
 
     /**
@@ -430,44 +434,41 @@ public class PinsComponent extends JPanel implements PinsGUI, MouseListener, Pin
     private void jbInit() {
         pinsTable.addFocusListener(new FocusListener() {
             public void focusGained(FocusEvent e) {
-                pinsTable_focusGained(e);
+                notifyListeners();
             }
 
             public void focusLost(FocusEvent e) {
-                pinsTable_focusLost(e);
+                lastSelectedRow = pinsTable.getSelectedRow();
+                pinsTable.clearSelection();
             }
         });
         pinsTable.addMouseListener(this);
         pinsTable.getTableHeader().setReorderingAllowed(false);
         pinsTable.getTableHeader().setResizingAllowed(false);
-        this.setLayout(null);
+        pinsTable.setFont(Utilities.valueFont);
+        pinsTable.getColumnModel().getColumn(0).setPreferredWidth(116);
+        pinsTable.getColumnModel().getColumn(1).setPreferredWidth(124);
+
         scrollPane = new JScrollPane(pinsTable);
-        scrollPane.setLocation(0, 27);
         setBorder(BorderFactory.createEtchedBorder());
 
-        binary.setSize(240, 52);
-        binary.setVisible(false);
         binary.addListener(this);
-        determineColumnWidth();
+
         nameLbl.setText("Name :");
-        nameLbl.setBounds(new Rectangle(3, 3, 102, 21));
         nameLbl.setFont(Utilities.labelsFont);
-        pinsTable.setFont(Utilities.valueFont);
-        this.add(binary, null);
-        this.add(scrollPane, null);
-        this.add(nameLbl, null);
 
-    }
+        final JPanel base = new JPanel();
+        base.setLayout(new BoxLayout(base, BoxLayout.Y_AXIS));
+        base.add(nameLbl);
+        base.add(scrollPane);
 
-    // The action of the table gaining focus
-    public void pinsTable_focusGained(FocusEvent e) {
-        notifyListeners();
-    }
+        final JPanel alt = new JPanel();
+        alt.setLayout(new BoxLayout(alt, BoxLayout.Y_AXIS));
+        alt.add(binary);
+        alt.add(Box.createVerticalGlue());
 
-    // The action of the table loosing focus
-    public void pinsTable_focusLost(FocusEvent e) {
-        lastSelectedRow = pinsTable.getSelectedRow();
-        pinsTable.clearSelection();
+        this.add(base, CARD_BASE);
+        this.add(alt, CARD_BINARY);
     }
 
     // An inner class representing the model of the breakpoint table.
@@ -540,7 +541,7 @@ public class PinsComponent extends JPanel implements PinsGUI, MouseListener, Pin
         }
     }
 
-    // An inner class which implemets the cell renderer of the pins table, giving
+    // An inner class which implements the cell renderer of the pins table, giving
     // the feature of alignment, flashing and highlighting.
     class PinsTableCellRenderer extends DefaultTableCellRenderer {
 

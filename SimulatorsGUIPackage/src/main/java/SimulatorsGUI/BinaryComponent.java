@@ -27,6 +27,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Vector;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 
 /**
  * This class represents a 16-bits binary number.
@@ -35,6 +37,8 @@ public class BinaryComponent extends JPanel implements MouseListener, KeyListene
 
     // An array containing all of the text fields.
     private final JTextField[] bits = new JTextField[16];
+    private final BooleanSupplier isVisible;
+    private final Consumer<Boolean> setVisible;
 
     // The value of this component in a String representation.
     private StringBuffer valueStr;
@@ -56,8 +60,10 @@ public class BinaryComponent extends JPanel implements MouseListener, KeyListene
     /**
      * Constructs a new BinaryComponent.
      */
-    public BinaryComponent() {
-        listeners = new Vector<>();
+    public BinaryComponent(BooleanSupplier isVisible, Consumer<Boolean> setVisible) {
+        this.isVisible = isVisible;
+        this.setVisible = setVisible;
+        this.listeners = new Vector<>();
 
         jbInit();
     }
@@ -232,7 +238,7 @@ public class BinaryComponent extends JPanel implements MouseListener, KeyListene
         isOk = true;
         updateValue();
         notifyListeners();
-        setVisible(false);
+        setVisible.accept(false);
     }
 
     /**
@@ -241,14 +247,18 @@ public class BinaryComponent extends JPanel implements MouseListener, KeyListene
     public void hideBinary() {
         isOk = false;
         notifyListeners();
-        setVisible(false);
+        setVisible.accept(false);
     }
 
     /**
      * Shows the Binary component and gives focus to the first available bit.
      */
     public void showBinary() {
-        setVisible(true);
+        setVisible.accept(true);
         bits[16 - numberOfBits].grabFocus();
+    }
+
+    public boolean isShown() {
+        return isVisible.getAsBoolean();
     }
 }
