@@ -37,16 +37,16 @@ public class MemoryComponent extends JPanel implements MemoryGUI {
     public int dataFormat;
 
     // A vector containing the listeners to this object.
-    private Vector<ComputerPartEventListener> listeners;
+    private final Vector<ComputerPartEventListener> listeners;
 
     // A vector containing the clear listeners to this object.
-    private Vector<ClearEventListener> clearListeners;
+    private final Vector<ClearEventListener> clearListeners;
 
     // A vector containing the error listeners to this object.
-    private Vector<ErrorEventListener> errorEventListeners;
+    private final Vector<ErrorEventListener> errorEventListeners;
 
     // A vector containing the repaint listeners to this object.
-    private Vector<MemoryChangeListener> changeListeners;
+    private final Vector<MemoryChangeListener> changeListeners;
 
     // The table representing the memory.
     protected JTable memoryTable;
@@ -63,11 +63,11 @@ public class MemoryComponent extends JPanel implements MemoryGUI {
     // Creating buttons and icons.
     protected MouseOverJButton searchButton = new MouseOverJButton();
     protected MouseOverJButton clearButton = new MouseOverJButton();
-    private ImageIcon searchIcon = new ImageIcon(Utilities.imagesDir + "find.gif");
-    private ImageIcon clearIcon = new ImageIcon(Utilities.imagesDir + "smallnew.gif");
+    private static final ImageIcon searchIcon = new ImageIcon(Utilities.imagesDir + "find.gif");
+    private static final ImageIcon clearIcon = new ImageIcon(Utilities.imagesDir + "smallnew.gif");
 
     // The window of searching a specific location in memory.
-    private SearchMemoryWindow searchWindow;
+    private final SearchMemoryWindow searchWindow;
 
     // The scroll-pane on which the table is placed.
     protected JScrollPane scrollPane;
@@ -433,12 +433,22 @@ public class MemoryComponent extends JPanel implements MemoryGUI {
             }
         });
 
+        messageTxt.setBackground(SystemColor.info);
+        messageTxt.setEnabled(false);
+        messageTxt.setFont(Utilities.labelsFont);
+        messageTxt.setPreferredSize(new Dimension(70, 20));
+        messageTxt.setDisabledTextColor(Color.red);
+        messageTxt.setEditable(false);
+        messageTxt.setHorizontalAlignment(SwingConstants.CENTER);
+        messageTxt.setBounds(new Rectangle(37, 3, 154, 22));
+        messageTxt.setVisible(false);
+
         scrollPane = new JScrollPane(memoryTable);
         this.setLayout(null);
         searchButton.setToolTipText("Search");
         searchButton.setIcon(searchIcon);
         searchButton.setBounds(new Rectangle(159, 2, 31, 25));
-        searchButton.addActionListener(this::searchButton_actionPerformed);
+        searchButton.addActionListener(e -> searchWindow.showWindow());
         memoryTable.setFont(Utilities.valueFont);
         nameLbl.setBounds(new Rectangle(3, 5, 70, 23));
         nameLbl.setFont(Utilities.labelsFont);
@@ -446,7 +456,20 @@ public class MemoryComponent extends JPanel implements MemoryGUI {
         setBorder(BorderFactory.createEtchedBorder());
         scrollPane.setLocation(0, 27);
 
-        clearButton.addActionListener(this::clearButton_actionPerformed);
+        clearButton.addActionListener(e -> {
+            Object[] options = {"Yes", "No"};
+            int pressedButtonValue = JOptionPane.showOptionDialog(this.getParent(),
+                                                                  "Are you sure you want to clear ?",
+                                                                  "Warning Message",
+                                                                  JOptionPane.YES_NO_OPTION,
+                                                                  JOptionPane.WARNING_MESSAGE,
+                                                                  null,
+                                                                  options,
+                                                                  options[1]);
+
+            if (pressedButtonValue == JOptionPane.YES_OPTION)
+                notifyClearListeners();
+        });
         clearButton.setIcon(clearIcon);
         clearButton.setBounds(new Rectangle(128, 2, 31, 25));
         clearButton.setToolTipText("Clear");
@@ -489,42 +512,16 @@ public class MemoryComponent extends JPanel implements MemoryGUI {
     /**
      * Implementing the action of the table gaining the focus.
      */
-    public void memoryTable_focusGained(FocusEvent e) {
+    protected void memoryTable_focusGained(FocusEvent e) {
         memoryTable.clearSelection();
         notifyListeners();
     }
 
     /**
-     * Implementing the action of the table loosing the focus.
+     * Implementing the action of the table losing the focus.
      */
-    public void memoryTable_focusLost(FocusEvent e) {
+    protected void memoryTable_focusLost(FocusEvent e) {
         memoryTable.clearSelection();
-    }
-
-    /**
-     * Implementing the action of pressing the search button.
-     */
-    public void searchButton_actionPerformed(ActionEvent e) {
-        searchWindow.showWindow();
-    }
-
-    /**
-     * Implementing the action of pressing the clear button.
-     */
-    public void clearButton_actionPerformed(ActionEvent e) {
-
-        Object[] options = {"Yes", "No", "Cancel"};
-        int pressedButtonValue = JOptionPane.showOptionDialog(this.getParent(),
-                                                              "Are you sure you want to clear ?",
-                                                              "Warning Message",
-                                                              JOptionPane.YES_NO_CANCEL_OPTION,
-                                                              JOptionPane.WARNING_MESSAGE,
-                                                              null,
-                                                              options,
-                                                              options[2]);
-
-        if (pressedButtonValue == JOptionPane.YES_OPTION)
-            notifyClearListeners();
     }
 
     // An inner class representing the model of this table.
@@ -566,12 +563,9 @@ public class MemoryComponent extends JPanel implements MemoryGUI {
          * otherwise.
          */
         public boolean isCellEditable(int row, int col) {
-            boolean result = false;
-            if (isEnabled && col == 1 &&
-                    (endEnabling == -1 || (row >= startEnabling && row <= endEnabling)))
-                result = true;
-
-            return result;
+            return isEnabled
+                           && col == 1
+                           && (endEnabling == -1 || row >= startEnabling && row <= endEnabling);
         }
 
         /**

@@ -50,7 +50,7 @@ public class PointedMemoryComponent extends MemoryComponent implements PointedMe
     /**
      * Implementing the action of the table gaining the focus.
      */
-    public void memoryTable_focusGained(FocusEvent e) {
+    protected void memoryTable_focusGained(FocusEvent e) {
         super.memoryTable_focusGained(e);
         hasFocus = true;
     }
@@ -58,7 +58,7 @@ public class PointedMemoryComponent extends MemoryComponent implements PointedMe
     /**
      * Implementing the action of the table loosing the focus.
      */
-    public void memoryTable_focusLost(FocusEvent e) {
+    protected void memoryTable_focusLost(FocusEvent e) {
         super.memoryTable_focusLost(e);
         hasFocus = false;
     }
