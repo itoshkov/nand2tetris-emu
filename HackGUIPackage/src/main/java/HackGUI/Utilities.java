@@ -134,6 +134,10 @@ public class Utilities {
         return table.getParent().getBounds().getHeight() / table.getRowHeight();
     }
 
+    public static void fixToPreferredSize(@NotNull Component component) {
+        fixSize(component, component.getPreferredSize());
+    }
+
     public static void fixSize(@NotNull Component component, Dimension dimension) {
         component.setPreferredSize(dimension);
         component.setMinimumSize(dimension);

@@ -17,8 +17,9 @@
 
 package SimulatorsGUI;
 
-import HackGUI.*;
-import Hack.HardwareSimulator.*;
+import Hack.HardwareSimulator.GateInfoGUI;
+import HackGUI.Utilities;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -28,12 +29,12 @@ import java.awt.*;
 public class GateInfoComponent extends JPanel implements GateInfoGUI {
 
     // creating labels
-    private JLabel chipNameLbl;
-    private JLabel timeLbl;
+    private final JLabel chipNameLbl;
+    private final JLabel timeLbl;
 
     // creating text fields
-    private JTextField chipNameTxt;
-    private JTextField timeTxt;
+    private final JTextField chipNameTxt;
+    private final JTextField timeTxt;
 
     // true if the clock is currently up
     private boolean clockUp;
@@ -98,31 +99,36 @@ public class GateInfoComponent extends JPanel implements GateInfoGUI {
 
     // Initializes this component.
     private void jbInit() {
-
-        this.setLayout(null);
-
         chipNameLbl.setText("Chip Name :");
-        chipNameLbl.setBounds(new Rectangle(11, 7, 74, 21));
-
-        timeLbl.setBounds(new Rectangle(341, 8, 42, 21));
-        timeLbl.setText("Time :");
+        Utilities.fixToPreferredSize(chipNameLbl);
 
         chipNameTxt.setBackground(SystemColor.info);
         chipNameTxt.setFont(Utilities.thinBigLabelsFont);
         chipNameTxt.setEditable(false);
         chipNameTxt.setHorizontalAlignment(SwingConstants.LEFT);
-        chipNameTxt.setBounds(new Rectangle(89, 8, 231, 20));
+        Utilities.fixSize(chipNameTxt, new Dimension(231, 20));
+
+        timeLbl.setText("Time :");
+        Utilities.fixToPreferredSize(timeLbl);
+
         timeTxt.setBackground(SystemColor.info);
         timeTxt.setFont(Utilities.thinBigLabelsFont);
         timeTxt.setEditable(false);
-        timeTxt.setBounds(new Rectangle(388, 8, 69, 20));
+        Utilities.fixSize(timeTxt, new Dimension(69, 20));
 
-        this.add(chipNameTxt, null);
-        this.add(chipNameLbl, null);
-        this.add(timeLbl, null);
-        this.add(timeTxt, null);
+        this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
-        setSize(483,37);
+        this.add(Box.createRigidArea(new Dimension(10, 37)));
+        this.add(chipNameLbl);
+        this.add(Box.createRigidArea(new Dimension(4, 37)));
+        this.add(chipNameTxt);
+        this.add(Box.createRigidArea(new Dimension(20, 37)));
+        this.add(Box.createHorizontalGlue());
+        this.add(timeLbl);
+        this.add(Box.createRigidArea(new Dimension(4, 37)));
+        this.add(timeTxt);
+        this.add(Box.createRigidArea(new Dimension(10, 37)));
+
         setBorder(BorderFactory.createEtchedBorder());
     }
 }
