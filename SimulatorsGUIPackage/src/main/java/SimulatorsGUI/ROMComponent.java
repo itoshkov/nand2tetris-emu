@@ -58,9 +58,6 @@ public class ROMComponent extends PointedMemoryComponent implements ROMGUI {
     // The hack assembler translator.
     private final HackAssemblerTranslator translator = HackAssemblerTranslator.getInstance();
 
-    // The text field containing the message (for example "Loading...").
-    private final JTextField messageTxt = new JTextField();
-
     // The possible numeric formats.
     private static final String[] format = {"Asm", "Dec", "Hex", "Bin"};
 
@@ -148,24 +145,18 @@ public class ROMComponent extends PointedMemoryComponent implements ROMGUI {
      * Hides the displayed message.
      */
     public void hideMessage() {
-        messageTxt.setVisible(false);
+        super.hideMessage();
         loadButton.setVisible(true);
-        searchButton.setVisible(true);
         romFormat.setVisible(true);
-        clearButton.setVisible(true);
-        messageTxt.setText("");
     }
 
     /**
      * Displays the given message.
      */
     public void showMessage(String message) {
-        messageTxt.setText(message);
         loadButton.setVisible(false);
-        searchButton.setVisible(false);
         romFormat.setVisible(false);
-        clearButton.setVisible(false);
-        messageTxt.setVisible(true);
+        super.showMessage(message);
     }
 
     /**
@@ -205,15 +196,6 @@ public class ROMComponent extends PointedMemoryComponent implements ROMGUI {
         loadButton.setBounds(new Rectangle(97, 2, 31, 25));
         loadButton.setToolTipText("Load Program");
         loadButton.addActionListener(e -> loadProgram());
-        messageTxt.setBackground(SystemColor.info);
-        messageTxt.setEnabled(false);
-        messageTxt.setFont(Utilities.labelsFont);
-        messageTxt.setPreferredSize(new Dimension(70, 20));
-        messageTxt.setDisabledTextColor(Color.red);
-        messageTxt.setEditable(false);
-        messageTxt.setHorizontalAlignment(SwingConstants.CENTER);
-        messageTxt.setBounds(new Rectangle(37, 3, 154, 22));
-        messageTxt.setVisible(false);
         romFormat.setPreferredSize(new Dimension(125, 23));
         romFormat.setBounds(new Rectangle(39, 3, 56, 23));
         romFormat.setFont(Utilities.thinLabelsFont);
@@ -230,7 +212,6 @@ public class ROMComponent extends PointedMemoryComponent implements ROMGUI {
                 setNumericFormat(Format.BIN_FORMAT);
         });
 
-        this.add(messageTxt);
         this.add(loadButton);
         this.add(romFormat);
     }

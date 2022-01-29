@@ -99,6 +99,9 @@ public class MemoryComponent extends JPanel implements MemoryGUI {
     // If true, the disabled region is shaded.
     protected boolean grayDisabledRange;
 
+    // The text field containing the message (for example "Loading...").
+    private final JTextField messageTxt = new JTextField();
+
     /**
      * Constructs a new MemoryComponent.
      */
@@ -185,6 +188,26 @@ public class MemoryComponent extends JPanel implements MemoryGUI {
      */
     public void setTopLevelLocation(Component top) {
         topLevelLocation = Utilities.getTopLevelLocation(top, memoryTable);
+    }
+
+    /**
+     * Hides the displayed message.
+     */
+    public void hideMessage() {
+        messageTxt.setVisible(false);
+        searchButton.setVisible(true);
+        clearButton.setVisible(true);
+        messageTxt.setText("");
+    }
+
+    /**
+     * Displays the given message.
+     */
+    public void showMessage(String message) {
+        messageTxt.setText(message);
+        searchButton.setVisible(false);
+        clearButton.setVisible(false);
+        messageTxt.setVisible(true);
     }
 
     public void addListener(ComputerPartEventListener listener) {
@@ -477,6 +500,7 @@ public class MemoryComponent extends JPanel implements MemoryGUI {
         this.add(searchButton, null);
         this.add(nameLbl, null);
         this.add(clearButton, null);
+        this.add(messageTxt);
     }
 
     /**
