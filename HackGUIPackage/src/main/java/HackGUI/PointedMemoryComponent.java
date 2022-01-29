@@ -33,6 +33,15 @@ public class PointedMemoryComponent extends MemoryComponent implements PointedMe
     // Indicates whether this component has the focus
     protected boolean hasFocus = false;
 
+    public static PointedMemoryComponent create() {
+        final PointedMemoryComponent component = new PointedMemoryComponent();
+        component.jbInit();
+        return component;
+    }
+
+    protected PointedMemoryComponent() {
+    }
+
     protected DefaultTableCellRenderer getCellRenderer() {
         return new PointedMemoryTableCellRenderer();
     }

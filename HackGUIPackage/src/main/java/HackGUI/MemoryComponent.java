@@ -105,7 +105,7 @@ public class MemoryComponent extends JPanel implements MemoryGUI {
     /**
      * Constructs a new MemoryComponent.
      */
-    public MemoryComponent() {
+    protected MemoryComponent() {
         dataFormat = Format.DEC_FORMAT;
         startEnabling = -1;
         endEnabling = -1;
@@ -129,8 +129,6 @@ public class MemoryComponent extends JPanel implements MemoryGUI {
         addresses = new String[0];
         valuesStr = new String[0];
         searchWindow = new SearchMemoryWindow(this, memoryTable);
-
-        jbInit();
     }
 
     /**
@@ -444,8 +442,7 @@ public class MemoryComponent extends JPanel implements MemoryGUI {
     }
 
     // Initializes this memory.
-    private void jbInit() {
-
+    protected void jbInit() {
         memoryTable.addFocusListener(new FocusListener() {
             public void focusGained(FocusEvent e) {
                 memoryTable_focusGained(e);

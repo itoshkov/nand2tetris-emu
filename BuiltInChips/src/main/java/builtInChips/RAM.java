@@ -46,7 +46,7 @@ public abstract class RAM extends BuiltInGateWithGUI implements ComputerPartEven
         values = new short[size];
 
         if (GatesManager.getInstance().isChipsGUIEnabled()) {
-            memoryGUI = new PointedMemoryComponent();
+            memoryGUI = PointedMemoryComponent.create();
             memoryGUI.setContents(values);
             memoryGUI.setVisibleRows(8);
             memoryGUI.setLocation(166,10);

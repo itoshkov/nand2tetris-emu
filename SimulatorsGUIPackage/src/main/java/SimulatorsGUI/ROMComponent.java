@@ -64,16 +64,21 @@ public class ROMComponent extends PointedMemoryComponent implements ROMGUI {
     // The combo box for choosing the numeric format.
     private final JComboBox<String> romFormat = new JComboBox<>(format);
 
+    public static ROMComponent create() {
+        final ROMComponent component = new ROMComponent();
+        component.init();
+        return component;
+    }
+
     /**
      * Constructs a new ROMComponent.
      */
-    public ROMComponent() {
+    protected ROMComponent() {
         dataFormat = ASM_FORMAT;
         programEventListeners = new Vector<>();
         // The file filter of this component.
         fileChooser = new JFileChooser();
         fileChooser.setFileFilter(new ROMFileFilter());
-        jbInit();
     }
 
 
@@ -191,7 +196,8 @@ public class ROMComponent extends PointedMemoryComponent implements ROMGUI {
     }
 
     // Initializes this rom.
-    private void jbInit() {
+    private void init() {
+        jbInit();
         loadButton.setIcon(loadIcon);
         loadButton.setBounds(new Rectangle(97, 2, 31, 25));
         loadButton.setToolTipText("Load Program");

@@ -46,7 +46,7 @@ public class ROM32K extends BuiltInGateWithGUI
         values = new short[Definitions.ROM_SIZE];
 
         if (GatesManager.getInstance().isChipsGUIEnabled()) {
-            gui = new ROMComponent();
+            gui = ROMComponent.create();
             gui.setContents(values);
             gui.setVisibleRows(7);
             gui.setLocation(326,295);

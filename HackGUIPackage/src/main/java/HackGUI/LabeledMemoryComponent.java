@@ -35,14 +35,24 @@ public class LabeledMemoryComponent extends PointedMemoryComponent implements La
     // The flash index of the labels.
     private int labelFlashIndex = -1;
 
+    public static LabeledMemoryComponent create() {
+        final LabeledMemoryComponent component = new LabeledMemoryComponent();
+        component.init();
+        return component;
+    }
+
     /**
      * Constructs a new LabeledMemoryComponent.
      */
-    public LabeledMemoryComponent() {
+    protected LabeledMemoryComponent() {
+        labels = new String[0];
+    }
+
+    private void init() {
+        jbInit();
         searchButton.setLocation(199, 2);
         clearButton.setLocation(168, 2);
         memoryTable.setGridColor(Color.lightGray);
-        labels = new String[0];
     }
 
     /**
