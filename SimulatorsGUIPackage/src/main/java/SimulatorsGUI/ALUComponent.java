@@ -66,18 +66,18 @@ public class ALUComponent extends JPanel implements ALUGUI{
     protected JTextField location2 = new JTextField();
 
     // the command of this ALU.
-    private JTextField commandLbl = new JTextField();
+    private final JTextField commandLbl = new JTextField();
 
     // The initial ALU color.
     private Color aluColor = new Color(107,194,46);
 
     // The label with the string "ALU".
-     private JLabel nameLbl = new JLabel();
+     private final JLabel nameLbl = new JLabel();
 
     // creating the labels of the inputs and outputs.
-    private JLabel location0Lbl = new JLabel();
-    private JLabel location1Lbl = new JLabel();
-    private JLabel location2Lbl = new JLabel();
+    private final JLabel location0Lbl = new JLabel();
+    private final JLabel location1Lbl = new JLabel();
+    private final JLabel location2Lbl = new JLabel();
 
     // The null value of this ALU
     protected short nullValue;
@@ -294,9 +294,12 @@ public class ALUComponent extends JPanel implements ALUGUI{
         g2.setStroke(regularStroke);
 
         // Drawing the lines.
-        g2.draw(new Line2D.Double(START_LOCATION_ZERO_X + LOCATION_WIDTH,START_LOCATION_ZERO_Y + (LOCATION_HEIGHT / 2),START_ALU_X,START_LOCATION_ZERO_Y + (LOCATION_HEIGHT / 2)));
-        g2.draw(new Line2D.Double(START_LOCATION_ZERO_X + LOCATION_WIDTH,START_LOCATION_ONE_Y + (LOCATION_HEIGHT / 2),START_ALU_X,START_LOCATION_ONE_Y + (LOCATION_HEIGHT / 2)));
-        g2.draw(new Line2D.Double(FINISH_ALU_X,START_LOCATION_TWO_Y + (LOCATION_HEIGHT / 2),START_LOCATION_TWO_X - 1,START_LOCATION_TWO_Y + (LOCATION_HEIGHT / 2)));
+        g2.draw(new Line2D.Double(START_LOCATION_ZERO_X + LOCATION_WIDTH, START_LOCATION_ZERO_Y + LOCATION_HEIGHT / 2.,
+                                  START_ALU_X, START_LOCATION_ZERO_Y + LOCATION_HEIGHT / 2.));
+        g2.draw(new Line2D.Double(START_LOCATION_ZERO_X + LOCATION_WIDTH, START_LOCATION_ONE_Y + LOCATION_HEIGHT / 2.,
+                                  START_ALU_X, START_LOCATION_ONE_Y + LOCATION_HEIGHT / 2.));
+        g2.draw(new Line2D.Double(FINISH_ALU_X, START_LOCATION_TWO_Y + LOCATION_HEIGHT / 2., START_LOCATION_TWO_X - 1,
+                                  START_LOCATION_TWO_Y + LOCATION_HEIGHT / 2.));
 
     }
     /**
@@ -315,7 +318,6 @@ public class ALUComponent extends JPanel implements ALUGUI{
         setOpaque(false);
         // The border of the alu's command.
         Border commandBorder = BorderFactory.createLineBorder(Color.black, 1);
-        this.setLayout(null);
         location0.setForeground(Color.black);
         location0.setDisabledTextColor(Color.black);
         location0.setEditable(false);
@@ -364,17 +366,17 @@ public class ALUComponent extends JPanel implements ALUGUI{
         nameLbl.setText("ALU");
         nameLbl.setFont(Utilities.labelsFont);
         nameLbl.setBounds(new Rectangle(6, 0, 50, 22));
-        this.add(commandLbl, null);
-        this.add(location1, null);
-        this.add(location0, null);
-        this.add(location2, null);
-        this.add(location0Lbl, null);
-        this.add(location1Lbl, null);
-        this.add(location2Lbl, null);
-        this.add(nameLbl, null);
+        this.setLayout(null);
+        this.add(commandLbl);
+        this.add(location1);
+        this.add(location0);
+        this.add(location2);
+        this.add(location0Lbl);
+        this.add(location1Lbl);
+        this.add(location2Lbl);
+        this.add(nameLbl);
 
         setBorder(BorderFactory.createEtchedBorder());
-        setPreferredSize(new Dimension(368, 122));
-        setSize(368, 122);
+        Utilities.fixSize(this, new Dimension(368, 122));
     }
 }
