@@ -17,13 +17,20 @@
 
 package HackGUI;
 
-import Hack.ComputerParts.*;
+import Hack.ComputerParts.TextFileEvent;
+import Hack.ComputerParts.TextFileEventListener;
+import Hack.ComputerParts.TextFileGUI;
 
 import javax.swing.*;
-import javax.swing.table.*;
-import java.util.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * A component for displaying a text file.
@@ -31,20 +38,20 @@ import java.io.*;
 public class TextFileComponent extends JPanel implements TextFileGUI {
 
     // A vector containing the listeners to this component.
-    private Vector<TextFileEventListener> listeners;
-    private Vector<String> rowsVector;
+    private final Vector<TextFileEventListener> listeners;
+    private final Vector<String> rowsVector;
 
     // The table.
-    private JTable textFileTable;
+    private final JTable textFileTable;
 
     // The scroll pane on which the table is placed.
-    private JScrollPane scrollPane;
+    private final JScrollPane scrollPane;
 
     // The label with the name of this component
-    private JLabel nameLbl = new JLabel();
+    private final JLabel nameLbl;
 
     // A set of indices of highlighted rows.
-    private Set<Integer> highlightedLines;
+    private final Set<Integer> highlightedLines;
 
     // Indicates whether this component is enabled.
     private boolean isEnabled;
@@ -52,14 +59,16 @@ public class TextFileComponent extends JPanel implements TextFileGUI {
     /**
      * Constructs a new TextFileComponent
      */
-    public TextFileComponent() {
+    public TextFileComponent(String name) {
         listeners = new Vector<>();
         rowsVector = new Vector<>();
         // The model of the table
+        nameLbl = new JLabel(name);
         TextFileTableModel model = new TextFileTableModel();
         textFileTable = new WideTable(model, 1000);
         textFileTable.setDefaultRenderer(textFileTable.getColumnClass(0), getCellRenderer());
         textFileTable.setTableHeader(null);
+        scrollPane = new JScrollPane(textFileTable);
         highlightedLines = new HashSet<>();
         enableUserInput();
         jbInit();
@@ -80,10 +89,6 @@ public class TextFileComponent extends JPanel implements TextFileGUI {
     public void select(int from, int to) {
         textFileTable.setRowSelectionInterval(from, to);
         Utilities.tableCenterScroll(this, textFileTable, from);
-    }
-
-    public void setName(String name) {
-        nameLbl.setText(name);
     }
 
     public void addHighlight(int index, boolean clear) {
@@ -148,7 +153,7 @@ public class TextFileComponent extends JPanel implements TextFileGUI {
             String line;
             while ((line = reader.readLine()) != null)
                 rowsVector.addElement(line);
-        } catch (IOException ioe) {
+        } catch (IOException ignored) {
         }
         textFileTable.clearSelection();
         textFileTable.revalidate();
@@ -166,52 +171,34 @@ public class TextFileComponent extends JPanel implements TextFileGUI {
         repaint();
     }
 
-    /**
-     * Sets the number of visible rows.
-     */
-    public void setVisibleRows(int num) {
-        int tableHeight = num * textFileTable.getRowHeight();
-        scrollPane.setSize(getTableWidth(), tableHeight + 3);
-        setPreferredSize(new Dimension(getTableWidth(), tableHeight + 30));
-        setSize(getTableWidth(), tableHeight + 30);
-        textFileTable.getParent().setSize(new Dimension(1000, tableHeight));
-    }
-
-    /**
-     * Returns the width of the table.
-     */
-    public int getTableWidth() {
-        return 241;
-    }
-
     // The initialization of this component.
     private void jbInit() {
-
+        textFileTable.setFont(Utilities.valueFont);
         textFileTable.setShowHorizontalLines(false);
-        ListSelectionModel rowSM = textFileTable.getSelectionModel();
-        rowSM.addListSelectionListener(e -> {
-            if (!isEnabled || e.getValueIsAdjusting()) return;
+        textFileTable.getSelectionModel().addListSelectionListener(e -> {
+            if (!isEnabled || e.getValueIsAdjusting())
+                return;
+
             ListSelectionModel lsm = (ListSelectionModel) e.getSource();
             if (!lsm.isSelectionEmpty()) {
                 int selectedRow = lsm.getMinSelectionIndex();
                 notifyTextFileListeners(rowsVector.elementAt(selectedRow), selectedRow);
             }
         });
-        this.setLayout(null);
 
-        scrollPane = new JScrollPane(textFileTable);
-        scrollPane.setLocation(0, 27);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollPane.getHorizontalScrollBar().setUnitIncrement(scrollPane.getHorizontalScrollBar().getBlockIncrement());
 
-        nameLbl.setBounds(new Rectangle(3, 3, 102, 21));
         nameLbl.setFont(Utilities.labelsFont);
-        textFileTable.setFont(Utilities.valueFont);
+        Utilities.fixToPreferredSize(nameLbl);
+
         setBorder(BorderFactory.createEtchedBorder());
 
-        this.add(scrollPane, null);
-        this.add(nameLbl, null);
-
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.add(Box.createVerticalStrut(2));
+        this.add(nameLbl);
+        this.add(Box.createVerticalStrut(3));
+        this.add(scrollPane);
     }
 
     // An inner class representing the model of the breakpoint table.
@@ -259,8 +246,9 @@ public class TextFileComponent extends JPanel implements TextFileGUI {
     // An inner class representing the cell renderer of the table.
     public class TextFileCellRenderer extends DefaultTableCellRenderer {
 
-        public Component getTableCellRendererComponent
-                (JTable table, Object value, boolean selected, boolean focused, int row, int column) {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean selected, boolean focused,
+                                                       int row, int column) {
+
             setForeground(null);
             setBackground(null);
 
@@ -271,11 +259,8 @@ public class TextFileComponent extends JPanel implements TextFileGUI {
         }
 
         public void setRenderer(int row) {
-            if (highlightedLines.contains(row))
-                setBackground(Color.yellow);
-            else
-                setBackground(null);
-
+            final Color bg = highlightedLines.contains(row) ? Color.yellow : null;
+            setBackground(bg);
             setForeground(null);
         }
     }

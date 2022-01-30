@@ -84,7 +84,7 @@ public class HardwareSimulatorComponent extends HackSimulatorComponent implement
         partPins.setPinsName("Part pins");
         parts = new PartsComponent();
         parts.setName("Internal Parts");
-        hdlView = new TextFileComponent();
+        hdlView = new TextFileComponent("HDL");
 
         gateInfo = new GateInfoComponent();
 
@@ -94,7 +94,6 @@ public class HardwareSimulatorComponent extends HackSimulatorComponent implement
         outputPins.setTopLevelLocation(this);
         internalPins.setTopLevelLocation(this);
         partPins.setTopLevelLocation(this);
-        hdlView.setName("HDL");
     }
 
     public void loadProgram() {}
@@ -278,8 +277,7 @@ public class HardwareSimulatorComponent extends HackSimulatorComponent implement
         internalPins.setBounds(247, 332, internalPins.getWidth(), internalPins.getHeight());
         internalPins.setVisible(false);
 
-        hdlView.setVisibleRows(15);
-        hdlView.setBounds(5, 332, hdlView.getWidth(), hdlView.getHeight());
+        hdlView.setBounds(5, 332, 241, 270);
 
         partPins.setVisibleRows(15);
         partPins.setBounds(247, 332, partPins.getWidth(), partPins.getHeight());
