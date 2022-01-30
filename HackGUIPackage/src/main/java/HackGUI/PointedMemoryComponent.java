@@ -33,6 +33,15 @@ public class PointedMemoryComponent extends MemoryComponent implements PointedMe
     // Indicates whether this component has the focus
     protected boolean hasFocus = false;
 
+    public static PointedMemoryComponent create() {
+        final PointedMemoryComponent component = new PointedMemoryComponent();
+        component.jbInit();
+        return component;
+    }
+
+    protected PointedMemoryComponent() {
+    }
+
     protected DefaultTableCellRenderer getCellRenderer() {
         return new PointedMemoryTableCellRenderer();
     }
@@ -50,7 +59,7 @@ public class PointedMemoryComponent extends MemoryComponent implements PointedMe
     /**
      * Implementing the action of the table gaining the focus.
      */
-    public void memoryTable_focusGained(FocusEvent e) {
+    protected void memoryTable_focusGained(FocusEvent e) {
         super.memoryTable_focusGained(e);
         hasFocus = true;
     }
@@ -58,7 +67,7 @@ public class PointedMemoryComponent extends MemoryComponent implements PointedMe
     /**
      * Implementing the action of the table loosing the focus.
      */
-    public void memoryTable_focusLost(FocusEvent e) {
+    protected void memoryTable_focusLost(FocusEvent e) {
         super.memoryTable_focusLost(e);
         hasFocus = false;
     }

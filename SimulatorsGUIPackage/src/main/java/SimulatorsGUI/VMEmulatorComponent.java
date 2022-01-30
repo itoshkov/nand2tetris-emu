@@ -72,7 +72,7 @@ public class VMEmulatorComponent extends HackSimulatorComponent implements VMEmu
         bus = new BusComponent();
         screen = new ScreenComponent();
         keyboard = new KeyboardComponent();
-        ram = new LabeledMemoryComponent();
+        ram = LabeledMemoryComponent.create();
         ram.setName("RAM");
         callStack = new CallStackComponent();
         program = new ProgramComponent();
