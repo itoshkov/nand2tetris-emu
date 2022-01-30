@@ -265,7 +265,7 @@ public class HardwareSimulatorComponent extends HackSimulatorComponent implement
     // Initialization of this component.
     private void jbInit() {
         this.setLayout(null);
-        gateInfo.setBounds(5,10,gateInfo.getWidth(), gateInfo.getHeight());
+        gateInfo.setBounds(5,10,gateInfo.getPreferredSize().width, gateInfo.getPreferredSize().height);
 
         inputPins.setVisibleRows(15);
         inputPins.setBounds(5, 53, inputPins.getWidth(), inputPins.getHeight());
