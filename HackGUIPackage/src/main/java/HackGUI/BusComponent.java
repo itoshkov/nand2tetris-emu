@@ -18,15 +18,19 @@
 package HackGUI;
 
 import Hack.ComputerParts.BusGUI;
-import Hack.Controller.*;
-import java.awt.event.*;
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.border.*;
+import Hack.Controller.HackController;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+/**
+ * The BusComponent implements the animations in the CPU and VM emulators.
+ */
 public class BusComponent extends JPanel implements ActionListener, BusGUI {
 
-    // Minimum and maximum miliseconds per one unit of movement
+    // Minimum and maximum milliseconds per one unit of movement
     private static final int MIN_MS = 10;
     private static final int MAX_MS = 40;
 
@@ -41,19 +45,16 @@ public class BusComponent extends JPanel implements ActionListener, BusGUI {
     private static final int WIDTH = 128;
 
     // The textField to be moved
-    protected JTextField txtField;
+    private final JTextField txtField;
 
     // The timer for the animation.
-    private Timer timer;
-
-    // The border of the text field.
-    protected Border txtBorder;
+    private final Timer timer;
 
     // the delay between each movement as a function of the current speed
-    private int[] delays;
+    private final int[] delays;
 
     // the length of each movement as a function of the current speed
-    private double[] stepLengths;
+    private final double[] stepLengths;
 
     private int counter = 0;
 
@@ -83,13 +84,12 @@ public class BusComponent extends JPanel implements ActionListener, BusGUI {
         delays = new int[range];
         for (int i = 0; i < range; i++) {
             stepLengths[i] = function[i] * (MAX_STEP_LENGTH - MIN_STEP_LENGTH) + MIN_STEP_LENGTH;
-            delays[i] = (int)(MAX_MS - function[i] * (double)(MAX_MS - MIN_MS));
+            delays[i] = (int) (MAX_MS - function[i] * (double) (MAX_MS - MIN_MS));
         }
 
         setSpeed(3);
 
         jbInit();
-
     }
 
     /**
@@ -98,9 +98,9 @@ public class BusComponent extends JPanel implements ActionListener, BusGUI {
     public synchronized void actionPerformed(ActionEvent e) {
         x = x + dx;
         y = y + dy;
-        txtField.setLocation((int)x,(int)y);
+        txtField.setLocation((int) x, (int) y);
         counter--;
-        if(counter==0) {
+        if (counter == 0) {
             timer.stop();
             txtField.setVisible(false);
             notify();
@@ -110,22 +110,22 @@ public class BusComponent extends JPanel implements ActionListener, BusGUI {
     /**
      * Moves the given value from the source coordinates to the target coordinates.
      */
-    public synchronized void move (Point p1, Point p2, String value) {
+    public synchronized void move(Point p1, Point p2, String value) {
         txtField.setText(value);
         x = p1.getX() - 2;
         y = p1.getY() - 2;
-        txtField.setLocation((int)x,(int)y);
+        txtField.setLocation((int) x, (int) y);
         txtField.setVisible(true);
 
-        int totalX = (int)(p2.getX() - p1.getX()) + 2;
-        int totalY = (int)(p2.getY() - p1.getY()) + 2;
+        int totalX = (int) (p2.getX() - p1.getX()) + 2;
+        int totalY = (int) (p2.getY() - p1.getY()) + 2;
 
         int absX = Math.abs(totalX);
         int absY = Math.abs(totalY);
 
-        dy = (currentStepLength * absY) / (double)(absX + absY);
+        dy = (currentStepLength * absY) / (double) (absX + absY);
         dx = currentStepLength - dy;
-        counter = (int)((double)absX / dx);
+        counter = (int) ((double) absX / dx);
         if (totalX < 0)
             dx = -dx;
         if (totalY < 0)
@@ -134,7 +134,7 @@ public class BusComponent extends JPanel implements ActionListener, BusGUI {
         timer.start();
         try {
             wait();
-        } catch (InterruptedException ie) {
+        } catch (InterruptedException ignored) {
         }
     }
 
@@ -150,22 +150,23 @@ public class BusComponent extends JPanel implements ActionListener, BusGUI {
     /**
      * Resets the content of this BusComponent.
      */
-    public void reset() {}
+    public void reset() {
+    }
 
     // Initializes this component.
     private void jbInit() {
-        txtBorder = BorderFactory.createMatteBorder(4,4,4,4,Color.orange);
         txtField.setBounds(new Rectangle(10, 8, WIDTH, HEIGHT));
         txtField.setBackground(Color.white);
         txtField.setEnabled(false);
-        txtField.setBorder(txtBorder);
+        txtField.setBorder(BorderFactory.createMatteBorder(4, 4, 4, 4, Color.orange));
         txtField.setDisabledTextColor(Color.black);
         txtField.setEditable(false);
         txtField.setHorizontalAlignment(SwingConstants.RIGHT);
         txtField.setFont(Utilities.valueFont);
+        txtField.setVisible(false);
+
         this.setLayout(null);
         this.add(txtField, null);
-        txtField.setVisible(false);
         this.setOpaque(false);
     }
 }
