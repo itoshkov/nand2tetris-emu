@@ -17,9 +17,9 @@
 
 package HackGUI;
 
-import java.awt.*;
 import javax.swing.*;
-import java.awt.event.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 
 /**
  * This class represents a search window for the use of MemoryComponent, ROMComponent,
@@ -28,24 +28,24 @@ import java.awt.event.*;
 public class SearchMemoryWindow extends JFrame {
 
     // Creating the label in this window.
-    private JLabel instructionLbl = new JLabel();
+    private final JLabel instructionLbl = new JLabel();
 
     // Creating the text field in this window.
-    private JTextField rowNumber = new JTextField();
+    private final JTextField rowNumber = new JTextField();
 
     // Creating buttons.
-    private JButton okButton = new JButton();
-    private JButton cancelButton = new JButton();
+    private final JButton okButton = new JButton();
+    private final JButton cancelButton = new JButton();
 
     // Creating icons
-    private ImageIcon okIcon = new ImageIcon(Utilities.imagesDir + "ok.gif");
-    private ImageIcon cancelIcon = new ImageIcon(Utilities.imagesDir + "cancel.gif");
+    private static final ImageIcon okIcon = new ImageIcon(Utilities.imagesDir + "ok.gif");
+    private static final ImageIcon cancelIcon = new ImageIcon(Utilities.imagesDir + "cancel.gif");
 
     // The table to search in.
-    private JTable table;
+    private final JTable table;
 
     // The container panel of the table
-    private JPanel tableContainer;
+    private final JPanel tableContainer;
 
     /**
      * Constructs a new SearchWindow.
@@ -66,19 +66,19 @@ public class SearchMemoryWindow extends JFrame {
     }
 
     // Initialization of this component.
-    private void jbInit()  {
+    private void jbInit() {
         instructionLbl.setFont(Utilities.thinLabelsFont);
         instructionLbl.setText("Enter Address :");
         instructionLbl.setBounds(new Rectangle(9, 22, 132, 23));
         this.getContentPane().setLayout(null);
         rowNumber.setBounds(new Rectangle(102, 25, 158, 18));
-        rowNumber.addActionListener(this::rowNumber_actionPerformed);
+        rowNumber.addActionListener(this::okButton_actionPerformed);
         okButton.setToolTipText("Ok");
         okButton.setIcon(okIcon);
         okButton.setBounds(new Rectangle(49, 60, 63, 44));
         okButton.addActionListener(this::okButton_actionPerformed);
         cancelButton.setBounds(new Rectangle(176, 60, 63, 44));
-        cancelButton.addActionListener(this::cancelButton_actionPerformed);
+        cancelButton.addActionListener(e -> setVisible(false));
         cancelButton.setToolTipText("Cancel");
         cancelButton.setIcon(cancelIcon);
         this.getContentPane().add(instructionLbl, null);
@@ -86,35 +86,20 @@ public class SearchMemoryWindow extends JFrame {
         this.getContentPane().add(okButton, null);
         this.getContentPane().add(cancelButton, null);
 
-        setSize(300,150);
-        setLocation(250,250);
+        setSize(300, 150);
+        setLocation(250, 250);
     }
 
     /**
      * Implementing the action of pressing the OK button.
      */
-    public void okButton_actionPerformed(ActionEvent e) {
+    private void okButton_actionPerformed(ActionEvent e) {
         try {
             int row = Format.translateValueToShort(rowNumber.getText(), Format.DEC_FORMAT);
-            table.setRowSelectionInterval(row,row);
+            table.setRowSelectionInterval(row, row);
             Utilities.tableCenterScroll(tableContainer, table, row);
             setVisible(false);
-        } catch (IllegalArgumentException nfe) {}
-
-    }
-
-    /**
-     * Implementing the action of pressing the cancel button.
-     */
-    public void cancelButton_actionPerformed(ActionEvent e) {
-        setVisible(false);
-    }
-
-    /**
-     * Implementing the action of pressing 'enter' on the text field
-     * (this action is similar to pressing the ok button).
-     */
-    public void rowNumber_actionPerformed(ActionEvent e) {
-        okButton_actionPerformed(e);
+        } catch (IllegalArgumentException ignored) {
+        }
     }
 }
