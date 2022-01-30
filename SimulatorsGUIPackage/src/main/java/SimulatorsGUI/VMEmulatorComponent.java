@@ -263,15 +263,13 @@ public class VMEmulatorComponent extends HackSimulatorComponent implements VMEmu
         workingStack.setVisibleRows(7);
         workingStack.setBounds(new Rectangle(8,304,workingStack.getWidth(), workingStack.getHeight()));
 
-        callStack.setVisibleRows(7);
-        callStack.setBounds(new Rectangle(8, 458, callStack.getWidth(), callStack.getHeight()));
+        callStack.setBounds(new Rectangle(8, 458, 190, 142));
 
         this.add(bus, null);
         this.add(screen, null);
         this.add(keyboard, null);
         this.add(program, null);
         this.add(workingStack, null);
-        this.add(callStack, null);
         this.add(calculator, null);
         this.add(stack, null);
         this.add(ram, null);

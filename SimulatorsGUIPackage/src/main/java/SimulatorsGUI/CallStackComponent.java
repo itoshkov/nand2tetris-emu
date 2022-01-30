@@ -18,53 +18,48 @@
 package SimulatorsGUI;
 
 import Hack.VMEmulator.CallStackGUI;
-import HackGUI.*;
-import java.util.*;
+import HackGUI.Utilities;
+
 import javax.swing.*;
-import javax.swing.table.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.util.Vector;
 
 /**
  * This class represents the gui of a CallStack.
  */
 public class CallStackComponent extends JPanel implements CallStackGUI {
 
-    // Default number of visible rows
-    protected static final int DEFAULT_VISIBLE_ROWS = 10;
-
     // The vector containing the method names of this call stack.
-    private Vector methodNames;
+    private Vector<String> methodNames;
 
     // The table representing this callStack.
-    private JTable callStackTable;
-
-    // The containing scroll panel
-    private JScrollPane scrollPane;
+    private final JTable callStackTable;
 
     // The name label
-    private JLabel nameLbl = new JLabel();
+    private final JLabel nameLbl = new JLabel();
 
     /**
      * Constructs a new CallStackComponent.
      */
     public CallStackComponent() {
-        methodNames = new Vector();
-        // The model of the table;
-        CallStackTableModel model = new CallStackTableModel();
-        callStackTable = new JTable(model);
+        methodNames = new Vector<>();
+        callStackTable = new JTable(new CallStackTableModel());
         jbInit();
-
     }
 
     /**
      * Sets the call stack with the given vector of method names.
      */
-    public void setContents(Vector newMethodNames) {
-        methodNames = (Vector)newMethodNames.clone();
+    @SuppressWarnings("unchecked")
+    public void setContents(Vector<String> newMethodNames) {
+        methodNames = (Vector<String>) newMethodNames.clone();
         callStackTable.revalidate();
 
-        Rectangle r = callStackTable.getCellRect(newMethodNames.size() - 1, 0, true);
+        Rectangle r = callStackTable.getCellRect(methodNames.size() - 1, 0, true);
         callStackTable.scrollRectToVisible(r);
         repaint();
     }
@@ -76,62 +71,31 @@ public class CallStackComponent extends JPanel implements CallStackGUI {
         methodNames.removeAllElements();
         callStackTable.revalidate();
         callStackTable.clearSelection();
-
-    }
-
-    /**
-     * Sets the number of visible rows.
-     */
-    public void setVisibleRows(int num) {
-        int tableHeight = num * callStackTable.getRowHeight();
-        scrollPane.setSize(getTableWidth(), tableHeight + 3);
-        setPreferredSize(new Dimension(getTableWidth(), tableHeight + 30));
-        setSize(getTableWidth(), tableHeight + 30);
-    }
-
-     /**
-     * Returns the width of the table.
-     */
-    public int getTableWidth() {
-        return 190;
     }
 
     // Initializing this component.
     private void jbInit() {
         callStackTable.addFocusListener(new FocusListener() {
             public void focusGained(FocusEvent e) {
-                callStackTable_focusGained(e);
             }
 
             public void focusLost(FocusEvent e) {
-                callStackTable_focusLost(e);
+                callStackTable.clearSelection();
             }
         });
         callStackTable.setTableHeader(null);
         callStackTable.setDefaultRenderer(callStackTable.getColumnClass(0), getCellRenderer());
-        scrollPane = new JScrollPane(callStackTable);
-        setVisibleRows(DEFAULT_VISIBLE_ROWS);
-        scrollPane.setLocation(0,27);
-        setBorder(BorderFactory.createEtchedBorder());
-        this.setLayout(null);
+
         nameLbl.setText("Call Stack");
-        nameLbl.setBounds(new Rectangle(3, 4, 70, 23));
         nameLbl.setFont(Utilities.labelsFont);
-        this.add(scrollPane, null);
-        this.add(nameLbl, null);
-    }
+        Utilities.fixToPreferredSize(nameLbl);
 
-    /**
-     * The action of the table gaining focus (empty implementation).
-     */
-    public void callStackTable_focusGained(FocusEvent e) {
-    }
-
-    /**
-     * The action of the table loosing focus
-     */
-    public void callStackTable_focusLost(FocusEvent e) {
-        callStackTable.clearSelection();
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.add(Box.createVerticalStrut(3));
+        this.add(nameLbl);
+        this.add(Box.createVerticalStrut(3));
+        this.add(new JScrollPane(callStackTable));
+        this.setBorder(BorderFactory.createEtchedBorder());
     }
 
     /**
@@ -176,7 +140,7 @@ public class CallStackComponent extends JPanel implements CallStackGUI {
          * Returns true of this table cells are editable, false -
          * otherwise.
          */
-        public boolean isCellEditable(int row, int col){
+        public boolean isCellEditable(int row, int col) {
             return false;
         }
     }
@@ -189,24 +153,13 @@ public class CallStackComponent extends JPanel implements CallStackGUI {
         /**
          * Returns the cell renderer component.
          */
-        public Component getTableCellRendererComponent
-            (JTable table, Object value, boolean selected, boolean focused, int row, int column)
-        {
-            setForeground(null);
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean selected, boolean focused,
+                                                       int row, int column) {
+
+            setForeground(row == (methodNames.size() - 1) ? Color.blue : null);
             setBackground(null);
 
-            setRenderer(row, column);
-            super.getTableCellRendererComponent(table, value, selected, focused, row, column);
-
-            return this;
-        }
-
-        /**
-         * Sets a new cell renderer.
-         */
-        public void setRenderer(int row, int column) {
-            if(row == (methodNames.size() - 1))
-                setForeground(Color.blue);
+            return super.getTableCellRendererComponent(table, value, selected, focused, row, column);
         }
     }
 }
