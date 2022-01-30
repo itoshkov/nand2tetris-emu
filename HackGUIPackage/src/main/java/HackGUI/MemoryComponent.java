@@ -31,6 +31,9 @@ import javax.swing.table.*;
  */
 public class MemoryComponent extends JPanel implements MemoryGUI {
 
+    private static final String CARD_TOOLS = "tools";
+    private static final String CARD_MESSAGE = "message";
+
     /**
      * The current format.
      */
@@ -101,6 +104,8 @@ public class MemoryComponent extends JPanel implements MemoryGUI {
 
     // The text field containing the message (for example "Loading...").
     private final JTextField messageTxt = new JTextField();
+
+    private final JPanel toolbarAlt = new JPanel(new CardLayout());
 
     /**
      * Constructs a new MemoryComponent.
@@ -192,9 +197,7 @@ public class MemoryComponent extends JPanel implements MemoryGUI {
      * Hides the displayed message.
      */
     public void hideMessage() {
-        messageTxt.setVisible(false);
-        searchButton.setVisible(true);
-        clearButton.setVisible(true);
+        ((CardLayout) toolbarAlt.getLayout()).show(toolbarAlt, CARD_TOOLS);
         messageTxt.setText("");
     }
 
@@ -203,9 +206,7 @@ public class MemoryComponent extends JPanel implements MemoryGUI {
      */
     public void showMessage(String message) {
         messageTxt.setText(message);
-        searchButton.setVisible(false);
-        clearButton.setVisible(false);
-        messageTxt.setVisible(true);
+        ((CardLayout) toolbarAlt.getLayout()).show(toolbarAlt, CARD_MESSAGE);
     }
 
     public void addListener(ComputerPartEventListener listener) {
@@ -442,7 +443,7 @@ public class MemoryComponent extends JPanel implements MemoryGUI {
     }
 
     // Initializes this memory.
-    protected void jbInit() {
+    protected void jbInit(Component... additionalTools) {
         memoryTable.addFocusListener(new FocusListener() {
             public void focusGained(FocusEvent e) {
                 memoryTable_focusGained(e);
@@ -460,15 +461,13 @@ public class MemoryComponent extends JPanel implements MemoryGUI {
         messageTxt.setDisabledTextColor(Color.red);
         messageTxt.setEditable(false);
         messageTxt.setHorizontalAlignment(SwingConstants.CENTER);
-        messageTxt.setBounds(new Rectangle(37, 3, 154, 22));
         messageTxt.setVisible(false);
 
         scrollPane = new JScrollPane(memoryTable);
-        this.setLayout(null);
         searchButton.setToolTipText("Search");
         searchButton.setIcon(searchIcon);
-        searchButton.setBounds(new Rectangle(159, 2, 31, 25));
         searchButton.addActionListener(e -> searchWindow.showWindow());
+        Utilities.fixSize(searchButton, new Dimension(31, 25));
         memoryTable.setFont(Utilities.valueFont);
         nameLbl.setBounds(new Rectangle(3, 5, 70, 23));
         nameLbl.setFont(Utilities.labelsFont);
@@ -491,13 +490,36 @@ public class MemoryComponent extends JPanel implements MemoryGUI {
                 notifyClearListeners();
         });
         clearButton.setIcon(clearIcon);
-        clearButton.setBounds(new Rectangle(128, 2, 31, 25));
         clearButton.setToolTipText("Clear");
-        this.add(scrollPane, null);
-        this.add(searchButton, null);
-        this.add(nameLbl, null);
-        this.add(clearButton, null);
-        this.add(messageTxt);
+        Utilities.fixSize(clearButton, new Dimension(31, 25));
+
+        final JPanel moreTools = new JPanel();
+        moreTools.setLayout(new BoxLayout(moreTools, BoxLayout.X_AXIS));
+
+        moreTools.add(Box.createHorizontalGlue());
+        for (Component component : additionalTools) {
+            moreTools.add(Box.createHorizontalStrut(3));
+            moreTools.add(component);
+        }
+
+        moreTools.add(clearButton);
+        moreTools.add(searchButton);
+
+        toolbarAlt.add(moreTools, CARD_TOOLS);
+        toolbarAlt.add(messageTxt, CARD_MESSAGE);
+
+        final JPanel tools = new JPanel();
+        tools.setLayout(new BoxLayout(tools, BoxLayout.X_AXIS));
+        tools.add(nameLbl);
+        tools.add(Box.createHorizontalStrut(3));
+        tools.add(toolbarAlt);
+
+        // Set maximum height to be equal to the preferred height
+        tools.setMaximumSize(new Dimension(tools.getMaximumSize().width, tools.getPreferredSize().height));
+
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.add(tools);
+        this.add(scrollPane);
     }
 
     /**

@@ -147,24 +147,6 @@ public class ROMComponent extends PointedMemoryComponent implements ROMGUI {
     }
 
     /**
-     * Hides the displayed message.
-     */
-    public void hideMessage() {
-        super.hideMessage();
-        loadButton.setVisible(true);
-        romFormat.setVisible(true);
-    }
-
-    /**
-     * Displays the given message.
-     */
-    public void showMessage(String message) {
-        loadButton.setVisible(false);
-        romFormat.setVisible(false);
-        super.showMessage(message);
-    }
-
-    /**
      * Translates a given string to a short according to the current format.
      */
     protected short translateValueToShort(String data) throws TranslationException {
@@ -197,15 +179,14 @@ public class ROMComponent extends PointedMemoryComponent implements ROMGUI {
 
     // Initializes this rom.
     private void init() {
-        jbInit();
         loadButton.setIcon(loadIcon);
         loadButton.setBounds(new Rectangle(97, 2, 31, 25));
         loadButton.setToolTipText("Load Program");
         loadButton.addActionListener(e -> loadProgram());
-        romFormat.setPreferredSize(new Dimension(125, 23));
-        romFormat.setBounds(new Rectangle(39, 3, 56, 23));
+        Utilities.fixSize(loadButton, new Dimension(31, 25));
         romFormat.setFont(Utilities.thinLabelsFont);
         romFormat.setToolTipText("Display Format");
+        Utilities.fixToPreferredSize(romFormat);
         romFormat.addActionListener(e -> {
             String newFormat = (String) romFormat.getSelectedItem();
             if (format[0].equals(newFormat))
@@ -218,8 +199,7 @@ public class ROMComponent extends PointedMemoryComponent implements ROMGUI {
                 setNumericFormat(Format.BIN_FORMAT);
         });
 
-        this.add(loadButton);
-        this.add(romFormat);
+        jbInit(romFormat, loadButton);
     }
 
     /**
@@ -234,10 +214,9 @@ public class ROMComponent extends PointedMemoryComponent implements ROMGUI {
      */
     public void loadProgram() {
         int returnVal = fileChooser.showDialog(this, "Load ROM");
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
+        if (returnVal == JFileChooser.APPROVE_OPTION)
             notifyProgramListeners(ProgramEvent.LOAD,
                                    fileChooser.getSelectedFile().getAbsolutePath());
-        }
     }
 
     /**

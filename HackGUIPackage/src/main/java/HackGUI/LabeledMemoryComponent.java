@@ -50,8 +50,6 @@ public class LabeledMemoryComponent extends PointedMemoryComponent implements La
 
     private void init() {
         jbInit();
-        searchButton.setLocation(199, 2);
-        clearButton.setLocation(168, 2);
         memoryTable.setGridColor(Color.lightGray);
     }
 
