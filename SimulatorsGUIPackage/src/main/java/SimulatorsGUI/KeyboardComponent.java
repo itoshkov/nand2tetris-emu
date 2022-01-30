@@ -29,13 +29,13 @@ import java.awt.event.*;
 public class KeyboardComponent extends JPanel implements KeyboardGUI {
 
     // The icon of the keyboard.
-    private ImageIcon keyboardIcon = new ImageIcon(Utilities.imagesDir + "keyboard.gif");
+    private static final ImageIcon keyboardIcon = new ImageIcon(Utilities.imagesDir + "keyboard.gif");
 
     // The text field on which the letter are appearing.
-    private JTextField keyNameText = new JTextField();
+    private final JTextField keyNameText = new JTextField();
 
     // The keyboard's button.
-    private JButton keyButton = new JButton();
+    private final JButton keyButton = new JButton();
 
     /**
      * Constructs a new keyboard component.
@@ -45,7 +45,7 @@ public class KeyboardComponent extends JPanel implements KeyboardGUI {
     }
 
     /**
-     * Displayes the given key name.
+     * Displays the given key name.
      */
     public void setKey(String keyName) {
         keyNameText.setText(keyName);
@@ -77,18 +77,17 @@ public class KeyboardComponent extends JPanel implements KeyboardGUI {
         keyButton.setBounds(new Rectangle(0, 0, 258, 27));
         keyButton.addFocusListener(new FocusListener() {
             public void focusGained(FocusEvent e) {
-                keyButton_focusGained(e);
+                keyButton.setBackground(UIManager.getColor("TextField.selectionBackground"));
             }
 
             public void focusLost(FocusEvent e) {
-                keyButton_focusLost(e);
+                keyButton.setBackground(UIManager.getColor("Button.background"));
             }
         });
         this.add(keyButton, null);
         this.add(keyNameText, null);
 
-        setPreferredSize(new Dimension(516, 27));
-        setSize(516, 27);
+        Utilities.fixSize(this, new Dimension(516, 27));
     }
 
     /**
@@ -96,21 +95,5 @@ public class KeyboardComponent extends JPanel implements KeyboardGUI {
      */
     public JComponent getKeyEventHandler() {
         return keyButton;
-    }
-
-    /**
-     * Implements the action of gaining the focus (changing the background
-     * of this component).
-     */
-    public void keyButton_focusGained(FocusEvent e) {
-        keyButton.setBackground(UIManager.getColor("TextField.selectionBackground"));
-    }
-
-    /**
-     * Implements the action of losing the focus (changing the background of
-     * this component back to the original color).
-     */
-    public void keyButton_focusLost(FocusEvent e) {
-        keyButton.setBackground(UIManager.getColor("Button.background"));
     }
 }
