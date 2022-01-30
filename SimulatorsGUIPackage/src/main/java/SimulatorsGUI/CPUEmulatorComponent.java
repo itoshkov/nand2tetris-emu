@@ -164,9 +164,9 @@ public class CPUEmulatorComponent extends HackSimulatorComponent implements CPUE
     // Initialization of this component.
     private void jbInit() {
         this.setLayout(null);
-        pc.setBounds(new Rectangle(35, 527, pc.getWidth(), pc.getHeight()));
-        a.setBounds(new Rectangle(278, 527, a.getWidth(), a.getHeight()));
-        d.setBounds(new Rectangle(646, 351, d.getWidth(), d.getHeight()));
+        pc.setBounds(new Rectangle(35, 527, pc.getPreferredSize().width, pc.getPreferredSize().height));
+        a.setBounds(new Rectangle(278, 527, a.getPreferredSize().width, a.getPreferredSize().height));
+        d.setBounds(new Rectangle(646, 351, d.getPreferredSize().width, d.getPreferredSize().height));
         screen.setToolTipText("Screen");
         screen.setBounds(new Rectangle(476, 25, screen.getWidth(), screen.getHeight()));
         keyboard.setBounds(new Rectangle(476, 285, keyboard.getWidth(), keyboard.getHeight()));

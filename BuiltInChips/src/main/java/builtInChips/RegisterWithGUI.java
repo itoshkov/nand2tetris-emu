@@ -17,9 +17,13 @@
 
 package builtInChips;
 
-import Hack.Gates.*;
-import Hack.ComputerParts.*;
-import HackGUI.*;
+import Hack.ComputerParts.ComputerPartEvent;
+import Hack.ComputerParts.ComputerPartEventListener;
+import Hack.Gates.BuiltInGateWithGUI;
+import Hack.Gates.GateException;
+import Hack.Gates.GatesManager;
+import HackGUI.RegisterComponent;
+
 import java.awt.*;
 
 /**

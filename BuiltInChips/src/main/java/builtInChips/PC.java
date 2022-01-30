@@ -17,17 +17,23 @@
 
 package builtInChips;
 
-import Hack.Gates.*;
-import HackGUI.*;
-import Hack.ComputerParts.*;
+import Hack.ComputerParts.ComputerPartEvent;
+import Hack.ComputerParts.ComputerPartEventListener;
+import Hack.Gates.BuiltInGateWithGUI;
+import Hack.Gates.GateException;
+import Hack.Gates.GatesManager;
+import HackGUI.RegisterComponent;
+
 import java.awt.*;
 
 /**
-/* A 16-bit counter with load and reset controls.
-/*      if      (reset[t]=1) out[t+1] = 0
-/*      else if (load[t]=1)  out[t+1] = in[t]
-/*      else if (inc[t]=1)   out[t+1] = out[t] + 1  (integer addition)
-/*      else                 out[t+1] = out[t]
+ * A 16-bit counter with load and reset controls.
+ * <pre>{@code
+ *      if      (reset[t] == 1) out[t+1] = 0
+ *      else if (load[t] == 1)  out[t+1] = in[t]
+ *      else if (inc[t] == 1)   out[t+1] = out[t] + 1  // integer addition
+ *      else                    out[t+1] = out[t]
+ * }</pre>
  */
 public class PC extends BuiltInGateWithGUI implements ComputerPartEventListener {
 
@@ -45,16 +51,16 @@ public class PC extends BuiltInGateWithGUI implements ComputerPartEventListener 
             gui = new RegisterComponent();
             gui.setName("PC:");
             gui.reset();
-            gui.setLocation(355,442);
+            gui.setLocation(355, 442);
             gui.addListener(this);
             gui.addErrorListener(this);
         }
     }
 
     protected void clockUp() {
-        short in = inputPins[0].get(); // 16 bit input
-        short load = inputPins[1].get(); // load bit
-        short inc = inputPins[2].get(); // incerement bit
+        short in = inputPins[0].get();    // 16 bit input
+        short load = inputPins[1].get();  // load bit
+        short inc = inputPins[2].get();   // increment bit
         short reset = inputPins[3].get(); // reset bit
         if (reset == 1)
             value = 0;
@@ -78,13 +84,13 @@ public class PC extends BuiltInGateWithGUI implements ComputerPartEventListener 
     public void valueChanged(ComputerPartEvent event) {
         short newValue = event.getValue();
         clearErrorListeners();
-        if (newValue < 0 || newValue > 32767) {
+        if (newValue < 0) {
             notifyErrorListeners("Illegal address value");
             if (gui != null)
                 gui.setValueAt(0, value);
-        }
-        else
+        } else {
             updateValue(newValue);
+        }
     }
 
     // updates the given value
