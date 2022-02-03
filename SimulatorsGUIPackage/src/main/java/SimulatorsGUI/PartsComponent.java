@@ -36,16 +36,16 @@ public class PartsComponent extends JPanel implements PartsGUI {
     private final static String COMPOSITE_GATE = "Composite";
 
     // The table containing the parts data
-    private JTable partsTable;
+    private final JTable partsTable;
 
     // The array of gates
     private Gate[] parts;
 
     // The scroll pane in which the table is placed.
-    private JScrollPane scrollPane;
+    private final JScrollPane scrollPane;
 
     // The name of this component.
-    private JLabel nameLbl = new JLabel();
+    private final JLabel nameLbl = new JLabel();
 
     /**
      * Constructs a new PartsComponent.
@@ -55,6 +55,7 @@ public class PartsComponent extends JPanel implements PartsGUI {
         // The model of this table.
         PartsTableModel model = new PartsTableModel();
         partsTable = new JTable(model);
+        scrollPane = new JScrollPane(partsTable);
         jbInit();
     }
 
@@ -109,43 +110,29 @@ public class PartsComponent extends JPanel implements PartsGUI {
 
     // Initialization of this component.
     private void jbInit() {
-        this.setLayout(null);
         partsTable.setFont(Utilities.valueFont);
         partsTable.getTableHeader().setReorderingAllowed(false);
         partsTable.getTableHeader().setResizingAllowed(false);
 
         partsTable.addFocusListener(new FocusListener() {
             public void focusGained(FocusEvent e) {
-                partsTable_focusGained(e);
             }
 
             public void focusLost(FocusEvent e) {
-                partsTable_focusLost(e);
+                partsTable.clearSelection();
             }
         });
 
-        setBorder(BorderFactory.createEtchedBorder());
-        scrollPane = new JScrollPane(partsTable);
-        scrollPane.setLocation(0, 27);
         nameLbl.setText("Name :");
-        nameLbl.setBounds(new Rectangle(3, 3, 102, 21));
         nameLbl.setFont(Utilities.labelsFont);
-        this.add(scrollPane, null);
-        this.add(nameLbl, null);
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.add(Box.createVerticalStrut(3));
+        this.add(nameLbl);
+        this.add(Box.createVerticalStrut(2));
+        this.add(scrollPane);
+        setBorder(BorderFactory.createEtchedBorder());
         determineColumnWidth();
     }
-
-    /**
-     * The action of the table gaining focus (empty implementation)
-     */
-    public void partsTable_focusGained(FocusEvent e) {
-    }
-
-    // The action of the table loosing focus
-    public void partsTable_focusLost(FocusEvent e) {
-        partsTable.clearSelection();
-    }
-
 
     // An inner class representing the model of the parts table.
     class PartsTableModel extends AbstractTableModel {
@@ -197,13 +184,6 @@ public class PartsComponent extends JPanel implements PartsGUI {
          */
         public boolean isCellEditable(int row, int col) {
             return false;
-        }
-
-        /**
-         * Returns the the class of a specific column.
-         */
-        public Class getColumnClass(int c) {
-            return getValueAt(0, c).getClass();
         }
     }
 }

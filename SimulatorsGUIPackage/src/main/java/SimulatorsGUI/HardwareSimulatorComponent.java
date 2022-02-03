@@ -284,7 +284,7 @@ public class HardwareSimulatorComponent extends HackSimulatorComponent implement
         partPins.setVisible(false);
 
         parts.setVisibleRows(15);
-        parts.setBounds(247, 332, parts.getWidth(), parts.getHeight());
+        parts.setBounds(247, 332, parts.getPreferredSize().width, parts.getPreferredSize().height);
         parts.setVisible(false);
 
         nullLayoutGatesPanel.setBorder(BorderFactory.createEtchedBorder());
