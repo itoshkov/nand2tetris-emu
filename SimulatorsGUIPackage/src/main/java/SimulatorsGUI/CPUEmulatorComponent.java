@@ -171,9 +171,9 @@ public class CPUEmulatorComponent extends HackSimulatorComponent implements CPUE
         screen.setBounds(new Rectangle(476, 25, screen.getWidth(), screen.getHeight()));
         keyboard.setBounds(new Rectangle(476, 285, keyboard.getWidth(), keyboard.getHeight()));
         ram.setVisibleRows(29);
-        ram.setBounds(new Rectangle(264, 25, ram.getWidth(), ram.getHeight()));
+        ram.setBounds(new Rectangle(264, 25, ram.getPreferredSize().width, ram.getPreferredSize().height));
         rom.setVisibleRows(29);
-        rom.setBounds(new Rectangle(20, 25, rom.getWidth(), rom.getHeight()));
+        rom.setBounds(new Rectangle(20, 25, rom.getPreferredSize().width, rom.getPreferredSize().height));
         alu.setBounds(new Rectangle(551, 414, alu.getPreferredSize().width, alu.getPreferredSize().height));
 
         bus.setBounds(new Rectangle(0, 0, EMULATOR_WIDTH , EMULATOR_HEIGHT));

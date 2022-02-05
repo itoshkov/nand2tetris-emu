@@ -17,11 +17,13 @@
 
 package SimulatorsGUI;
 
-import HackGUI.*;
 import Hack.VMEmulator.CalculatorGUI;
+import HackGUI.Format;
+import HackGUI.Utilities;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.*;
+import java.awt.geom.Line2D;
 
 /**
  * This class represents an operation performed on the Stack.
@@ -29,10 +31,10 @@ import java.awt.geom.*;
 public class StackCalculator extends JPanel implements CalculatorGUI {
 
     // The input, command and output text fields.
-    private JTextField firstInput = new JTextField();
-    private JTextField command = new JTextField();
-    private JTextField secondInput = new JTextField();
-    private JTextField output = new JTextField();
+    private final JTextField firstInput = new JTextField();
+    private final JTextField command = new JTextField();
+    private final JTextField secondInput = new JTextField();
+    private final JTextField output = new JTextField();
 
     //wide and regular strokes for the painting.
     private final static BasicStroke wideStroke = new BasicStroke(3.0f);
@@ -48,15 +50,14 @@ public class StackCalculator extends JPanel implements CalculatorGUI {
      * Constructs a new StackCalculator.
      */
     public StackCalculator() {
-
         jbInit();
     }
 
     /**
      * Sets the null value of this component.
      */
-    public void setNullValue (short value, boolean hideNullValue) {
-        nullValue = value;
+    public void setNullValue(short value, boolean hideNullValue) {
+        this.nullValue = value;
         this.hideNullValue = hideNullValue;
     }
 
@@ -64,14 +65,10 @@ public class StackCalculator extends JPanel implements CalculatorGUI {
      * Translates a given short to a string according to the current format.
      */
     protected String translateValueToString(short value) {
-        if(hideNullValue) {
-            if(value == nullValue)
-                return "";
-            else
-                return Format.translateValueToString(value, Format.DEC_FORMAT);
-        }
-        else return Format.translateValueToString(value, Format.DEC_FORMAT);
+        if (value == nullValue && hideNullValue)
+            return "";
 
+        return Format.translateValueToString(value, Format.DEC_FORMAT);
     }
 
     /**
@@ -105,7 +102,7 @@ public class StackCalculator extends JPanel implements CalculatorGUI {
     /**
      * Sets the operator of the calculator with the given operator.
      */
-    public void setOperator(char operator){
+    public void setOperator(char operator) {
         command.setText(String.valueOf(operator));
     }
 
@@ -122,7 +119,7 @@ public class StackCalculator extends JPanel implements CalculatorGUI {
      * flashes the value at the given index.
      */
     public void flash(int index) {
-         switch(index) {
+        switch (index) {
             case 0:
                 firstInput.setBackground(Color.orange);
                 break;
@@ -147,8 +144,8 @@ public class StackCalculator extends JPanel implements CalculatorGUI {
     /**
      * Highlights the value at the given index.
      */
-    public void highlight (int index) {
-         switch(index) {
+    public void highlight(int index) {
+        switch (index) {
             case 0:
                 firstInput.setForeground(Color.blue);
                 break;
@@ -164,8 +161,8 @@ public class StackCalculator extends JPanel implements CalculatorGUI {
     /**
      * Returns the value at the given index in its string representation.
      */
-    public String getValueAsString (int index) {
-        switch(index) {
+    public String getValueAsString(int index) {
+        switch (index) {
             case 0:
                 return firstInput.getText();
             case 1:
@@ -193,16 +190,19 @@ public class StackCalculator extends JPanel implements CalculatorGUI {
      */
     public Point getCoordinates(int index) {
         Point location = getLocation();
-        switch(index) {
+        switch (index) {
             // The first input
             case 0:
-                return new Point((int)(location.getX() + firstInput.getLocation().getX()), (int)(location.getY() + firstInput.getLocation().getY()));
+                return new Point(location.x + firstInput.getLocation().x,
+                                 location.y + firstInput.getLocation().y);
             // The second input
             case 1:
-                return new Point ((int)(location.getX() + secondInput.getLocation().getX()), (int)(location.getY() + secondInput.getLocation().getY()));
+                return new Point(location.x + secondInput.getLocation().x,
+                                 location.y + secondInput.getLocation().y);
             // The output
             case 2:
-                return new Point ((int)(location.getX() + output.getLocation().getX()), (int)(location.getY() + output.getLocation().getY()));
+                return new Point(location.x + output.getLocation().x,
+                                 location.y + output.getLocation().y);
             default:
                 return null;
         }
@@ -213,7 +213,7 @@ public class StackCalculator extends JPanel implements CalculatorGUI {
      */
     public void setValueAt(int index, short value) {
         String data = translateValueToString(value);
-        switch(index) {
+        switch (index) {
             case 0:
                 firstInput.setText(data);
                 break;
@@ -233,7 +233,7 @@ public class StackCalculator extends JPanel implements CalculatorGUI {
         Graphics2D g2 = (Graphics2D) g;
         g2.setPaint(Color.black);
         g2.setStroke(wideStroke);
-        g2.draw(new Line2D.Double(18,60,142,60));
+        g2.draw(new Line2D.Double(18, 60, 142, 60));
         g2.setStroke(regularStroke);
     }
 
@@ -241,11 +241,11 @@ public class StackCalculator extends JPanel implements CalculatorGUI {
      * Sets the numeric format with the given code (out of the format constants
      * in HackController).
      */
-    public void setNumericFormat(int formatCode) {}
+    public void setNumericFormat(int formatCode) {
+    }
 
     // Initialization of this component.
     private void jbInit() {
-        this.setLayout(null);
         firstInput.setHorizontalAlignment(SwingConstants.RIGHT);
         firstInput.setBounds(new Rectangle(18, 8, 124, 19));
         firstInput.setBackground(UIManager.getColor("Button.background"));
@@ -263,9 +263,11 @@ public class StackCalculator extends JPanel implements CalculatorGUI {
         output.setBounds(new Rectangle(18, 70, 124, 19));
         output.setBackground(UIManager.getColor("Button.background"));
         output.setFont(Utilities.valueFont);
-        this.add(secondInput, null);
-        this.add(firstInput, null);
-        this.add(output, null);
-        this.add(command, null);
+        this.setLayout(null);
+        this.add(secondInput);
+        this.add(firstInput);
+        this.add(output);
+        this.add(command);
+        Utilities.fixSize(this, new Dimension(148, 103));
     }
 }
