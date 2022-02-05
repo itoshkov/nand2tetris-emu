@@ -461,7 +461,6 @@ public class MemoryComponent extends JPanel implements MemoryGUI {
         messageTxt.setDisabledTextColor(Color.red);
         messageTxt.setEditable(false);
         messageTxt.setHorizontalAlignment(SwingConstants.CENTER);
-        messageTxt.setVisible(false);
 
         scrollPane = new JScrollPane(memoryTable);
         searchButton.setToolTipText("Search");
@@ -469,11 +468,9 @@ public class MemoryComponent extends JPanel implements MemoryGUI {
         searchButton.addActionListener(e -> searchWindow.showWindow());
         Utilities.fixSize(searchButton, new Dimension(31, 25));
         memoryTable.setFont(Utilities.valueFont);
-        nameLbl.setBounds(new Rectangle(3, 5, 70, 23));
         nameLbl.setFont(Utilities.labelsFont);
         determineColumnWidth();
         setBorder(BorderFactory.createEtchedBorder());
-        scrollPane.setLocation(0, 27);
 
         clearButton.addActionListener(e -> {
             Object[] options = {"Yes", "No"};
@@ -534,9 +531,7 @@ public class MemoryComponent extends JPanel implements MemoryGUI {
      */
     public void setVisibleRows(int num) {
         int tableHeight = num * memoryTable.getRowHeight();
-        scrollPane.setSize(getTableWidth(), tableHeight + 3);
         setPreferredSize(new Dimension(getTableWidth(), tableHeight + 30));
-        setSize(getTableWidth(), tableHeight + 30);
     }
 
     // Determines the width of each column in the table.

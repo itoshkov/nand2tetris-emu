@@ -248,7 +248,7 @@ public class VMEmulatorComponent extends HackSimulatorComponent implements VMEmu
         keyboard.setBounds(492, 270, keyboard.getWidth(), keyboard.getHeight());
         screen.setBounds(492, 10, screen.getWidth(), screen.getHeight());
         program.setVisibleRows(15);
-        program.setBounds(new Rectangle(6, 10, program.getWidth(), program.getHeight()));
+        program.setBounds(new Rectangle(6, 10, program.getPreferredSize().width, program.getPreferredSize().height));
         ram.setVisibleRows(15);
         ram.setBounds(new Rectangle(766, 327, ram.getWidth(), ram.getHeight()));
 
