@@ -51,7 +51,7 @@ public class CPU
     // The time that passed since the program started running.
     protected long time;
 
-    // An assembler transltor
+    // An assembler translator
     protected HackAssemblerTranslator assemblerTranslator;
 
     /**
@@ -161,8 +161,8 @@ public class CPU
             bus.send(rom, PC.get(), A, 0);
         else if ((instruction & 0xe000) == 0xe000) {
             computeExp(instruction);
-            setDestination(instruction);
             pcChanged = checkJump(instruction);
+            setDestination(instruction);
         }
         else if (instruction != HackAssemblerTranslator.NOP)
             throw new ProgramException("At line " + PC.get() +
