@@ -37,9 +37,9 @@ push temp 0
 pop that 0
 push constant 0
 return
-function Memory.alloc 1
+function Memory.alloc 2
 push argument 0
-push constant 1
+push constant 0
 lt
 if-goto IF_TRUE0
 goto IF_FALSE0
@@ -48,9 +48,21 @@ push constant 5
 call Sys.error 1
 pop temp 0
 label IF_FALSE0
+push argument 0
+push constant 0
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 1
+pop argument 0
+label IF_FALSE1
 push constant 2048
 pop local 0
 label WHILE_EXP0
+push local 0
+push constant 16383
+lt
 push constant 0
 push local 0
 add
@@ -58,6 +70,7 @@ pop pointer 1
 push that 0
 push argument 0
 lt
+and
 not
 if-goto WHILE_END0
 push constant 1
@@ -65,7 +78,91 @@ push local 0
 add
 pop pointer 1
 push that 0
+pop local 1
+push constant 0
+push local 0
+add
+pop pointer 1
+push that 0
+push constant 0
+eq
+push local 1
+push constant 16382
+gt
+or
+push constant 0
+push local 1
+add
+pop pointer 1
+push that 0
+push constant 0
+eq
+or
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push local 1
 pop local 0
+goto IF_END2
+label IF_FALSE2
+push constant 0
+push local 0
+add
+push constant 1
+push local 0
+add
+pop pointer 1
+push that 0
+push local 0
+sub
+push constant 0
+push local 1
+add
+pop pointer 1
+push that 0
+add
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 1
+push local 1
+add
+pop pointer 1
+push that 0
+push local 1
+push constant 2
+add
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push constant 1
+push local 0
+add
+push local 0
+push constant 2
+add
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+goto IF_END3
+label IF_FALSE3
+push constant 1
+push local 0
+add
+push constant 1
+push local 1
+add
+pop pointer 1
+push that 0
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+label IF_END3
+label IF_END2
 goto WHILE_EXP0
 label WHILE_END0
 push local 0
@@ -73,13 +170,13 @@ push argument 0
 add
 push constant 16379
 gt
-if-goto IF_TRUE1
-goto IF_FALSE1
-label IF_TRUE1
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
 push constant 6
 call Sys.error 1
 pop temp 0
-label IF_FALSE1
+label IF_FALSE4
 push constant 0
 push local 0
 add
@@ -89,9 +186,9 @@ push argument 0
 push constant 2
 add
 gt
-if-goto IF_TRUE2
-goto IF_FALSE2
-label IF_TRUE2
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
 push argument 0
 push constant 2
 add
@@ -119,9 +216,9 @@ push local 0
 push constant 2
 add
 eq
-if-goto IF_TRUE3
-goto IF_FALSE3
-label IF_TRUE3
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
 push argument 0
 push constant 3
 add
@@ -136,8 +233,8 @@ pop temp 0
 pop pointer 1
 push temp 0
 pop that 0
-goto IF_END3
-label IF_FALSE3
+goto IF_END6
+label IF_FALSE6
 push argument 0
 push constant 3
 add
@@ -152,7 +249,7 @@ pop temp 0
 pop pointer 1
 push temp 0
 pop that 0
-label IF_END3
+label IF_END6
 push constant 1
 push local 0
 add
@@ -165,7 +262,7 @@ pop temp 0
 pop pointer 1
 push temp 0
 pop that 0
-label IF_FALSE2
+label IF_FALSE5
 push constant 0
 push local 0
 add
