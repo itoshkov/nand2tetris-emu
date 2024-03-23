@@ -4,7 +4,7 @@
 
     <groupId>org.nand2tetris</groupId>
     <artifactId>parent</artifactId>
-    <version>2.6.2</version>
+    <version>2.7.0</version>
     <packaging>pom</packaging>
 
     <name>Hack/Jack tools</name>
@@ -34,8 +34,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.5</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
         </plugins>

@@ -65,15 +65,14 @@ label WHILE_END0
 push constant 0
 return
 function Sys.error 0
-push constant 3
-call String.new 1
 push constant 69
-call String.appendChar 2
+call Output.printChar 1
+pop temp 0
 push constant 82
-call String.appendChar 2
+call Output.printChar 1
+pop temp 0
 push constant 82
-call String.appendChar 2
-call Output.printString 1
+call Output.printChar 1
 pop temp 0
 push argument 0
 call Output.printInt 1
